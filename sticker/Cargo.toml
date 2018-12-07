@@ -1,0 +1,21 @@
+[package]
+name = "sticker"
+version = "0.1.0"
+edition = "2018"
+authors = ["Daniël de Kok <me@danieldk.eu>"]
+
+[dependencies]
+conllx = "0.10"
+failure = "0.1"
+finalfrontier = "0.2"
+itertools = "0.6"
+ndarray = "0.11"
+protobuf = "1.4"
+rust2vec = "0.3"
+serde = "1"
+serde_derive = "1"
+tf-proto = { git = "https://github.com/danieldk/tf-proto-rs", tag = "v1.4.0" }
+tensorflow = "0.11"
+
+[dev-dependencies]
+approx = "0.3"

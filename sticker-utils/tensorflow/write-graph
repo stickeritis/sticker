@@ -1,0 +1,116 @@
+#!/usr/bin/env python
+#  -*- coding: utf-8 -*-
+
+import argparse
+import sys
+import tensorflow as tf
+import toml
+
+from config import DefaultConfig
+from conv_model import ConvModel
+from rnn_model import RNNModel
+
+
+def usage():
+    print("Usage: %s write-graph SHAPES GRAPH" % sys.argv[0])
+    sys.exit(1)
+
+
+def create_graph(config, model, shapes, graph_filename):
+    gpuopts = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
+    tfconfig = tf.ConfigProto(gpu_options=gpuopts)
+
+    with tf.Graph().as_default(), tf.Session(config=tfconfig) as session:
+        with tf.variable_scope("model", reuse=None):
+            m = model(config=config, shapes=shapes)
+
+        init = tf.variables_initializer(tf.global_variables(), name='init')
+
+        saver = tf.train.Saver(tf.global_variables())
+
+        tf.train.write_graph(
+            session.graph_def,
+            './',
+            graph_filename,
+            as_text=False)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'shape_file',
+        metavar='SHAPE_FILE',
+        type=str,
+        help='shape file')
+    parser.add_argument(
+        'output_graph_file',
+        metavar='OUTPUT_GRAPH_FILE',
+        type=str,
+        help='output graph file')
+    parser.add_argument(
+        "--crf",
+        help="use CRF layer for classification",
+        action="store_true")
+    parser.add_argument(
+        "--glu",
+        help="use GLU activiation in convolutions",
+        action="store_true")
+    parser.add_argument(
+        "--hidden_size",
+        type=int,
+        help="neurons in the hidden layer",
+        default=200)
+    parser.add_argument(
+        "--keep_prob",
+        type=float,
+        help="dropout keep probability",
+        default=0.85)
+    parser.add_argument(
+        "--keep_prob_input",
+        type=float,
+        help="input keep probability",
+        default=0.80)
+    parser.add_argument(
+        "--kernel_size",
+        type=int,
+        help="convolution model kernel size",
+        default=3)
+    parser.add_argument(
+        "--levels",
+        type=int,
+        help="number of dilated convolution levels",
+        default=7)
+    parser.add_argument(
+        '--type',
+        metavar='MODEL_TYPE',
+        type=str,
+        help='model type, one of: rnn, conv (default: rnn)',
+        default='rnn')
+    args = parser.parse_args()
+
+    config = DefaultConfig()
+    config.crf = args.crf
+    config.glu = args.glu
+    config.hidden_size = args.hidden_size
+    config.keep_prob = args.keep_prob
+    config.keep_prob_input = args.keep_prob_input
+    config.kernel_size = args.kernel_size
+    config.n_levels = args.levels
+
+    if args.type == 'rnn':
+        print("Model: rnn, crf: %r" % config.crf)
+        model = RNNModel
+    elif args.type == 'conv':
+        model = ConvModel
+        print("Model: convolution, kernel: %d, levels: %d, glu: %r, crf: %r" %
+              (config.kernel_size, config.n_levels, config.glu, config.crf))
+    else:
+        raise "Unknown model type: %s" % config.type
+
+    print("Dropout input: %.2f, hidden: %.2f" %
+          (config.keep_prob_input, config.keep_prob))
+
+    with open(args.shape_file) as shapesfile:
+        shapes = toml.loads(shapesfile.read())
+
+    create_graph(config, model, shapes, args.output_graph_file)

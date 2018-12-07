@@ -1,0 +1,23 @@
+[package]
+name = "sticker-utils"
+version = "0.1.0"
+edition = "2018"
+authors = ["Daniël de Kok <me@danieldk.eu>"]
+
+[dependencies]
+conllx = "0.10"
+failure = "0.1"
+finalfrontier = "0.2"
+getopts = "0.2"
+indicatif = "0.9"
+ordered-float = { version = "1", features = ["serde"] }
+rust2vec = "0.3"
+serde = "1"
+serde_cbor = "0.9"
+serde_derive = "1"
+stdinout = "0.4"
+toml = "0.4"
+sticker = { path = "../sticker" }
+
+[dev-dependencies]
+lazy_static = "0.2"
