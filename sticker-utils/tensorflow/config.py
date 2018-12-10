@@ -4,6 +4,7 @@ from os import path
 class DefaultConfig:
     crf = False
     glu = False
+    gru = False
     hidden_size = 50
     keep_prob = 0.85
     keep_prob_input = 0.80

@@ -23,8 +23,14 @@ def rnn_layers(
         output_dropout=1,
         state_dropout=1,
         seq_lens=None,
-        bidirectional=False):
-    forward_cell = tf.contrib.rnn.BasicLSTMCell(output_size)
+        bidirectional=False,
+        gru=False):
+    if gru:
+        cell = tf.nn.rnn_cell.GRUCell
+    else:
+        cell = tf.contrib.rnn.BasicLSTMCell
+
+    forward_cell = cell(output_size)
     forward_cell = dropout_wrapper(
         cell=forward_cell,
         is_training=is_training,
@@ -37,7 +43,7 @@ def rnn_layers(
             dtype=tf.float32,
             sequence_length=seq_lens)
 
-    backward_cell = tf.contrib.rnn.BasicLSTMCell(output_size)
+    backward_cell = cell(output_size)
     backward_cell = dropout_wrapper(
         cell=backward_cell,
         is_training=is_training,
@@ -73,12 +79,13 @@ class RNNModel(Model):
             output_dropout=config.keep_prob,
             state_dropout=config.keep_prob,
             seq_lens=self._seq_lens,
-            bidirectional=True)
+            bidirectional=True,
+            gru=config.gru)
         hidden_states = tf.concat([fstates, bstates], axis=2)
 
         hidden_states, _ = rnn_layers(self.is_training, hidden_states, num_layers=1, output_size=config.hidden_size,
                                       output_dropout=config.keep_prob,
-                                      state_dropout=config.keep_prob, seq_lens=self._seq_lens)
+                                      state_dropout=config.keep_prob, seq_lens=self._seq_lens, gru=config.gru)
 
         hidden_states = batch_norm(
             hidden_states,

@@ -56,6 +56,10 @@ if __name__ == '__main__':
         help="use GLU activiation in convolutions",
         action="store_true")
     parser.add_argument(
+        "--gru",
+        help="use GRU RNN cells",
+        action="store_true")
+    parser.add_argument(
         "--hidden_size",
         type=int,
         help="neurons in the hidden layer",
@@ -91,6 +95,7 @@ if __name__ == '__main__':
     config = DefaultConfig()
     config.crf = args.crf
     config.glu = args.glu
+    config.gru = args.gru
     config.hidden_size = args.hidden_size
     config.keep_prob = args.keep_prob
     config.keep_prob_input = args.keep_prob_input
@@ -98,7 +103,7 @@ if __name__ == '__main__':
     config.n_levels = args.levels
 
     if args.type == 'rnn':
-        print("Model: rnn, crf: %r" % config.crf)
+        print("Model: rnn, gru: %r, crf: %r" % (config.gru, config.crf))
         model = RNNModel
     elif args.type == 'conv':
         model = ConvModel
