@@ -97,6 +97,7 @@ impl Embeddings {
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Labeler {
     pub labels: String,
+    pub read_ahead: usize,
 }
 
 fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> {

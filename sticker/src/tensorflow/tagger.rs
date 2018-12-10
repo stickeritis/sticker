@@ -314,9 +314,16 @@ impl Tagger {
 }
 
 impl Tag for Tagger {
-    fn tag_sentences(&mut self, sentences: &[Sentence]) -> Result<Vec<Vec<&str>>, Error> {
+    fn tag_sentences(
+        &mut self,
+        sentences: &[impl AsRef<Sentence>],
+    ) -> Result<Vec<Vec<&str>>, Error> {
         // Find maximum sentence size.
-        let max_seq_len = sentences.iter().map(|s| s.len()).max().unwrap_or(0);
+        let max_seq_len = sentences
+            .iter()
+            .map(|s| s.as_ref().len())
+            .max()
+            .unwrap_or(0);
 
         let token_dims = self.vectorizer.layer_embeddings().token_embeddings().dims();
 
@@ -324,7 +331,7 @@ impl Tag for Tagger {
 
         // Fill the batch.
         for sentence in sentences {
-            let input = self.vectorizer.realize(sentence)?;
+            let input = self.vectorizer.realize(sentence.as_ref())?;
             builder.add(&input);
         }
 
@@ -335,7 +342,7 @@ impl Tag for Tagger {
         let numberer = &self.labels;
         let mut labels = Vec::new();
         for (idx, sentence) in sentences.iter().enumerate() {
-            let seq_len = min(max_seq_len, sentence.len());
+            let seq_len = min(max_seq_len, sentence.as_ref().len());
             let offset = idx * max_seq_len;
             let seq = &tag_tensor[offset..offset + seq_len];
 

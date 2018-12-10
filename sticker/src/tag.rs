@@ -4,7 +4,10 @@ use failure::Error;
 
 /// Trait for part-of-speech taggers.
 pub trait Tag {
-    fn tag_sentences(&mut self, sentences: &[Sentence]) -> Result<Vec<Vec<&str>>, Error>;
+    fn tag_sentences(
+        &mut self,
+        sentences: &[impl AsRef<Sentence>],
+    ) -> Result<Vec<Vec<&str>>, Error>;
 }
 
 /// Results of validation.
