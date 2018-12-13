@@ -83,12 +83,12 @@ impl Embeddings {
                     embeds.normalize()
                 }
 
-                Ok(sticker::Embeddings::Word2Vec(embeds))
+                Ok(embeds.into())
             }
             Embedding::FinalFrontier { filename } => {
                 let f = File::open(filename)?;
                 let model = finalfrontier::Model::read_model_binary(&mut BufReader::new(f))?;
-                Ok(sticker::Embeddings::FinalFrontier(model))
+                Ok(model.into())
             }
         }
     }

@@ -2,39 +2,79 @@ use std::borrow::Cow;
 
 use conllx::Sentence;
 use failure::Error;
+use ndarray::Array1;
 
 pub enum Embeddings {
-    FinalFrontier(finalfrontier::Model),
-    Word2Vec(rust2vec::Embeddings),
+    FinalFrontier {
+        model: finalfrontier::Model,
+        unknown: Array1<f32>,
+    },
+    Word2Vec {
+        embeds: rust2vec::Embeddings,
+        unknown: Array1<f32>,
+    },
 }
 
 impl Embeddings {
     pub fn dims(&self) -> usize {
         match self {
-            Embeddings::FinalFrontier(model) => model.config().dims as usize,
-            Embeddings::Word2Vec(embeds) => embeds.embed_len(),
+            Embeddings::FinalFrontier { model, .. } => model.config().dims as usize,
+            Embeddings::Word2Vec { embeds, .. } => embeds.embed_len(),
         }
     }
 
     pub fn embedding(&self, word: &str) -> Cow<[f32]> {
         let embed = match self {
-            Embeddings::FinalFrontier(model) => Cow::Owned(
+            Embeddings::FinalFrontier { model, unknown } => Cow::Owned(
                 model
                     .embedding(word)
-                    .expect("Cannot retrieve embedding.")
+                    .unwrap_or(unknown.clone())
                     .into_raw_vec(),
             ),
-            Embeddings::Word2Vec(embeds) => Cow::Borrowed(
+            Embeddings::Word2Vec { embeds, unknown } => Cow::Borrowed(
                 embeds
                     .embedding(word)
-                    .or(embeds.embedding("<UNKNOWN-TOKEN>"))
-                    .expect("No unknown token embedding: <UNKNOWN_TOKEN>")
+                    .unwrap_or(unknown.view())
                     .into_slice()
                     .expect("Non-contiguous word embedding"),
             ),
         };
 
         embed
+    }
+}
+
+impl From<finalfrontier::Model> for Embeddings {
+    fn from(model: finalfrontier::Model) -> Self {
+        let mut unknown = Array1::zeros(model.config().dims as usize);
+
+        for (_, embed) in &model {
+            unknown += &embed;
+        }
+
+        let l2norm = unknown.dot(&unknown).sqrt();
+        if l2norm != 0f32 {
+            unknown /= l2norm;
+        }
+
+        Embeddings::FinalFrontier { model, unknown }
+    }
+}
+
+impl From<rust2vec::Embeddings> for Embeddings {
+    fn from(embeds: rust2vec::Embeddings) -> Self {
+        let mut unknown = Array1::zeros(embeds.embed_len());
+
+        for (_, embed) in &embeds {
+            unknown += &embed;
+        }
+
+        let l2norm = unknown.dot(&unknown).sqrt();
+        if l2norm != 0f32 {
+            unknown /= l2norm;
+        }
+
+        Embeddings::Word2Vec { embeds, unknown }
     }
 }
 
