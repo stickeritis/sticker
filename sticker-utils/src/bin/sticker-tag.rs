@@ -144,13 +144,13 @@ where
         self.buffer.push(sent);
 
         if self.buffer.len() == self.batch_size * self.read_ahead {
-            self.tag_cached_sentences()?;
+            self.tag_buffered_sentences()?;
         }
 
         Ok(())
     }
 
-    fn tag_cached_sentences(&mut self) -> Result<(), Error> {
+    fn tag_buffered_sentences(&mut self) -> Result<(), Error> {
         // Sort sentences by length.
         let mut sent_refs: Vec<_> = self.buffer.iter_mut().map(|s| s).collect();
         sent_refs.sort_unstable_by_key(|s| s.len());
@@ -194,7 +194,7 @@ where
 {
     fn drop(&mut self) {
         if !self.buffer.is_empty() {
-            if let Err(err) = self.tag_cached_sentences() {
+            if let Err(err) = self.tag_buffered_sentences() {
                 eprintln!("Error tagging sentences: {}", err);
             }
         }
