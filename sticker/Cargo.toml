@@ -7,11 +7,11 @@ authors = ["Daniël de Kok <me@danieldk.eu>"]
 [dependencies]
 conllx = "0.10"
 failure = "0.1"
-finalfrontier = "0.2"
+finalfrontier = "0.3"
 itertools = "0.6"
-ndarray = "0.11"
+ndarray = "0.12"
 protobuf = "1.4"
-rust2vec = "0.3.2"
+rust2vec = "0.4"
 serde = "1"
 serde_derive = "1"
 tf-proto = { git = "https://github.com/danieldk/tf-proto-rs", tag = "v1.4.0" }
