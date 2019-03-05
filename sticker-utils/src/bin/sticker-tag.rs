@@ -44,7 +44,7 @@ fn main() {
         return;
     }
 
-    if matches.free.len() == 0 || matches.free.len() > 3 {
+    if matches.free.is_empty() || matches.free.len() > 3 {
         print_usage(&program, opts);
         return;
     }

@@ -1,4 +1,4 @@
-use conllx::Sentence;
+use conllx::Token;
 use failure::{format_err, Error};
 use tensorflow::Tensor;
 
@@ -85,7 +85,7 @@ impl TensorCollector {
 }
 
 impl Collector for TensorCollector {
-    fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
+    fn collect(&mut self, sentence: &[Token]) -> Result<(), Error> {
         if self.cur_labels.len() == self.batch_size {
             self.finalize_batch();
         }
@@ -95,7 +95,7 @@ impl Collector for TensorCollector {
         for token in sentence {
             let pos_tag = token
                 .pos()
-                .ok_or(format_err!("Token without a part-of-speech tag: {}", token))?;
+                .ok_or_else(|| format_err!("Token without a part-of-speech tag: {}", token))?;
             labels.push(self.numberer.add(pos_tag.to_owned()) as i32);
         }
 

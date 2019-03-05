@@ -107,7 +107,7 @@ impl PlateauLearningRate {
     pub fn new(initial_lr: f32, scale: f32, max_patience: usize) -> Self {
         PlateauLearningRate {
             lr: initial_lr,
-            scale: scale,
+            scale,
             best_score: -f32::INFINITY,
             patience: 0,
             max_patience,

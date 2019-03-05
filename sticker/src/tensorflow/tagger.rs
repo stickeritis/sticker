@@ -381,7 +381,7 @@ where
     };
 
     path.to_str()
-        .ok_or(err_msg("Filename contains non-unicode characters"))
+        .ok_or_else(|| err_msg("Filename contains non-unicode characters"))
         .map(ToOwned::to_owned)
 }
 

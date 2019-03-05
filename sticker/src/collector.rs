@@ -1,11 +1,11 @@
-use conllx::Sentence;
+use conllx::Token;
 
 use crate::{Numberer, SentVectorizer};
 use failure::{format_err, Error};
 
 /// Data types collects (and typically stores) vectorized sentences.
 pub trait Collector {
-    fn collect(&mut self, sentence: &Sentence) -> Result<(), Error>;
+    fn collect(&mut self, sentence: &[Token]) -> Result<(), Error>;
 
     fn vectorizer(&self) -> &SentVectorizer;
 }
@@ -33,13 +33,13 @@ impl NoopCollector {
 }
 
 impl Collector for NoopCollector {
-    fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
+    fn collect(&mut self, sentence: &[Token]) -> Result<(), Error> {
         self.vectorizer.realize(sentence)?;
 
         for token in sentence {
             let pos_tag = token
                 .pos()
-                .ok_or(format_err!("Token without a part-of-speech tag: {}", token))?;
+                .ok_or_else(|| format_err!("Token without a part-of-speech tag: {}", token))?;
             self.numberer.add(pos_tag.to_owned());
         }
 

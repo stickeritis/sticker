@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use conllx::Sentence;
+use conllx::Token;
 use failure::Error;
 use ndarray::Array1;
 
@@ -24,23 +24,21 @@ impl Embeddings {
     }
 
     pub fn embedding(&self, word: &str) -> Cow<[f32]> {
-        let embed = match self {
+        match self {
             Embeddings::FinalFrontier { model, unknown } => Cow::Owned(
                 model
                     .embedding(word)
-                    .unwrap_or(unknown.clone())
+                    .unwrap_or_else(|| unknown.clone())
                     .into_raw_vec(),
             ),
             Embeddings::Word2Vec { embeds, unknown } => Cow::Borrowed(
                 embeds
                     .embedding(word)
-                    .unwrap_or(unknown.view())
+                    .unwrap_or_else(|| unknown.view())
                     .into_slice()
                     .expect("Non-contiguous word embedding"),
             ),
-        };
-
-        embed
+        }
     }
 }
 
@@ -83,6 +81,7 @@ impl From<rust2vec::Embeddings> for Embeddings {
 /// This data type represents a sentence as vectors (`Vec`) of tokens and
 /// part-of-speech indices. Such a vector is typically the input to a
 /// sequence labeling graph.
+#[derive(Default)]
 pub struct SentVec {
     pub tokens: Vec<f32>,
 }
@@ -90,7 +89,7 @@ pub struct SentVec {
 impl SentVec {
     /// Construct a new sentence vector.
     pub fn new() -> Self {
-        SentVec { tokens: Vec::new() }
+        SentVec::default()
     }
 
     /// Construct a sentence vector with the given capacity.
@@ -120,9 +119,7 @@ pub struct LayerEmbeddings {
 impl LayerEmbeddings {
     /// Construct `LayerEmbeddings` from the given embeddings.
     pub fn new(token_embeddings: Embeddings) -> Self {
-        LayerEmbeddings {
-            token_embeddings: token_embeddings,
-        }
+        LayerEmbeddings { token_embeddings }
     }
 
     /// Get the token embedding matrix.
@@ -145,9 +142,7 @@ impl SentVectorizer {
     /// embeddings are used to find the indices into the embedding matrix for
     /// layer values.
     pub fn new(layer_embeddings: LayerEmbeddings) -> Self {
-        SentVectorizer {
-            layer_embeddings: layer_embeddings,
-        }
+        SentVectorizer { layer_embeddings }
     }
 
     /// Get the layer embeddings.
@@ -156,7 +151,7 @@ impl SentVectorizer {
     }
 
     /// Vectorize a sentence.
-    pub fn realize(&self, sentence: &Sentence) -> Result<SentVec, Error> {
+    pub fn realize(&self, sentence: &[Token]) -> Result<SentVec, Error> {
         let mut input = SentVec::with_capacity(sentence.len());
 
         for token in sentence {

@@ -80,7 +80,7 @@ macro_rules! cbor_write {
                 W: Write,
             {
                 let data = serde_cbor::to_vec(self)?;
-                write.write(&data)?;
+                write.write_all(&data)?;
                 Ok(())
             }
         }

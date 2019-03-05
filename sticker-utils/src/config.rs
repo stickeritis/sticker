@@ -115,16 +115,20 @@ fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> 
     let abs_config_path = config_path.canonicalize()?;
     Ok(abs_config_path
         .parent()
-        .ok_or(format_err!(
-            "Cannot get parent path of the configuration file: {}",
-            abs_config_path.to_string_lossy()
-        ))?
+        .ok_or_else(|| {
+            format_err!(
+                "Cannot get parent path of the configuration file: {}",
+                abs_config_path.to_string_lossy()
+            )
+        })?
         .join(path)
         .to_str()
-        .ok_or(format_err!(
-            "Cannot cannot convert partent path to string: {}",
-            abs_config_path.to_string_lossy()
-        ))?
+        .ok_or_else(|| {
+            format_err!(
+                "Cannot cannot convert partent path to string: {}",
+                abs_config_path.to_string_lossy()
+            )
+        })?
         .to_owned())
 }
 
