@@ -3,9 +3,9 @@ use std::io::BufReader;
 use std::path::Path;
 
 use failure::{format_err, Error};
-use finalfrontier::ReadModelBinary;
 use ordered_float::NotNan;
-use rust2vec::ReadWord2Vec;
+use rust2vec::embeddings::Embeddings as R2VEmbeddings;
+use rust2vec::prelude::*;
 use serde_derive::{Deserialize, Serialize};
 
 use sticker::tensorflow::{Model, PlateauLearningRate};
@@ -28,8 +28,8 @@ impl Config {
         let config_path = config_path.as_ref();
 
         self.labeler.labels = relativize_path(config_path, &self.labeler.labels)?;
-        *self.embeddings.word.filename_mut() =
-            relativize_path(config_path, &self.embeddings.word.filename_mut())?;
+        self.embeddings.word.filename =
+            relativize_path(config_path, &self.embeddings.word.filename)?;
         self.model.graph = relativize_path(config_path, &self.model.graph)?;
         self.model.parameters = relativize_path(config_path, &self.model.parameters)?;
 
@@ -43,21 +43,8 @@ pub struct Embeddings {
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "type")]
-pub enum Embedding {
-    Word2Vec { filename: String, normalize: bool },
-    FinalFrontier { filename: String },
-}
-
-impl Embedding {
-    pub fn filename_mut(&mut self) -> &mut String {
-        match self {
-            Embedding::Word2Vec {
-                ref mut filename, ..
-            } => filename,
-            Embedding::FinalFrontier { ref mut filename } => filename,
-        }
-    }
+pub struct Embedding {
+    pub filename: String,
 }
 
 impl Embeddings {
@@ -70,27 +57,10 @@ impl Embeddings {
         &self,
         embeddings: &Embedding,
     ) -> Result<sticker::Embeddings, Error> {
-        match embeddings {
-            Embedding::Word2Vec {
-                filename,
-                normalize,
-            } => {
-                let f = File::open(filename)?;
-                let mut embeds =
-                    rust2vec::Embeddings::read_word2vec_binary(&mut BufReader::new(f))?;
-
-                if *normalize {
-                    embeds.normalize()
-                }
-
-                Ok(embeds.into())
-            }
-            Embedding::FinalFrontier { filename } => {
-                let f = File::open(filename)?;
-                let model = finalfrontier::Model::read_model_binary(&mut BufReader::new(f))?;
-                Ok(model.into())
-            }
-        }
+        let f = File::open(&embeddings.filename)?;
+        let embeds: R2VEmbeddings<VocabWrap, StorageWrap> =
+            ReadEmbeddings::read_embeddings(&mut BufReader::new(f))?;
+        Ok(embeds.into())
     }
 }
 

@@ -12,9 +12,8 @@ lazy_static! {
             read_ahead: 10,
         },
         embeddings: Embeddings {
-            word: Embedding::Word2Vec {
+            word: Embedding {
                 filename: "word-vectors-null.bin".to_owned(),
-                normalize: true
             },
         },
         train: Train {

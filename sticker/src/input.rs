@@ -1,53 +1,36 @@
-use std::borrow::Cow;
-
 use conllx::Token;
 use failure::Error;
 use ndarray::Array1;
+use rust2vec::{
+    embeddings::Embeddings as R2VEmbeddings,
+    storage::StorageWrap,
+    storage::{CowArray, CowArray1},
+    vocab::VocabWrap,
+};
 
-pub enum Embeddings {
-    FinalFrontier {
-        model: finalfrontier::Model,
-        unknown: Array1<f32>,
-    },
-    Word2Vec {
-        embeds: rust2vec::Embeddings,
-        unknown: Array1<f32>,
-    },
+pub struct Embeddings {
+    embeddings: R2VEmbeddings<VocabWrap, StorageWrap>,
+    unknown: Array1<f32>,
 }
 
 impl Embeddings {
     pub fn dims(&self) -> usize {
-        match self {
-            Embeddings::FinalFrontier { model, .. } => model.config().dims as usize,
-            Embeddings::Word2Vec { embeds, .. } => embeds.embed_len(),
-        }
+        self.embeddings.dims()
     }
 
-    pub fn embedding(&self, word: &str) -> Cow<[f32]> {
-        match self {
-            Embeddings::FinalFrontier { model, unknown } => Cow::Owned(
-                model
-                    .embedding(word)
-                    .unwrap_or_else(|| unknown.clone())
-                    .into_raw_vec(),
-            ),
-            Embeddings::Word2Vec { embeds, unknown } => Cow::Borrowed(
-                embeds
-                    .embedding(word)
-                    .unwrap_or_else(|| unknown.view())
-                    .into_slice()
-                    .expect("Non-contiguous word embedding"),
-            ),
-        }
+    pub fn embedding(&self, word: &str) -> CowArray1<f32> {
+        self.embeddings
+            .embedding(word)
+            .unwrap_or_else(|| CowArray::Borrowed(self.unknown.view()))
     }
 }
 
-impl From<finalfrontier::Model> for Embeddings {
-    fn from(model: finalfrontier::Model) -> Self {
-        let mut unknown = Array1::zeros(model.config().dims as usize);
+impl From<R2VEmbeddings<VocabWrap, StorageWrap>> for Embeddings {
+    fn from(embeddings: R2VEmbeddings<VocabWrap, StorageWrap>) -> Self {
+        let mut unknown = Array1::zeros(embeddings.dims());
 
-        for (_, embed) in &model {
-            unknown += &embed;
+        for (_, embed) in &embeddings {
+            unknown += &embed.as_view();
         }
 
         let l2norm = unknown.dot(&unknown).sqrt();
@@ -55,24 +38,10 @@ impl From<finalfrontier::Model> for Embeddings {
             unknown /= l2norm;
         }
 
-        Embeddings::FinalFrontier { model, unknown }
-    }
-}
-
-impl From<rust2vec::Embeddings> for Embeddings {
-    fn from(embeds: rust2vec::Embeddings) -> Self {
-        let mut unknown = Array1::zeros(embeds.embed_len());
-
-        for (_, embed) in &embeds {
-            unknown += &embed;
+        Embeddings {
+            embeddings,
+            unknown,
         }
-
-        let l2norm = unknown.dot(&unknown).sqrt();
-        if l2norm != 0f32 {
-            unknown /= l2norm;
-        }
-
-        Embeddings::Word2Vec { embeds, unknown }
     }
 }
 
@@ -157,9 +126,15 @@ impl SentVectorizer {
         for token in sentence {
             let form = token.form();
 
-            input
-                .tokens
-                .extend_from_slice(&self.layer_embeddings.token_embeddings.embedding(form));
+            input.tokens.extend_from_slice(
+                &self
+                    .layer_embeddings
+                    .token_embeddings
+                    .embedding(form)
+                    .as_view()
+                    .as_slice()
+                    .expect("Non-contiguous embedding"),
+            );
         }
 
         Ok(input)
