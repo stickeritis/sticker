@@ -1,0 +1,24 @@
+image: archlinux
+packages:
+  - tensorflow
+  - rustup
+sources:
+  - https://git.sr.ht/~danieldk/sticker
+tasks:
+  - setup: |
+      rustup install stable
+      rustup default stable
+      rustup component add clippy
+      rustup component add rustfmt
+  - build: |
+      cd sticker
+      cargo build --verbose
+  - test: |
+      cd sticker
+      cargo test --verbose
+  - clippy: |
+      cd sticker
+      cargo clippy
+  - rustfmt: |
+      cd sticker
+      cargo fmt --all -- --check
