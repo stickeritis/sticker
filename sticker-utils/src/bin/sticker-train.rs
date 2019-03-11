@@ -9,8 +9,9 @@ use failure::Error;
 use getopts::Options;
 use indicatif::{ProgressBar, ProgressStyle};
 use stdinout::OrExit;
-
-use sticker::tensorflow::{CollectedTensors, LearningRateSchedule, Tagger, TensorCollector};
+use sticker::tensorflow::{
+    CollectedTensors, LearningRateSchedule, Tagger, TaggerGraph, TensorCollector,
+};
 use sticker::{Collector, Numberer, SentVectorizer};
 use sticker_utils::{CborRead, Config, FileProgress, TomlRead};
 
@@ -79,7 +80,9 @@ fn train_model(
     let vectorizer = SentVectorizer::new(embeddings);
 
     let graph_read = BufReader::new(File::open(&config.model.graph)?);
-    let mut tagger = Tagger::load_graph(graph_read, vectorizer, labels, &config.model)?;
+    let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
+    let tagger =
+        Tagger::random_weights(graph, labels, vectorizer).or_exit("Cannot construct tagger", 1);
 
     let mut best_epoch = 0;
     let mut best_acc = 0.0;
@@ -90,18 +93,14 @@ fn train_model(
     for epoch in 0.. {
         let lr = lr_schedule.learning_rate(epoch, last_acc);
 
-        let (loss, acc) = run_epoch(&mut tagger, &train_tensors, true, lr);
+        let (loss, acc) = run_epoch(&tagger, &train_tensors, true, lr);
 
         eprintln!(
             "Epoch {} (train, lr: {:.4}): loss: {:.4}, acc: {:.4}",
             epoch, lr, loss, acc
         );
 
-        tagger
-            .save(format!("epoch-{}", epoch))
-            .or_exit(format!("Cannot save model for epoch {}", epoch), 1);
-
-        let (_, acc) = run_epoch(&mut tagger, &validation_tensors, false, lr);
+        let (_, acc) = run_epoch(&tagger, &validation_tensors, false, lr);
 
         last_acc = acc;
         if acc > best_acc {
@@ -113,6 +112,10 @@ fn train_model(
             "Epoch {} (validation): loss: {:.4}, acc: {:.4}, best epoch: {}, best acc: {:.4}",
             epoch, loss, acc, best_epoch, best_acc
         );
+
+        tagger
+            .save(format!("epoch-{}", epoch))
+            .or_exit(format!("Cannot save model for epoch {}", epoch), 1);
 
         if epoch - best_epoch == config.train.patience {
             eprintln!(
@@ -127,7 +130,7 @@ fn train_model(
 }
 
 fn run_epoch(
-    tagger: &mut Tagger,
+    tagger: &Tagger,
     tensors: &CollectedTensors,
     is_training: bool,
     lr: f32,

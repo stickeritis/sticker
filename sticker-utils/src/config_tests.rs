@@ -2,7 +2,7 @@ use std::fs::File;
 
 use lazy_static::lazy_static;
 use ordered_float::NotNan;
-use sticker::tensorflow::{Model, OpNames};
+use sticker::tensorflow::{ModelConfig, OpNames};
 
 use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, TomlRead, Train};
 
@@ -24,7 +24,7 @@ lazy_static! {
             lr_patience: 4,
             patience: 10,
         },
-        model: Model {
+        model: ModelConfig {
             batch_size: 128,
             graph: "sticker.graph".to_owned(),
             parameters: "sticker.model".to_owned(),

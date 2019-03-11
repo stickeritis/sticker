@@ -15,8 +15,8 @@ use tf_proto::ConfigProto;
 use super::tensor::TensorBuilder;
 use crate::{ModelPerformance, Numberer, SentVectorizer, Tag};
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct Model {
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub struct ModelConfig {
     /// Model batch size, should be kept constant between training and
     /// prediction.
     pub batch_size: usize,
@@ -39,7 +39,7 @@ pub struct Model {
     pub parameters: String,
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct OpNames {
     pub init_op: String,
 
@@ -61,11 +61,9 @@ pub struct OpNames {
     pub train_op: String,
 }
 
-pub struct Tagger {
-    session: Session,
-
-    vectorizer: SentVectorizer,
-    labels: Numberer<String>,
+pub struct TaggerGraph {
+    graph: Graph,
+    model_config: ModelConfig,
 
     init_op: Operation,
     restore_op: Operation,
@@ -84,67 +82,13 @@ pub struct Tagger {
     train_op: Operation,
 }
 
-impl Tagger {
-    pub fn load_graph<R>(
-        r: R,
-        vectorizer: SentVectorizer,
-        labels: Numberer<String>,
-        model: &Model,
-    ) -> Result<Self, Error>
-    where
-        R: Read,
-    {
-        let mut tagger = Self::load_graph_(r, vectorizer, labels, model)?;
-
-        // Initialize parameters.
-        let mut args = SessionRunArgs::new();
-        args.add_target(&tagger.init_op);
-        tagger
-            .session
-            .run(&mut args)
-            .expect("Cannot initialize parameters");
-
-        Ok(tagger)
-    }
-
-    /// Load a Tensorflow graph with weights.
-    ///
-    /// This constructor will load the model parameters (such as weights) from
-    /// the file specified in `parameters_path`.
-    pub fn load_graph_with_weights<P, R>(
-        graph_read: R,
-        parameters_path: P,
-        vectorizer: SentVectorizer,
-        labels: Numberer<String>,
-        model: &Model,
-    ) -> Result<Self, Error>
-    where
-        P: AsRef<Path>,
-        R: Read,
-    {
-        let mut model = Self::load_graph_(graph_read, vectorizer, labels, model)?;
-
-        // Restore parameters.
-        let path_tensor = prepare_path(parameters_path)?.into();
-        let mut args = SessionRunArgs::new();
-        args.add_feed(&model.save_path_op, 0, &path_tensor);
-        args.add_target(&model.restore_op);
-        model.session.run(&mut args).map_err(status_to_error)?;
-
-        Ok(model)
-    }
-
-    fn load_graph_<R>(
-        mut r: R,
-        vectorizer: SentVectorizer,
-        labels: Numberer<String>,
-        model: &Model,
-    ) -> Result<Self, Error>
+impl TaggerGraph {
+    pub fn load_graph<R>(mut graph_read: R, model_config: &ModelConfig) -> Result<Self, Error>
     where
         R: Read,
     {
         let mut data = Vec::new();
-        r.read_to_end(&mut data)?;
+        graph_read.read_to_end(&mut data)?;
 
         let opts = ImportGraphDefOptions::new();
         let mut graph = Graph::new();
@@ -152,13 +96,7 @@ impl Tagger {
             .import_graph_def(&data, &opts)
             .map_err(status_to_error)?;
 
-        let mut session_opts = SessionOptions::new();
-        session_opts
-            .set_config(&tf_model_to_protobuf(&model)?)
-            .map_err(status_to_error)?;
-        let session = Session::new(&session_opts, &graph).map_err(status_to_error)?;
-
-        let op_names = &model.op_names;
+        let op_names = &model_config.op_names;
 
         let restore_op = Self::add_op(&graph, &op_names.restore_op)?;
         let save_op = Self::add_op(&graph, &op_names.save_op)?;
@@ -178,11 +116,9 @@ impl Tagger {
 
         let train_op = Self::add_op(&graph, &op_names.train_op)?;
 
-        Ok(Tagger {
-            session,
-
-            vectorizer,
-            labels,
+        Ok(TaggerGraph {
+            graph,
+            model_config: model_config.clone(),
 
             init_op,
             restore_op,
@@ -207,11 +143,80 @@ impl Tagger {
             .operation_by_name_required(name)
             .map_err(status_to_error)
     }
+}
+
+pub struct Tagger {
+    graph: TaggerGraph,
+    labels: Numberer<String>,
+    session: Session,
+    vectorizer: SentVectorizer,
+}
+
+impl Tagger {
+    /// Create a new session with randomized weights.
+    pub fn random_weights(
+        graph: TaggerGraph,
+        labels: Numberer<String>,
+        vectorizer: SentVectorizer,
+    ) -> Result<Tagger, Error> {
+        // Initialize parameters.
+        let mut args = SessionRunArgs::new();
+        args.add_target(&graph.init_op);
+        let session = Self::new_session(&graph)?;
+        session
+            .run(&mut args)
+            .expect("Cannot initialize parameters");
+
+        Ok(Tagger {
+            graph,
+            labels,
+            session,
+            vectorizer,
+        })
+    }
+
+    /// Load a tagger with weights.
+    ///
+    /// This constructor will load the model parameters (such as weights) from
+    /// the file specified in `parameters_path`.
+    pub fn load_weights<P>(
+        graph: TaggerGraph,
+        labels: Numberer<String>,
+        vectorizer: SentVectorizer,
+        parameters_path: P,
+    ) -> Result<Tagger, Error>
+    where
+        P: AsRef<Path>,
+    {
+        // Restore parameters.
+        let path_tensor = prepare_path(parameters_path)?.into();
+        let mut args = SessionRunArgs::new();
+        args.add_feed(&graph.save_path_op, 0, &path_tensor);
+        args.add_target(&graph.restore_op);
+        let session = Self::new_session(&graph)?;
+        session.run(&mut args).map_err(status_to_error)?;
+
+        Ok(Tagger {
+            graph,
+            labels,
+            session,
+            vectorizer,
+        })
+    }
+
+    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
+        let mut session_opts = SessionOptions::new();
+        session_opts
+            .set_config(&tf_model_config_to_protobuf(&graph.model_config)?)
+            .map_err(status_to_error)?;
+
+        Session::new(&session_opts, &graph.graph).map_err(status_to_error)
+    }
 
     /// Save the model parameters.
     ///
     /// The model parameters are stored as the given path.
-    pub fn save<P>(&mut self, path: P) -> Result<(), Error>
+    pub fn save<P>(&self, path: P) -> Result<(), Error>
     where
         P: AsRef<Path>,
     {
@@ -220,104 +225,12 @@ impl Tagger {
 
         // Call the save op.
         let mut args = SessionRunArgs::new();
-        args.add_feed(&self.save_path_op, 0, &path_tensor);
-        args.add_target(&self.save_op);
+        args.add_feed(&self.graph.save_path_op, 0, &path_tensor);
+        args.add_target(&self.graph.save_op);
         self.session.run(&mut args).map_err(status_to_error)
     }
 
-    fn tag_sequences(
-        &mut self,
-        seq_lens: &Tensor<i32>,
-        tokens: &Tensor<f32>,
-    ) -> Result<Tensor<i32>, Error> {
-        let mut is_training = Tensor::new(&[]);
-        is_training[0] = false;
-
-        let mut args = SessionRunArgs::new();
-
-        args.add_feed(&self.is_training_op, 0, &is_training);
-
-        // Sequence inputs
-        args.add_feed(&self.seq_lens_op, 0, seq_lens);
-        args.add_feed(&self.tokens_op, 0, tokens);
-
-        let predictions_token = args.request_fetch(&self.predicted_op, 0);
-
-        self.session.run(&mut args).map_err(status_to_error)?;
-
-        Ok(args.fetch(predictions_token).map_err(status_to_error)?)
-    }
-
-    pub fn validate(
-        &mut self,
-        seq_lens: &Tensor<i32>,
-        tokens: &Tensor<f32>,
-        labels: &Tensor<i32>,
-    ) -> ModelPerformance {
-        let mut is_training = Tensor::new(&[]);
-        is_training[0] = false;
-
-        let mut args = SessionRunArgs::new();
-
-        args.add_feed(&self.is_training_op, 0, &is_training);
-
-        self.validate_(seq_lens, tokens, labels, args)
-    }
-
-    pub fn train(
-        &mut self,
-        seq_lens: &Tensor<i32>,
-        tokens: &Tensor<f32>,
-        labels: &Tensor<i32>,
-        learning_rate: f32,
-    ) -> ModelPerformance {
-        let mut is_training = Tensor::new(&[]);
-        is_training[0] = true;
-
-        let mut lr = Tensor::new(&[]);
-        lr[0] = learning_rate;
-
-        let mut args = SessionRunArgs::new();
-        args.add_feed(&self.is_training_op, 0, &is_training);
-        args.add_feed(&self.lr_op, 0, &lr);
-        args.add_target(&self.train_op);
-
-        self.validate_(seq_lens, tokens, labels, args)
-    }
-
-    fn validate_<'l>(
-        &'l mut self,
-        seq_lens: &'l Tensor<i32>,
-        tokens: &'l Tensor<f32>,
-        labels: &'l Tensor<i32>,
-        mut args: SessionRunArgs<'l>,
-    ) -> ModelPerformance {
-        // Add inputs.
-        args.add_feed(&self.tokens_op, 0, tokens);
-        args.add_feed(&self.seq_lens_op, 0, seq_lens);
-
-        // Add gold labels.
-        args.add_feed(&self.labels_op, 0, labels);
-
-        let accuracy_token = args.request_fetch(&self.accuracy_op, 0);
-        let loss_token = args.request_fetch(&self.loss_op, 0);
-
-        self.session.run(&mut args).expect("Cannot run graph");
-
-        ModelPerformance {
-            loss: args.fetch(loss_token).expect("Unable to retrieve loss")[0],
-            accuracy: args
-                .fetch(accuracy_token)
-                .expect("Unable to retrieve accuracy")[0],
-        }
-    }
-}
-
-impl Tag for Tagger {
-    fn tag_sentences(
-        &mut self,
-        sentences: &[impl AsRef<Sentence>],
-    ) -> Result<Vec<Vec<&str>>, Error> {
+    fn tag_sentences_(&self, sentences: &[impl AsRef<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
         // Find maximum sentence size.
         let max_seq_len = sentences
             .iter()
@@ -339,7 +252,6 @@ impl Tag for Tagger {
         let tag_tensor = self.tag_sequences(builder.seq_lens(), builder.tokens())?;
 
         // Convert label numbers to labels.
-        let numberer = &self.labels;
         let mut labels = Vec::new();
         for (idx, sentence) in sentences.iter().enumerate() {
             let seq_len = min(max_seq_len, sentence.as_ref().len());
@@ -348,19 +260,111 @@ impl Tag for Tagger {
 
             labels.push(
                 seq.iter()
-                    .map(|&label| numberer.value(label as usize).unwrap().as_str())
+                    .map(|&label| self.labels.value(label as usize).unwrap().as_str())
                     .collect(),
             );
         }
 
         Ok(labels)
     }
+
+    fn tag_sequences(
+        &self,
+        seq_lens: &Tensor<i32>,
+        tokens: &Tensor<f32>,
+    ) -> Result<Tensor<i32>, Error> {
+        let mut is_training = Tensor::new(&[]);
+        is_training[0] = false;
+
+        let mut args = SessionRunArgs::new();
+
+        args.add_feed(&self.graph.is_training_op, 0, &is_training);
+
+        // Sequence inputs
+        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
+        args.add_feed(&self.graph.tokens_op, 0, tokens);
+
+        let predictions_token = args.request_fetch(&self.graph.predicted_op, 0);
+
+        self.session.run(&mut args).map_err(status_to_error)?;
+
+        Ok(args.fetch(predictions_token).map_err(status_to_error)?)
+    }
+
+    pub fn train(
+        &self,
+        seq_lens: &Tensor<i32>,
+        tokens: &Tensor<f32>,
+        labels: &Tensor<i32>,
+        learning_rate: f32,
+    ) -> ModelPerformance {
+        let mut is_training = Tensor::new(&[]);
+        is_training[0] = true;
+
+        let mut lr = Tensor::new(&[]);
+        lr[0] = learning_rate;
+
+        let mut args = SessionRunArgs::new();
+        args.add_feed(&self.graph.is_training_op, 0, &is_training);
+        args.add_feed(&self.graph.lr_op, 0, &lr);
+        args.add_target(&self.graph.train_op);
+
+        self.validate_(seq_lens, tokens, labels, args)
+    }
+
+    pub fn validate(
+        &self,
+        seq_lens: &Tensor<i32>,
+        tokens: &Tensor<f32>,
+        labels: &Tensor<i32>,
+    ) -> ModelPerformance {
+        let mut is_training = Tensor::new(&[]);
+        is_training[0] = false;
+
+        let mut args = SessionRunArgs::new();
+        args.add_feed(&self.graph.is_training_op, 0, &is_training);
+
+        self.validate_(seq_lens, tokens, labels, args)
+    }
+
+    fn validate_<'l>(
+        &'l self,
+        seq_lens: &'l Tensor<i32>,
+        tokens: &'l Tensor<f32>,
+        labels: &'l Tensor<i32>,
+        mut args: SessionRunArgs<'l>,
+    ) -> ModelPerformance {
+        // Add inputs.
+        args.add_feed(&self.graph.tokens_op, 0, tokens);
+        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
+
+        // Add gold labels.
+        args.add_feed(&self.graph.labels_op, 0, labels);
+
+        let accuracy_token = args.request_fetch(&self.graph.accuracy_op, 0);
+        let loss_token = args.request_fetch(&self.graph.loss_op, 0);
+
+        self.session.run(&mut args).expect("Cannot run graph");
+
+        ModelPerformance {
+            loss: args.fetch(loss_token).expect("Unable to retrieve loss")[0],
+            accuracy: args
+                .fetch(accuracy_token)
+                .expect("Unable to retrieve accuracy")[0],
+        }
+    }
 }
 
-fn tf_model_to_protobuf(model: &Model) -> Result<Vec<u8>, Error> {
+impl Tag for Tagger where {
+    fn tag_sentences(&self, sentences: &[impl AsRef<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
+        self.tag_sentences_(sentences)
+    }
+}
+
+fn tf_model_config_to_protobuf(model_config: &ModelConfig) -> Result<Vec<u8>, Error> {
     let mut config_proto = ConfigProto::new();
-    config_proto.intra_op_parallelism_threads = model.intra_op_parallelism_threads as i32;
-    config_proto.inter_op_parallelism_threads = model.inter_op_parallelism_threads as i32;
+    config_proto.intra_op_parallelism_threads = model_config.intra_op_parallelism_threads as i32;
+    config_proto.inter_op_parallelism_threads = model_config.inter_op_parallelism_threads as i32;
 
     let mut bytes = Vec::new();
     config_proto.write_to_vec(&mut bytes)?;

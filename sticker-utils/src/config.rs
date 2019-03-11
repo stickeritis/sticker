@@ -8,14 +8,14 @@ use finalfusion::prelude::*;
 use ordered_float::NotNan;
 use serde_derive::{Deserialize, Serialize};
 
-use sticker::tensorflow::{Model, PlateauLearningRate};
+use sticker::tensorflow::{ModelConfig, PlateauLearningRate};
 use sticker::LayerEmbeddings;
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Config {
     pub labeler: Labeler,
     pub embeddings: Embeddings,
-    pub model: Model,
+    pub model: ModelConfig,
     pub train: Train,
 }
 
@@ -37,12 +37,12 @@ impl Config {
     }
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Embeddings {
     pub word: Embedding,
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Embedding {
     pub filename: String,
     pub alloc: EmbeddingAlloc,
@@ -69,13 +69,13 @@ impl Embeddings {
 }
 
 #[serde(rename_all = "lowercase")]
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum EmbeddingAlloc {
     Mmap,
     Read,
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Labeler {
     pub labels: String,
     pub read_ahead: usize,
@@ -113,7 +113,7 @@ fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> 
         .to_owned())
 }
 
-#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Train {
     pub initial_lr: NotNan<f32>,
     pub lr_scale: NotNan<f32>,
