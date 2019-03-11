@@ -27,3 +27,9 @@ $ cargo install --path sticker-utils
 ~~~
 
 sticker should then be installed in ~/.cargo/bin/sticker-{tag,train,server}
+
+## Issues and patches
+
+You can report bugs and feature requests in the [sticker issue
+tracker](https://todo.sr.ht/~danieldk/sticker). Send patches to:
+[~danieldk/public-inbox@lists.sr.ht](mailto:~danieldk/public-inbox@lists.sr.ht)
