@@ -19,4 +19,4 @@ toml = "0.4"
 sticker = { path = "../sticker" }
 
 [dev-dependencies]
-lazy_static = "0.2"
+lazy_static = "1"

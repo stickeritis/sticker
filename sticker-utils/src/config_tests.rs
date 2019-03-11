@@ -1,5 +1,6 @@
 use std::fs::File;
 
+use lazy_static::lazy_static;
 use ordered_float::NotNan;
 use sticker::tensorflow::{Model, OpNames};
 

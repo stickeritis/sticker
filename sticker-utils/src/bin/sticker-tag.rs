@@ -1,15 +1,3 @@
-extern crate conllx;
-
-extern crate failure;
-
-extern crate getopts;
-
-extern crate stdinout;
-
-extern crate sticker;
-
-extern crate sticker_utils;
-
 use std::env::args;
 use std::fs::File;
 use std::io::{BufWriter, Write};

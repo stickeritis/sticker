@@ -1,18 +1,3 @@
-extern crate conllx;
-
-extern crate failure;
-
-extern crate getopts;
-
-#[macro_use]
-extern crate serde_derive;
-
-extern crate stdinout;
-
-extern crate sticker;
-
-extern crate sticker_utils;
-
 use std::env::args;
 use std::fs::File;
 use std::path::Path;
@@ -21,6 +6,7 @@ use std::process;
 use conllx::ReadSentence;
 use failure::Error;
 use getopts::Options;
+use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
 
 use sticker::{Collector, NoopCollector, Numberer, SentVectorizer};

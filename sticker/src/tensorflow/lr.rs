@@ -135,7 +135,7 @@ impl LearningRateSchedule for PlateauLearningRate {
 
 #[cfg(test)]
 mod tests {
-    use approx::{__assert_approx, assert_relative_eq, relative_eq};
+    use approx::assert_relative_eq;
 
     use super::{
         ConstantLearningRate, ExponentialDecay, LearningRateSchedule, PlateauLearningRate,
