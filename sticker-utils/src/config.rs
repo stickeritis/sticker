@@ -45,6 +45,7 @@ pub struct Embeddings {
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Embedding {
     pub filename: String,
+    pub alloc: EmbeddingAlloc,
 }
 
 impl Embeddings {
@@ -58,10 +59,20 @@ impl Embeddings {
         embeddings: &Embedding,
     ) -> Result<sticker::Embeddings, Error> {
         let f = File::open(&embeddings.filename)?;
-        let embeds: R2VEmbeddings<VocabWrap, StorageWrap> =
-            ReadEmbeddings::read_embeddings(&mut BufReader::new(f))?;
+        let embeds: R2VEmbeddings<VocabWrap, StorageWrap> = match embeddings.alloc {
+            EmbeddingAlloc::Read => ReadEmbeddings::read_embeddings(&mut BufReader::new(f))?,
+            EmbeddingAlloc::Mmap => MmapEmbeddings::mmap_embeddings(&mut BufReader::new(f))?,
+        };
+
         Ok(embeds.into())
     }
+}
+
+#[serde(rename_all = "lowercase")]
+#[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub enum EmbeddingAlloc {
+    Mmap,
+    Read,
 }
 
 #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]

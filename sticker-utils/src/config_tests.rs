@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use ordered_float::NotNan;
 use sticker::tensorflow::{Model, OpNames};
 
-use super::{Config, Embedding, Embeddings, Labeler, TomlRead, Train};
+use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, TomlRead, Train};
 
 lazy_static! {
     static ref BASIC_LABELER_CHECK: Config = Config {
@@ -15,6 +15,7 @@ lazy_static! {
         embeddings: Embeddings {
             word: Embedding {
                 filename: "word-vectors-null.bin".to_owned(),
+                alloc: EmbeddingAlloc::Mmap,
             },
         },
         train: Train {
