@@ -1,15 +1,15 @@
 use conllx::Token;
 use failure::Error;
-use ndarray::Array1;
-use rust2vec::{
-    embeddings::Embeddings as R2VEmbeddings,
+use finalfusion::{
+    embeddings::Embeddings as FiFuEmbeddings,
     storage::StorageWrap,
     storage::{CowArray, CowArray1},
     vocab::VocabWrap,
 };
+use ndarray::Array1;
 
 pub struct Embeddings {
-    embeddings: R2VEmbeddings<VocabWrap, StorageWrap>,
+    embeddings: FiFuEmbeddings<VocabWrap, StorageWrap>,
     unknown: Array1<f32>,
 }
 
@@ -25,8 +25,8 @@ impl Embeddings {
     }
 }
 
-impl From<R2VEmbeddings<VocabWrap, StorageWrap>> for Embeddings {
-    fn from(embeddings: R2VEmbeddings<VocabWrap, StorageWrap>) -> Self {
+impl From<FiFuEmbeddings<VocabWrap, StorageWrap>> for Embeddings {
+    fn from(embeddings: FiFuEmbeddings<VocabWrap, StorageWrap>) -> Self {
         let mut unknown = Array1::zeros(embeddings.dims());
 
         for (_, embed) in &embeddings {
