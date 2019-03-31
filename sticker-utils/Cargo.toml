@@ -9,14 +9,14 @@ conllx = "0.10"
 failure = "0.1"
 finalfusion = "0.5"
 getopts = "0.2"
-indicatif = "0.9"
+indicatif = "0.11"
 ordered-float = { version = "1", features = ["serde"] }
 serde = "1"
 serde_cbor = "0.9"
 serde_derive = "1"
 stdinout = "0.4"
 threadpool = "1"
-toml = "0.4"
+toml = "0.5"
 sticker = { path = "../sticker" }
 tensorflow = { git = "https://github.com/tensorflow/rust.git", rev = "3fccac6071"}
 

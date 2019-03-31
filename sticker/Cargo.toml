@@ -8,9 +8,8 @@ authors = ["Daniël de Kok <me@danieldk.eu>"]
 conllx = "0.10"
 failure = "0.1"
 finalfusion = "0.5"
-itertools = "0.6"
 ndarray = "0.12"
-protobuf = "1.4"
+protobuf = "1"
 serde = "1"
 serde_derive = "1"
 tf-proto = { git = "https://github.com/danieldk/tf-proto-rs", tag = "v1.4.0" }
