@@ -3,12 +3,14 @@ use std::fs::File;
 use lazy_static::lazy_static;
 use ordered_float::NotNan;
 use sticker::tensorflow::{ModelConfig, OpNames};
+use sticker::Layer;
 
 use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, TomlRead, Train};
 
 lazy_static! {
     static ref BASIC_LABELER_CHECK: Config = Config {
         labeler: Labeler {
+            layer: Layer::Feature("tf".to_string()),
             labels: "sticker.labels".to_owned(),
             read_ahead: 10,
         },

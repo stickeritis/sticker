@@ -1,6 +1,6 @@
 use conllx::Token;
 
-use crate::{Numberer, SentVectorizer};
+use crate::{Layer, LayerValue, Numberer, SentVectorizer};
 use failure::{format_err, Error};
 
 /// Data types collects (and typically stores) vectorized sentences.
@@ -15,13 +15,19 @@ pub trait Collector {
 /// This collector can be used to construct lookup tables as a
 /// side-effect of vectorizing the input.
 pub struct NoopCollector {
+    layer: Layer,
     numberer: Numberer<String>,
     vectorizer: SentVectorizer,
 }
 
 impl NoopCollector {
-    pub fn new(numberer: Numberer<String>, vectorizer: SentVectorizer) -> NoopCollector {
+    pub fn new(
+        layer: Layer,
+        numberer: Numberer<String>,
+        vectorizer: SentVectorizer,
+    ) -> NoopCollector {
         NoopCollector {
+            layer,
             numberer,
             vectorizer,
         }
@@ -37,10 +43,10 @@ impl Collector for NoopCollector {
         self.vectorizer.realize(sentence)?;
 
         for token in sentence {
-            let pos_tag = token
-                .pos()
-                .ok_or_else(|| format_err!("Token without a part-of-speech tag: {}", token))?;
-            self.numberer.add(pos_tag.to_owned());
+            let label = token
+                .value(&self.layer)
+                .ok_or_else(|| format_err!("Token without a tag: {}", token))?;
+            self.numberer.add(label.to_owned());
         }
 
         Ok(())

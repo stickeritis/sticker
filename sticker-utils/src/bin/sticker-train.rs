@@ -202,7 +202,12 @@ where
         FileProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
     ));
 
-    let mut collector = TensorCollector::new(config.model.batch_size, labels, vectorizer);
+    let mut collector = TensorCollector::new(
+        config.model.batch_size,
+        config.labeler.layer.clone(),
+        labels,
+        vectorizer,
+    );
     for sentence in reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
         collector

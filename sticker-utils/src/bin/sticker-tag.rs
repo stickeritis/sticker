@@ -79,6 +79,7 @@ fn main() {
         .or_exit("Cannot construct tagger", 1);
 
     let mut sent_proc = SentProcessor::new(
+        config.labeler.layer.clone(),
         &tagger,
         writer,
         config.model.batch_size,

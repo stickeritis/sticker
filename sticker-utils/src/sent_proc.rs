@@ -2,7 +2,7 @@ use std::io::Write;
 
 use conllx::{Sentence, WriteSentence};
 use failure::Error;
-use sticker::Tag;
+use sticker::{Layer, LayerValue, Tag};
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.
@@ -11,6 +11,7 @@ where
     T: Tag,
     W: Write,
 {
+    layer: Layer,
     tagger: &'a T,
     writer: conllx::Writer<W>,
     batch_size: usize,
@@ -24,6 +25,7 @@ where
     W: Write,
 {
     pub fn new(
+        layer: Layer,
         tagger: &'a T,
         writer: conllx::Writer<W>,
         batch_size: usize,
@@ -33,6 +35,7 @@ where
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
         SentProcessor {
+            layer,
             tagger,
             writer,
             batch_size,
@@ -59,7 +62,7 @@ where
         // Split in batches, tag, and merge results.
         for batch in sent_refs.chunks_mut(self.batch_size) {
             let labels = labels_to_owned(self.tagger.tag_sentences(batch)?);
-            Self::merge_labels(batch, labels)?;
+            Self::merge_labels(&self.layer, batch, labels)?;
         }
 
         // Write out sentences.
@@ -72,14 +75,18 @@ where
         Ok(())
     }
 
-    fn merge_labels(sentences: &mut [&mut Sentence], labels: Vec<Vec<String>>) -> Result<(), Error>
+    fn merge_labels(
+        layer: &Layer,
+        sentences: &mut [&mut Sentence],
+        labels: Vec<Vec<String>>,
+    ) -> Result<(), Error>
     where
         W: Write,
     {
         for (tokens, sent_labels) in sentences.iter_mut().zip(labels) {
             {
                 for (token, label) in tokens.iter_mut().zip(sent_labels) {
-                    token.set_pos(Some(label));
+                    token.set_value(layer, label);
                 }
             }
         }

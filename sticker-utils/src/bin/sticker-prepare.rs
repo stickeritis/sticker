@@ -70,7 +70,7 @@ fn main() {
         .or_exit("Cannot load embeddings", 1);
     let vectorizer = SentVectorizer::new(embeddings);
 
-    let mut collector = NoopCollector::new(labels, vectorizer);
+    let mut collector = NoopCollector::new(config.labeler.layer.clone(), labels, vectorizer);
 
     for sentence in treebank_reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);

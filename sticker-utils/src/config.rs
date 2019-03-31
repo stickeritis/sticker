@@ -9,7 +9,7 @@ use ordered_float::NotNan;
 use serde_derive::{Deserialize, Serialize};
 
 use sticker::tensorflow::{ModelConfig, PlateauLearningRate};
-use sticker::LayerEmbeddings;
+use sticker::{Layer, LayerEmbeddings};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Config {
@@ -78,6 +78,7 @@ pub enum EmbeddingAlloc {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Labeler {
     pub labels: String,
+    pub layer: Layer,
     pub read_ahead: usize,
 }
 

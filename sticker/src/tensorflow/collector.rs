@@ -2,7 +2,7 @@ use conllx::Token;
 use failure::{format_err, Error};
 use tensorflow::Tensor;
 
-use crate::{Collector, Numberer, SentVectorizer};
+use crate::{Collector, Layer, LayerValue, Numberer, SentVectorizer};
 
 pub struct CollectedTensors {
     pub sequence_lens: Vec<Tensor<i32>>,
@@ -13,6 +13,7 @@ pub struct CollectedTensors {
 pub struct TensorCollector {
     numberer: Numberer<String>,
     vectorizer: SentVectorizer,
+    layer: Layer,
     batch_size: usize,
     sequence_lens: Vec<Tensor<i32>>,
     tokens: Vec<Tensor<f32>>,
@@ -22,9 +23,15 @@ pub struct TensorCollector {
 }
 
 impl TensorCollector {
-    pub fn new(batch_size: usize, numberer: Numberer<String>, vectorizer: SentVectorizer) -> Self {
+    pub fn new(
+        batch_size: usize,
+        layer: Layer,
+        numberer: Numberer<String>,
+        vectorizer: SentVectorizer,
+    ) -> Self {
         TensorCollector {
             batch_size,
+            layer,
             numberer,
             vectorizer,
             labels: Vec::new(),
@@ -93,10 +100,10 @@ impl Collector for TensorCollector {
         let input = self.vectorizer.realize(sentence)?;
         let mut labels = Vec::with_capacity(sentence.len());
         for token in sentence {
-            let pos_tag = token
-                .pos()
-                .ok_or_else(|| format_err!("Token without a part-of-speech tag: {}", token))?;
-            labels.push(self.numberer.add(pos_tag.to_owned()) as i32);
+            let label = token
+                .value(&self.layer)
+                .ok_or_else(|| format_err!("Token without a tag: {}", token))?;
+            labels.push(self.numberer.add(label.to_owned()) as i32);
         }
 
         let tokens = input.into_inner();

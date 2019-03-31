@@ -47,8 +47,8 @@ impl From<FiFuEmbeddings<VocabWrap, StorageWrap>> for Embeddings {
 
 /// Sentence represented as a vector.
 ///
-/// This data type represents a sentence as vectors (`Vec`) of tokens and
-/// part-of-speech indices. Such a vector is typically the input to a
+/// This data type represents a sentence as vectors (`Vec`) of tokens
+/// and tag indices. Such a vector is typically the input to a
 /// sequence labeling graph.
 #[derive(Default)]
 pub struct SentVec {

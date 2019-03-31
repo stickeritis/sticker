@@ -8,6 +8,6 @@ mod numberer;
 pub use crate::numberer::Numberer;
 
 mod tag;
-pub use crate::tag::{ModelPerformance, Tag};
+pub use crate::tag::{Layer, LayerValue, ModelPerformance, Tag};
 
 pub mod tensorflow;

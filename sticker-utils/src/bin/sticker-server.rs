@@ -129,6 +129,7 @@ fn handle_client(config: Config, tagger: Arc<Tagger>, mut stream: TcpStream) {
     let writer = conllx::Writer::new(BufWriter::new(&conllx_stream));
 
     let mut sent_proc = SentProcessor::new(
+        config.labeler.layer.clone(),
         &*tagger,
         writer,
         config.model.batch_size,
