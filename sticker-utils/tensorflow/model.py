@@ -72,13 +72,13 @@ class Model:
             tf.int32, name="tags", shape=[
                 None, None])
 
-        self._tokens = tf.placeholder(
+        self._inputs = tf.placeholder(
             tf.float32,
             shape=[
                 None,
                 None,
-                self.shapes['token_embed_dims']],
-            name="tokens")
+                self.shapes['token_embed_dims'] + self.shapes['tag_embed_dims']],
+            name="inputs")
 
         self._seq_lens = tf.placeholder(
             tf.int32, [None], name="seq_lens")
@@ -86,7 +86,7 @@ class Model:
         # Compute mask
         self._mask = tf.sequence_mask(
             self.seq_lens, maxlen=tf.shape(
-                self.tokens)[1], dtype=tf.float32)
+                self.inputs)[1], dtype=tf.float32)
 
     @property
     def config(self):
@@ -109,8 +109,8 @@ class Model:
         return self._tags
 
     @property
-    def tokens(self):
-        return self._tokens
+    def inputs(self):
+        return self._inputs
 
     @property
     def shapes(self):

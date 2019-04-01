@@ -149,7 +149,7 @@ fn run_epoch(
 
     for i in 0..tensors.labels.len() {
         let seq_lens = &tensors.sequence_lens[i];
-        let tokens = &tensors.tokens[i];
+        let tokens = &tensors.inputs[i];
         let labels = &tensors.labels[i];
 
         let batch_perf = if is_training {

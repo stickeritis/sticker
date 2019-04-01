@@ -1,5 +1,5 @@
 use conllx::Token;
-use failure::Error;
+use failure::{format_err, Error};
 use finalfusion::{
     embeddings::Embeddings as FiFuEmbeddings,
     storage::StorageWrap,
@@ -45,50 +45,27 @@ impl From<FiFuEmbeddings<VocabWrap, StorageWrap>> for Embeddings {
     }
 }
 
-/// Sentence represented as a vector.
-///
-/// This data type represents a sentence as vectors (`Vec`) of tokens
-/// and tag indices. Such a vector is typically the input to a
-/// sequence labeling graph.
-#[derive(Default)]
-pub struct SentVec {
-    pub tokens: Vec<f32>,
-}
-
-impl SentVec {
-    /// Construct a new sentence vector.
-    pub fn new() -> Self {
-        SentVec::default()
-    }
-
-    /// Construct a sentence vector with the given capacity.
-    pub fn with_capacity(capacity: usize) -> Self {
-        SentVec {
-            tokens: Vec::with_capacity(capacity),
-        }
-    }
-
-    /// Get the embedding representation of a sentence.
-    ///
-    /// The vector contains the concatenation of the embeddings of the
-    /// tokens in the sentence.
-    pub fn into_inner(self) -> Vec<f32> {
-        self.tokens
-    }
-}
-
 /// Embeddings for annotation layers.
 ///
 /// This data structure bundles embedding matrices for the input
 /// annotation layers: tokens and part-of-speech.
 pub struct LayerEmbeddings {
     token_embeddings: Embeddings,
+    tag_embeddings: Option<Embeddings>,
 }
 
 impl LayerEmbeddings {
     /// Construct `LayerEmbeddings` from the given embeddings.
-    pub fn new(token_embeddings: Embeddings) -> Self {
-        LayerEmbeddings { token_embeddings }
+    pub fn new(token_embeddings: Embeddings, tag_embeddings: Option<Embeddings>) -> Self {
+        LayerEmbeddings {
+            token_embeddings,
+            tag_embeddings,
+        }
+    }
+
+    /// Get the tag embedding matrix.
+    pub fn tag_embeddings(&self) -> Option<&Embeddings> {
+        self.tag_embeddings.as_ref()
     }
 
     /// Get the token embedding matrix.
@@ -120,13 +97,20 @@ impl SentVectorizer {
     }
 
     /// Vectorize a sentence.
-    pub fn realize(&self, sentence: &[Token]) -> Result<SentVec, Error> {
-        let mut input = SentVec::with_capacity(sentence.len());
+    pub fn realize(&self, sentence: &[Token]) -> Result<Vec<f32>, Error> {
+        let input_size = self.layer_embeddings.token_embeddings.dims()
+            + self
+                .layer_embeddings
+                .tag_embeddings
+                .as_ref()
+                .map(|e| e.dims())
+                .unwrap_or_default();
+        let mut input = Vec::with_capacity(sentence.len() * input_size);
 
         for token in sentence {
             let form = token.form();
 
-            input.tokens.extend_from_slice(
+            input.extend_from_slice(
                 &self
                     .layer_embeddings
                     .token_embeddings
@@ -135,6 +119,20 @@ impl SentVectorizer {
                     .as_slice()
                     .expect("Non-contiguous embedding"),
             );
+
+            if let Some(tag_embeddings) = &self.layer_embeddings.tag_embeddings {
+                let pos_tag = token
+                    .pos()
+                    .ok_or_else(|| format_err!("Token without a tag: {}", token))?;
+
+                input.extend_from_slice(
+                    tag_embeddings
+                        .embedding(pos_tag)
+                        .as_view()
+                        .as_slice()
+                        .expect("Non-contiguous embedding"),
+                );
+            }
         }
 
         Ok(input)

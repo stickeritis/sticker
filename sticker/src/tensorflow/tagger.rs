@@ -50,7 +50,7 @@ pub struct OpNames {
     pub is_training_op: String,
     pub lr_op: String,
 
-    pub tokens_op: String,
+    pub inputs_op: String,
     pub seq_lens_op: String,
 
     pub loss_op: String,
@@ -71,7 +71,7 @@ pub struct TaggerGraph {
     save_path_op: Operation,
     lr_op: Operation,
     is_training_op: Operation,
-    tokens_op: Operation,
+    inputs_op: Operation,
     seq_lens_op: Operation,
 
     loss_op: Operation,
@@ -106,7 +106,7 @@ impl TaggerGraph {
         let is_training_op = Self::add_op(&graph, &op_names.is_training_op)?;
         let lr_op = Self::add_op(&graph, &op_names.lr_op)?;
 
-        let tokens_op = Self::add_op(&graph, &op_names.tokens_op)?;
+        let inputs_op = Self::add_op(&graph, &op_names.inputs_op)?;
         let seq_lens_op = Self::add_op(&graph, &op_names.seq_lens_op)?;
 
         let loss_op = Self::add_op(&graph, &op_names.loss_op)?;
@@ -126,7 +126,7 @@ impl TaggerGraph {
             save_path_op,
             is_training_op,
             lr_op,
-            tokens_op,
+            inputs_op,
             seq_lens_op,
 
             loss_op,
@@ -238,9 +238,16 @@ impl Tagger {
             .max()
             .unwrap_or(0);
 
-        let token_dims = self.vectorizer.layer_embeddings().token_embeddings().dims();
+        let inputs_dims = self.vectorizer.layer_embeddings().token_embeddings().dims()
+            + self
+                .vectorizer
+                .layer_embeddings()
+                .tag_embeddings()
+                .as_ref()
+                .map(|e| e.dims())
+                .unwrap_or_default();
 
-        let mut builder = TensorBuilder::new(sentences.len(), max_seq_len, token_dims);
+        let mut builder = TensorBuilder::new(sentences.len(), max_seq_len, inputs_dims);
 
         // Fill the batch.
         for sentence in sentences {
@@ -249,7 +256,7 @@ impl Tagger {
         }
 
         // Tag the batch
-        let tag_tensor = self.tag_sequences(builder.seq_lens(), builder.tokens())?;
+        let tag_tensor = self.tag_sequences(builder.seq_lens(), builder.inputs())?;
 
         // Convert label numbers to labels.
         let mut labels = Vec::new();
@@ -271,7 +278,7 @@ impl Tagger {
     fn tag_sequences(
         &self,
         seq_lens: &Tensor<i32>,
-        tokens: &Tensor<f32>,
+        inputs: &Tensor<f32>,
     ) -> Result<Tensor<i32>, Error> {
         let mut is_training = Tensor::new(&[]);
         is_training[0] = false;
@@ -282,7 +289,7 @@ impl Tagger {
 
         // Sequence inputs
         args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
-        args.add_feed(&self.graph.tokens_op, 0, tokens);
+        args.add_feed(&self.graph.inputs_op, 0, inputs);
 
         let predictions_token = args.request_fetch(&self.graph.predicted_op, 0);
 
@@ -294,7 +301,7 @@ impl Tagger {
     pub fn train(
         &self,
         seq_lens: &Tensor<i32>,
-        tokens: &Tensor<f32>,
+        inputs: &Tensor<f32>,
         labels: &Tensor<i32>,
         learning_rate: f32,
     ) -> ModelPerformance {
@@ -309,13 +316,13 @@ impl Tagger {
         args.add_feed(&self.graph.lr_op, 0, &lr);
         args.add_target(&self.graph.train_op);
 
-        self.validate_(seq_lens, tokens, labels, args)
+        self.validate_(seq_lens, inputs, labels, args)
     }
 
     pub fn validate(
         &self,
         seq_lens: &Tensor<i32>,
-        tokens: &Tensor<f32>,
+        inputs: &Tensor<f32>,
         labels: &Tensor<i32>,
     ) -> ModelPerformance {
         let mut is_training = Tensor::new(&[]);
@@ -324,18 +331,18 @@ impl Tagger {
         let mut args = SessionRunArgs::new();
         args.add_feed(&self.graph.is_training_op, 0, &is_training);
 
-        self.validate_(seq_lens, tokens, labels, args)
+        self.validate_(seq_lens, inputs, labels, args)
     }
 
     fn validate_<'l>(
         &'l self,
         seq_lens: &'l Tensor<i32>,
-        tokens: &'l Tensor<f32>,
+        inputs: &'l Tensor<f32>,
         labels: &'l Tensor<i32>,
         mut args: SessionRunArgs<'l>,
     ) -> ModelPerformance {
         // Add inputs.
-        args.add_feed(&self.graph.tokens_op, 0, tokens);
+        args.add_feed(&self.graph.inputs_op, 0, inputs);
         args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
 
         // Add gold labels.

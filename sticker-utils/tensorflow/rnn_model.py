@@ -67,7 +67,7 @@ class RNNModel(Model):
         self.setup_placeholders()
 
         inputs = tf.contrib.layers.dropout(
-            self.tokens,
+            self.inputs,
             keep_prob=config.keep_prob_input,
             is_training=self.is_training)
 

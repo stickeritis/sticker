@@ -2,7 +2,7 @@ mod collector;
 pub use crate::collector::{Collector, NoopCollector};
 
 mod input;
-pub use crate::input::{Embeddings, LayerEmbeddings, SentVec, SentVectorizer};
+pub use crate::input::{Embeddings, LayerEmbeddings, SentVectorizer};
 
 mod numberer;
 pub use crate::numberer::Numberer;

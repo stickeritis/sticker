@@ -6,7 +6,7 @@ use crate::{Collector, Layer, LayerValue, Numberer, SentVectorizer};
 
 pub struct CollectedTensors {
     pub sequence_lens: Vec<Tensor<i32>>,
-    pub tokens: Vec<Tensor<f32>>,
+    pub inputs: Vec<Tensor<f32>>,
     pub labels: Vec<Tensor<i32>>,
 }
 
@@ -16,10 +16,10 @@ pub struct TensorCollector {
     layer: Layer,
     batch_size: usize,
     sequence_lens: Vec<Tensor<i32>>,
-    tokens: Vec<Tensor<f32>>,
+    inputs: Vec<Tensor<f32>>,
     labels: Vec<Tensor<i32>>,
     cur_labels: Vec<Vec<i32>>,
-    cur_tokens: Vec<Vec<f32>>,
+    cur_inputs: Vec<Vec<f32>>,
 }
 
 impl TensorCollector {
@@ -35,10 +35,10 @@ impl TensorCollector {
             numberer,
             vectorizer,
             labels: Vec::new(),
-            tokens: Vec::new(),
+            inputs: Vec::new(),
             sequence_lens: Vec::new(),
             cur_labels: Vec::new(),
-            cur_tokens: Vec::new(),
+            cur_inputs: Vec::new(),
         }
     }
 
@@ -56,27 +56,27 @@ impl TensorCollector {
             .for_each(|(idx, labels)| batch_seq_lens[idx] = labels.len() as i32);
 
         let max_seq_len = self.cur_labels.iter().map(Vec::len).max().unwrap_or(0);
-        let token_dims = self.cur_tokens[0].len() / self.cur_labels[0].len();
+        let inputs_dims = self.cur_inputs[0].len() / self.cur_labels[0].len();
 
-        let mut batch_tokens =
-            Tensor::new(&[batch_size as u64, max_seq_len as u64, token_dims as u64]);
+        let mut batch_inputs =
+            Tensor::new(&[batch_size as u64, max_seq_len as u64, inputs_dims as u64]);
         let mut batch_labels = Tensor::new(&[batch_size as u64, max_seq_len as u64]);
 
         for i in 0..batch_size {
             let offset = i * max_seq_len;
-            let token_offset = offset * token_dims;
+            let inputs_offset = offset * inputs_dims;
             let seq_len = self.cur_labels[i].len();
 
-            batch_tokens[token_offset..token_offset + token_dims * seq_len]
-                .copy_from_slice(&self.cur_tokens[i]);
+            batch_inputs[inputs_offset..inputs_offset + inputs_dims * seq_len]
+                .copy_from_slice(&self.cur_inputs[i]);
             batch_labels[offset..offset + seq_len].copy_from_slice(&self.cur_labels[i]);
         }
 
         self.sequence_lens.push(batch_seq_lens);
-        self.tokens.push(batch_tokens);
+        self.inputs.push(batch_inputs);
         self.labels.push(batch_labels);
 
-        self.cur_tokens.clear();
+        self.cur_inputs.clear();
         self.cur_labels.clear();
     }
 
@@ -85,7 +85,7 @@ impl TensorCollector {
 
         CollectedTensors {
             sequence_lens: self.sequence_lens,
-            tokens: self.tokens,
+            inputs: self.inputs,
             labels: self.labels,
         }
     }
@@ -106,8 +106,7 @@ impl Collector for TensorCollector {
             labels.push(self.numberer.add(label.to_owned()) as i32);
         }
 
-        let tokens = input.into_inner();
-        self.cur_tokens.push(tokens);
+        self.cur_inputs.push(input);
         self.cur_labels.push(labels);
 
         Ok(())

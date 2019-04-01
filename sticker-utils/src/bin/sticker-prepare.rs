@@ -18,6 +18,7 @@ use sticker_utils::{CborWrite, Config, TomlRead};
 struct Shapes {
     n_labels: usize,
     token_embed_dims: usize,
+    tag_embed_dims: usize,
 }
 
 fn print_usage(program: &str, opts: Options) {
@@ -88,6 +89,12 @@ fn main() {
             .layer_embeddings()
             .token_embeddings()
             .dims(),
+        tag_embed_dims: collector
+            .vectorizer()
+            .layer_embeddings()
+            .tag_embeddings()
+            .map(|e| e.dims())
+            .unwrap_or_default(),
     };
 
     write!(

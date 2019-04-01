@@ -16,9 +16,13 @@ lazy_static! {
         },
         embeddings: Embeddings {
             word: Embedding {
-                filename: "word-vectors-null.bin".to_owned(),
+                filename: "word-vectors.bin".into(),
                 alloc: EmbeddingAlloc::Mmap,
             },
+            tag: Some(Embedding {
+                filename: "tag-vectors.bin".into(),
+                alloc: EmbeddingAlloc::Read,
+            }),
         },
         train: Train {
             initial_lr: NotNan::from(0.05),
@@ -36,7 +40,7 @@ lazy_static! {
                 is_training_op: "prediction/model/is_training".to_owned(),
                 init_op: "prediction/model/init".to_owned(),
                 labels_op: "prediction/model/labels".to_owned(),
-                tokens_op: "prediction/model/tokens".to_owned(),
+                inputs_op: "prediction/model/inputs".to_owned(),
                 seq_lens_op: "prediction/model/seq_lens".to_owned(),
                 predicted_op: "prediction/model/predicted".to_owned(),
                 accuracy_op: "prediction/model/accuracy".to_owned(),

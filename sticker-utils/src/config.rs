@@ -40,6 +40,7 @@ impl Config {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Embeddings {
     pub word: Embedding,
+    pub tag: Option<Embedding>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -51,7 +52,11 @@ pub struct Embedding {
 impl Embeddings {
     pub fn load_embeddings(&self) -> Result<LayerEmbeddings, Error> {
         let token_embeddings = self.load_layer_embeddings(&self.word)?;
-        Ok(LayerEmbeddings::new(token_embeddings))
+        let tag_embeddings = match &self.tag {
+            Some(embed) => Some(self.load_layer_embeddings(embed)?),
+            None => None,
+        };
+        Ok(LayerEmbeddings::new(token_embeddings, tag_embeddings))
     }
 
     pub fn load_layer_embeddings(
