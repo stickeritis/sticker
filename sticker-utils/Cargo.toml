@@ -18,7 +18,7 @@ stdinout = "0.4"
 threadpool = "1"
 toml = "0.5"
 sticker = { path = "../sticker" }
-tensorflow = { git = "https://github.com/tensorflow/rust.git", rev = "3fccac6071"}
+tensorflow = "0.13"
 
 [dev-dependencies]
 lazy_static = "1"

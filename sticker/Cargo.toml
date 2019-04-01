@@ -13,7 +13,7 @@ protobuf = "1"
 serde = "1"
 serde_derive = "1"
 tf-proto = { git = "https://github.com/danieldk/tf-proto-rs", tag = "v1.4.0" }
-tensorflow = { git = "https://github.com/tensorflow/rust.git", rev = "3fccac6071"}
+tensorflow = "0.13"
 
 [dev-dependencies]
 approx = "0.3"
