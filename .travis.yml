@@ -1,15 +1,22 @@
 language: rust
-rust:
-  - stable
-  - beta
-  - nightly
-script:
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: osx
+      rust: stable
+      env: TARGET=x86_64-apple-darwin
+    - os: linux
+      rust: 1.31.0
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: linux
+      rust: nightly
+      env: TARGET=x86_64-unknown-linux-gnu
+  allow_failures:
+  - rust: nightly
+before_script:
   - rustup component add clippy
   - rustup component add rustfmt
-  - cargo build --verbose
-  - cargo test --verbose
-  - cargo clippy
-  - cargo fmt --all -- --check
-matrix:
-  allow_failures:
-    - rust: nightly
+script: ci/script.sh
