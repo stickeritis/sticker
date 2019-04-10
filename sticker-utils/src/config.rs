@@ -30,6 +30,9 @@ impl Config {
         self.labeler.labels = relativize_path(config_path, &self.labeler.labels)?;
         self.embeddings.word.filename =
             relativize_path(config_path, &self.embeddings.word.filename)?;
+        if let Some(ref mut embeddings) = self.embeddings.tag {
+            embeddings.filename = relativize_path(config_path, &embeddings.filename)?;
+        }
         self.model.graph = relativize_path(config_path, &self.model.graph)?;
         self.model.parameters = relativize_path(config_path, &self.model.parameters)?;
 
