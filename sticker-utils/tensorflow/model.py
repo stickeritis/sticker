@@ -59,11 +59,14 @@ class Model:
         return tf.identity(predictions, name="%s_predictions" % prefix)
 
     def predictions(self, prefix, logits):
-        return tf.cast(
-            tf.argmax(
-                logits,
-                axis=2),
-            tf.int32, name="%s_predictions" % prefix)
+        # Get the best label, excluding padding.
+        best_label = tf.argmax(
+            logits[:, :, 1:],
+            axis=2,
+            output_type=tf.dtypes.int32)
+
+        # Exclusion of padding shifts all classes by one.
+        return tf.add(best_label, 1, name="%s_predictions" % prefix)
 
     def setup_placeholders(self):
         self._is_training = tf.placeholder(tf.bool, [], "is_training")
@@ -77,7 +80,8 @@ class Model:
             shape=[
                 None,
                 None,
-                self.shapes['token_embed_dims'] + self.shapes['tag_embed_dims']],
+                self.shapes['token_embed_dims'] +
+                self.shapes['tag_embed_dims']],
             name="inputs")
 
         self._seq_lens = tf.placeholder(
