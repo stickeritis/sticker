@@ -4,7 +4,7 @@ use std::io::BufWriter;
 use std::path::Path;
 use std::process;
 
-use conllx::ReadSentence;
+use conllx::io::{ReadSentence, Reader, Writer};
 use failure::Error;
 use getopts::Options;
 use stdinout::{Input, OrExit, Output};
@@ -47,10 +47,10 @@ fn main() {
         .or_exit("Cannot relativize paths in configuration", 1);
 
     let input = Input::from(matches.free.get(1));
-    let reader = conllx::Reader::new(input.buf_read().or_exit("Cannot open input for reading", 1));
+    let reader = Reader::new(input.buf_read().or_exit("Cannot open input for reading", 1));
 
     let output = Output::from(matches.free.get(2));
-    let writer = conllx::Writer::new(BufWriter::new(
+    let writer = Writer::new(BufWriter::new(
         output.write().or_exit("Cannot open output for writing", 1),
     ));
 

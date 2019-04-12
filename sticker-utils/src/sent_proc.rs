@@ -1,6 +1,7 @@
 use std::io::Write;
 
-use conllx::{Sentence, WriteSentence};
+use conllx::graph::{Node, Sentence};
+use conllx::io::{WriteSentence, Writer};
 use failure::Error;
 use sticker::{Layer, LayerValue, Tag};
 
@@ -13,7 +14,7 @@ where
 {
     layer: Layer,
     tagger: &'a T,
-    writer: conllx::Writer<W>,
+    writer: Writer<W>,
     batch_size: usize,
     read_ahead: usize,
     buffer: Vec<Sentence>,
@@ -27,7 +28,7 @@ where
     pub fn new(
         layer: Layer,
         tagger: &'a T,
-        writer: conllx::Writer<W>,
+        writer: Writer<W>,
         batch_size: usize,
         read_ahead: usize,
     ) -> Self {
@@ -83,9 +84,13 @@ where
     where
         W: Write,
     {
-        for (tokens, sent_labels) in sentences.iter_mut().zip(labels) {
+        for (sentence, sent_labels) in sentences.iter_mut().zip(labels) {
             {
-                for (token, label) in tokens.iter_mut().zip(sent_labels) {
+                for (token, label) in sentence
+                    .iter_mut()
+                    .filter_map(Node::token_mut)
+                    .zip(sent_labels)
+                {
                     token.set_value(layer, label);
                 }
             }

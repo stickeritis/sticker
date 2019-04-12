@@ -1,5 +1,7 @@
-use conllx::{Features, Sentence, Token};
+use std::borrow::Borrow;
 
+use conllx::graph::Sentence;
+use conllx::token::{Features, Token};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
@@ -38,9 +40,10 @@ impl LayerValue for Token {
 
                 features.insert(feature.clone(), Some(value));
 
-                self.set_features(Some(Features::from_iter(features)));
+                self.set_features(Some(Features::from_iter(features)))
+                    .map(Features::into_inner_string)
             }
-        }
+        };
     }
 
     /// Look up the layer value in a token.
@@ -60,7 +63,7 @@ impl LayerValue for Token {
 
 /// Trait for sequence taggers.
 pub trait Tag {
-    fn tag_sentences(&self, sentences: &[impl AsRef<Sentence>]) -> Result<Vec<Vec<&str>>, Error>;
+    fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&str>>, Error>;
 }
 
 /// Results of validation.
@@ -79,15 +82,15 @@ pub struct ModelPerformance {
 mod tests {
     use crate::{Layer, LayerValue};
 
-    use conllx::{Features, TokenBuilder};
+    use conllx::token::{Features, Token, TokenBuilder};
 
     #[test]
     fn layer() {
-        let token = TokenBuilder::new("test")
+        let token: Token = TokenBuilder::new("test")
             .cpos("CP")
             .pos("P")
             .features(Features::from_string("a:b|c:d"))
-            .token();
+            .into();
 
         assert_eq!(token.value(&Layer::CPos), Some("CP"));
         assert_eq!(token.value(&Layer::Pos), Some("P"));
@@ -98,7 +101,7 @@ mod tests {
 
     #[test]
     fn set_layer() {
-        let mut token = TokenBuilder::new("test").token();
+        let mut token: Token = TokenBuilder::new("test").into();
         token.set_value(&Layer::CPos, "CP");
         token.set_value(&Layer::Pos, "P");
         token.set_value(&Layer::Feature("a".to_owned()), "b");

@@ -6,7 +6,7 @@ use std::path::Path;
 use std::process;
 use std::sync::Arc;
 
-use conllx::ReadSentence;
+use conllx::io::{ReadSentence, Reader, Writer};
 use failure::Error;
 use getopts::Options;
 use stdinout::OrExit;
@@ -125,8 +125,8 @@ fn handle_client(config: Config, tagger: Arc<Tagger>, mut stream: TcpStream) {
         }
     };
 
-    let reader = conllx::Reader::new(BufReader::new(&conllx_stream));
-    let writer = conllx::Writer::new(BufWriter::new(&conllx_stream));
+    let reader = Reader::new(BufReader::new(&conllx_stream));
+    let writer = Writer::new(BufWriter::new(&conllx_stream));
 
     let mut sent_proc = SentProcessor::new(
         config.labeler.layer.clone(),

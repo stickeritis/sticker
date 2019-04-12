@@ -3,7 +3,7 @@ use std::fs::File;
 use std::path::Path;
 use std::process;
 
-use conllx::ReadSentence;
+use conllx::io::{ReadSentence, Reader};
 use failure::Error;
 use getopts::Options;
 use serde_derive::Serialize;
@@ -55,7 +55,7 @@ fn main() {
         .or_exit("Cannot relativize paths in configuration", 1);
 
     let input = Input::from(matches.free.get(1));
-    let treebank_reader = conllx::Reader::new(
+    let treebank_reader = Reader::new(
         input
             .buf_read()
             .or_exit("Cannot open corpus for reading", 1),
