@@ -1,4 +1,4 @@
-use conllx::Token;
+use conllx::graph::{Node, Sentence};
 use failure::{format_err, Error};
 use finalfusion::{
     embeddings::Embeddings as FiFuEmbeddings,
@@ -97,7 +97,7 @@ impl SentVectorizer {
     }
 
     /// Vectorize a sentence.
-    pub fn realize(&self, sentence: &[Token]) -> Result<Vec<f32>, Error> {
+    pub fn realize(&self, sentence: &Sentence) -> Result<Vec<f32>, Error> {
         let input_size = self.layer_embeddings.token_embeddings.dims()
             + self
                 .layer_embeddings
@@ -107,7 +107,7 @@ impl SentVectorizer {
                 .unwrap_or_default();
         let mut input = Vec::with_capacity(sentence.len() * input_size);
 
-        for token in sentence {
+        for token in sentence.iter().filter_map(Node::token) {
             let form = token.form();
 
             input.extend_from_slice(
@@ -123,7 +123,7 @@ impl SentVectorizer {
             if let Some(tag_embeddings) = &self.layer_embeddings.tag_embeddings {
                 let pos_tag = token
                     .pos()
-                    .ok_or_else(|| format_err!("Token without a tag: {}", token))?;
+                    .ok_or_else(|| format_err!("Token without a tag: {}", token.form()))?;
 
                 input.extend_from_slice(
                     tag_embeddings

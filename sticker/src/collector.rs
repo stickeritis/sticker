@@ -1,11 +1,11 @@
-use conllx::Token;
+use conllx::graph::{Node, Sentence};
+use failure::{format_err, Error};
 
 use crate::{Layer, LayerValue, Numberer, SentVectorizer};
-use failure::{format_err, Error};
 
 /// Data types collects (and typically stores) vectorized sentences.
 pub trait Collector {
-    fn collect(&mut self, sentence: &[Token]) -> Result<(), Error>;
+    fn collect(&mut self, sentence: &Sentence) -> Result<(), Error>;
 
     fn vectorizer(&self) -> &SentVectorizer;
 }
@@ -39,13 +39,13 @@ impl NoopCollector {
 }
 
 impl Collector for NoopCollector {
-    fn collect(&mut self, sentence: &[Token]) -> Result<(), Error> {
+    fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
         self.vectorizer.realize(sentence)?;
 
-        for token in sentence {
+        for token in sentence.iter().filter_map(Node::token) {
             let label = token
                 .value(&self.layer)
-                .ok_or_else(|| format_err!("Token without a tag: {}", token))?;
+                .ok_or_else(|| format_err!("Token without a label: {}", token.form()))?;
             self.numberer.add(label.to_owned());
         }
 

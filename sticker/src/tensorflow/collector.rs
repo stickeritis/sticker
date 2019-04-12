@@ -1,4 +1,4 @@
-use conllx::Token;
+use conllx::graph::{Node, Sentence};
 use failure::{format_err, Error};
 use tensorflow::Tensor;
 
@@ -92,17 +92,17 @@ impl TensorCollector {
 }
 
 impl Collector for TensorCollector {
-    fn collect(&mut self, sentence: &[Token]) -> Result<(), Error> {
+    fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
         if self.cur_labels.len() == self.batch_size {
             self.finalize_batch();
         }
 
         let input = self.vectorizer.realize(sentence)?;
         let mut labels = Vec::with_capacity(sentence.len());
-        for token in sentence {
+        for token in sentence.iter().filter_map(Node::token) {
             let label = token
                 .value(&self.layer)
-                .ok_or_else(|| format_err!("Token without a tag: {}", token))?;
+                .ok_or_else(|| format_err!("Token without a tag: {}", token.form()))?;
             labels.push(self.numberer.add(label.to_owned()) as i32);
         }
 

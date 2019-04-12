@@ -4,7 +4,7 @@ use std::io::BufReader;
 use std::path::Path;
 use std::process;
 
-use conllx::ReadSentence;
+use conllx::io::{ReadSentence, Reader};
 use failure::Error;
 use getopts::Options;
 use indicatif::{ProgressBar, ProgressStyle};
@@ -198,7 +198,7 @@ where
         ),
         1,
     );
-    let reader = conllx::Reader::new(BufReader::new(
+    let reader = Reader::new(BufReader::new(
         FileProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
     ));
 

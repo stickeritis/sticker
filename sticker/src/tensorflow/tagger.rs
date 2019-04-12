@@ -1,8 +1,9 @@
+use std::borrow::Borrow;
 use std::cmp::min;
 use std::io::Read;
 use std::path::Path;
 
-use conllx::Sentence;
+use conllx::graph::Sentence;
 use failure::{err_msg, format_err, Error};
 use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
@@ -230,11 +231,11 @@ impl Tagger {
         self.session.run(&mut args).map_err(status_to_error)
     }
 
-    fn tag_sentences_(&self, sentences: &[impl AsRef<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
+    fn tag_sentences_(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
         // Find maximum sentence size.
         let max_seq_len = sentences
             .iter()
-            .map(|s| s.as_ref().len())
+            .map(|s| s.borrow().len() - 1)
             .max()
             .unwrap_or(0);
 
@@ -251,7 +252,7 @@ impl Tagger {
 
         // Fill the batch.
         for sentence in sentences {
-            let input = self.vectorizer.realize(sentence.as_ref())?;
+            let input = self.vectorizer.realize(sentence.borrow())?;
             builder.add(&input);
         }
 
@@ -261,7 +262,7 @@ impl Tagger {
         // Convert label numbers to labels.
         let mut labels = Vec::new();
         for (idx, sentence) in sentences.iter().enumerate() {
-            let seq_len = min(max_seq_len, sentence.as_ref().len());
+            let seq_len = min(max_seq_len, sentence.borrow().len());
             let offset = idx * max_seq_len;
             let seq = &tag_tensor[offset..offset + seq_len];
 
@@ -363,7 +364,7 @@ impl Tagger {
 }
 
 impl Tag for Tagger where {
-    fn tag_sentences(&self, sentences: &[impl AsRef<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
+    fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
         self.tag_sentences_(sentences)
     }
 }
