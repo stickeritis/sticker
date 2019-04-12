@@ -103,7 +103,7 @@ impl SentVectorizer {
                 .layer_embeddings
                 .tag_embeddings
                 .as_ref()
-                .map(|e| e.dims())
+                .map(Embeddings::dims)
                 .unwrap_or_default();
         let mut input = Vec::with_capacity(sentence.len() * input_size);
 

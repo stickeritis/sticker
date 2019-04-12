@@ -9,7 +9,7 @@ use getopts::Options;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
 
-use sticker::{Collector, NoopCollector, Numberer, SentVectorizer};
+use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
 use sticker_utils::{CborWrite, Config, TomlRead};
 
 /// Ad-hoc shapes structure, which can be used to construct the
@@ -93,7 +93,7 @@ fn main() {
             .vectorizer()
             .layer_embeddings()
             .tag_embeddings()
-            .map(|e| e.dims())
+            .map(Embeddings::dims)
             .unwrap_or_default(),
     };
 
