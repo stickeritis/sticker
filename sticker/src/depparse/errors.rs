@@ -22,4 +22,8 @@ pub(crate) enum DecodeError {
     /// The head position is out of bounds.
     #[fail(display = "position out of bounds")]
     PositionOutOfBounds,
+
+    /// The head part-of-speech tag does not occur in the sentence.
+    #[fail(display = "unknown part-of-speech tag")]
+    InvalidPOS,
 }

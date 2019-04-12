@@ -6,6 +6,9 @@ pub use crate::depparse::errors::*;
 mod relative_position;
 pub use crate::depparse::relative_position::*;
 
+mod relative_pos;
+pub use crate::depparse::relative_pos::*;
+
 /// Encoding of a dependency relation as a token label.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct DependencyEncoding<H> {
@@ -34,7 +37,7 @@ mod tests {
     use conllx::graph::{Node, Sentence};
     use conllx::io::Reader;
 
-    use super::RelativePositionEncoder;
+    use super::{RelativePOSEncoder, RelativePositionEncoder};
     use crate::{SentenceDecoder, SentenceEncoder};
 
     static NON_PROJECTIVE_DATA: &'static str = "testdata/nonprojective.conll";
@@ -70,6 +73,12 @@ mod tests {
 
             assert_eq!(sentence, test_sentence);
         }
+    }
+
+    #[test]
+    fn relative_pos_position() {
+        let encoder = RelativePOSEncoder;
+        test_encoding(NON_PROJECTIVE_DATA, encoder);
     }
 
     #[test]
