@@ -13,6 +13,12 @@ use crate::{SentenceDecoder, SentenceEncoder, SentenceTopKDecoder};
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct RelativePosition(isize);
 
+impl ToString for DependencyEncoding<RelativePosition> {
+    fn to_string(&self) -> String {
+        format!("{}/{}", self.label, self.head.0)
+    }
+}
+
 /// Relative position encoder.
 ///
 /// This encoder encodes dependency relations as token labels. The
