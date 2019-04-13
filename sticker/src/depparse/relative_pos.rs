@@ -20,6 +20,12 @@ pub struct RelativePOS {
     pos: String,
 }
 
+impl ToString for DependencyEncoding<RelativePOS> {
+    fn to_string(&self) -> String {
+        format!("{}/{}/{}", self.label, self.head.pos, self.head.position)
+    }
+}
+
 /// Relative part-of-speech position encoder.
 ///
 /// This encoder encodes dependency relations as token labels. The
