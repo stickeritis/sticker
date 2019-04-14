@@ -1,8 +1,10 @@
-use conllx::graph::{Node, Sentence};
-use failure::{format_err, Error};
+use std::hash::Hash;
+
+use conllx::graph::Sentence;
+use failure::Error;
 use tensorflow::Tensor;
 
-use crate::{Collector, Layer, LayerValue, Numberer, SentVectorizer};
+use crate::{Collector, Numberer, SentVectorizer, SentenceEncoder};
 
 pub struct CollectedTensors {
     pub sequence_lens: Vec<Tensor<i32>>,
@@ -10,10 +12,14 @@ pub struct CollectedTensors {
     pub labels: Vec<Tensor<i32>>,
 }
 
-pub struct TensorCollector {
-    numberer: Numberer<String>,
+pub struct TensorCollector<E>
+where
+    E: SentenceEncoder,
+    E::Encoding: Eq + Hash,
+{
+    encoder: E,
+    numberer: Numberer<E::Encoding>,
     vectorizer: SentVectorizer,
-    layer: Layer,
     batch_size: usize,
     sequence_lens: Vec<Tensor<i32>>,
     inputs: Vec<Tensor<f32>>,
@@ -22,16 +28,20 @@ pub struct TensorCollector {
     cur_inputs: Vec<Vec<f32>>,
 }
 
-impl TensorCollector {
+impl<E> TensorCollector<E>
+where
+    E: SentenceEncoder,
+    E::Encoding: Eq + Hash,
+{
     pub fn new(
         batch_size: usize,
-        layer: Layer,
-        numberer: Numberer<String>,
+        encoder: E,
+        numberer: Numberer<E::Encoding>,
         vectorizer: SentVectorizer,
     ) -> Self {
         TensorCollector {
             batch_size,
-            layer,
+            encoder,
             numberer,
             vectorizer,
             labels: Vec::new(),
@@ -91,7 +101,11 @@ impl TensorCollector {
     }
 }
 
-impl Collector for TensorCollector {
+impl<E> Collector for TensorCollector<E>
+where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+{
     fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
         if self.cur_labels.len() == self.batch_size {
             self.finalize_batch();
@@ -99,11 +113,9 @@ impl Collector for TensorCollector {
 
         let input = self.vectorizer.realize(sentence)?;
         let mut labels = Vec::with_capacity(sentence.len());
-        for token in sentence.iter().filter_map(Node::token) {
-            let label = token
-                .value(&self.layer)
-                .ok_or_else(|| format_err!("Token without a tag: {}", token.form()))?;
-            labels.push(self.numberer.add(label.to_owned()) as i32);
+
+        for encoding in self.encoder.encode(&sentence)? {
+            labels.push(self.numberer.add(encoding) as i32);
         }
 
         self.cur_inputs.push(input);

@@ -12,7 +12,7 @@ use stdinout::OrExit;
 use sticker::tensorflow::{
     CollectedTensors, LearningRateSchedule, Tagger, TaggerGraph, TensorCollector,
 };
-use sticker::{Collector, Numberer, SentVectorizer};
+use sticker::{Collector, LayerEncoder, Numberer, SentVectorizer};
 use sticker_utils::{CborRead, Config, FileProgress, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
@@ -202,12 +202,8 @@ where
         FileProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
     ));
 
-    let mut collector = TensorCollector::new(
-        config.model.batch_size,
-        config.labeler.layer.clone(),
-        labels,
-        vectorizer,
-    );
+    let encoder = LayerEncoder::new(config.labeler.layer.clone());
+    let mut collector = TensorCollector::new(config.model.batch_size, encoder, labels, vectorizer);
     for sentence in reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
         collector

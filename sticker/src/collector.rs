@@ -1,7 +1,9 @@
-use conllx::graph::{Node, Sentence};
-use failure::{format_err, Error};
+use std::hash::Hash;
 
-use crate::{Layer, LayerValue, Numberer, SentVectorizer};
+use conllx::graph::Sentence;
+use failure::Error;
+
+use crate::{Numberer, SentVectorizer, SentenceEncoder};
 
 /// Data types collects (and typically stores) vectorized sentences.
 pub trait Collector {
@@ -14,39 +16,48 @@ pub trait Collector {
 ///
 /// This collector can be used to construct lookup tables as a
 /// side-effect of vectorizing the input.
-pub struct NoopCollector {
-    layer: Layer,
-    numberer: Numberer<String>,
+pub struct NoopCollector<E>
+where
+    E: SentenceEncoder,
+    E::Encoding: Eq + Hash,
+{
+    encoder: E,
+    numberer: Numberer<E::Encoding>,
     vectorizer: SentVectorizer,
 }
 
-impl NoopCollector {
+impl<E> NoopCollector<E>
+where
+    E: SentenceEncoder,
+    E::Encoding: Eq + Hash,
+{
     pub fn new(
-        layer: Layer,
-        numberer: Numberer<String>,
+        encoder: E,
+        numberer: Numberer<E::Encoding>,
         vectorizer: SentVectorizer,
-    ) -> NoopCollector {
+    ) -> NoopCollector<E> {
         NoopCollector {
-            layer,
+            encoder,
             numberer,
             vectorizer,
         }
     }
 
-    pub fn labels(&self) -> &Numberer<String> {
+    pub fn labels(&self) -> &Numberer<E::Encoding> {
         &self.numberer
     }
 }
 
-impl Collector for NoopCollector {
+impl<E> Collector for NoopCollector<E>
+where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+{
     fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
         self.vectorizer.realize(sentence)?;
 
-        for token in sentence.iter().filter_map(Node::token) {
-            let label = token
-                .value(&self.layer)
-                .ok_or_else(|| format_err!("Token without a label: {}", token.form()))?;
-            self.numberer.add(label.to_owned());
+        for encoding in self.encoder.encode(sentence)? {
+            self.numberer.add(encoding);
         }
 
         Ok(())
