@@ -2,7 +2,7 @@ mod collector;
 pub use crate::collector::{Collector, NoopCollector};
 
 mod encoder;
-pub use crate::encoder::{LayerEncoder, SentenceEncoder};
+pub use crate::encoder::{LayerEncoder, SentenceDecoder, SentenceEncoder};
 
 mod input;
 pub use crate::input::{Embeddings, LayerEmbeddings, SentVectorizer};

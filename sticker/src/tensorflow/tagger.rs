@@ -1,5 +1,6 @@
 use std::borrow::Borrow;
 use std::cmp::min;
+use std::hash::Hash;
 use std::io::Read;
 use std::path::Path;
 
@@ -146,20 +147,26 @@ impl TaggerGraph {
     }
 }
 
-pub struct Tagger {
+pub struct Tagger<T>
+where
+    T: Eq + Hash,
+{
     graph: TaggerGraph,
-    labels: Numberer<String>,
+    labels: Numberer<T>,
     session: Session,
     vectorizer: SentVectorizer,
 }
 
-impl Tagger {
+impl<T> Tagger<T>
+where
+    T: Clone + Eq + Hash,
+{
     /// Create a new session with randomized weights.
     pub fn random_weights(
         graph: TaggerGraph,
-        labels: Numberer<String>,
+        labels: Numberer<T>,
         vectorizer: SentVectorizer,
-    ) -> Result<Tagger, Error> {
+    ) -> Result<Tagger<T>, Error> {
         // Initialize parameters.
         let mut args = SessionRunArgs::new();
         args.add_target(&graph.init_op);
@@ -182,10 +189,10 @@ impl Tagger {
     /// the file specified in `parameters_path`.
     pub fn load_weights<P>(
         graph: TaggerGraph,
-        labels: Numberer<String>,
+        labels: Numberer<T>,
         vectorizer: SentVectorizer,
         parameters_path: P,
-    ) -> Result<Tagger, Error>
+    ) -> Result<Tagger<T>, Error>
     where
         P: AsRef<Path>,
     {
@@ -231,7 +238,7 @@ impl Tagger {
         self.session.run(&mut args).map_err(status_to_error)
     }
 
-    fn tag_sentences_(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
+    fn tag_sentences_(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
         // Find maximum sentence size.
         let max_seq_len = sentences
             .iter()
@@ -268,7 +275,7 @@ impl Tagger {
 
             labels.push(
                 seq.iter()
-                    .map(|&label| self.labels.value(label as usize).unwrap().as_str())
+                    .map(|&label| self.labels.value(label as usize).unwrap())
                     .collect(),
             );
         }
@@ -363,8 +370,11 @@ impl Tagger {
     }
 }
 
-impl Tag for Tagger where {
-    fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&str>>, Error> {
+impl<T> Tag<T> for Tagger<T>
+where
+    T: Clone + Eq + Hash,
+{
+    fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
         self.tag_sentences_(sentences)
     }
 }

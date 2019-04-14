@@ -13,7 +13,7 @@ use stdinout::OrExit;
 use threadpool::ThreadPool;
 
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{Numberer, SentVectorizer};
+use sticker::{LayerEncoder, Numberer, SentVectorizer};
 use sticker_utils::{CborRead, Config, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
@@ -110,7 +110,7 @@ fn main() {
     }
 }
 
-fn handle_client(config: Config, tagger: Arc<Tagger>, mut stream: TcpStream) {
+fn handle_client(config: Config, tagger: Arc<Tagger<String>>, mut stream: TcpStream) {
     let peer_addr = stream
         .peer_addr()
         .map(|addr| addr.to_string())
@@ -128,8 +128,9 @@ fn handle_client(config: Config, tagger: Arc<Tagger>, mut stream: TcpStream) {
     let reader = Reader::new(BufReader::new(&conllx_stream));
     let writer = Writer::new(BufWriter::new(&conllx_stream));
 
+    let decoder = LayerEncoder::new(config.labeler.layer.clone());
     let mut sent_proc = SentProcessor::new(
-        config.labeler.layer.clone(),
+        decoder,
         &*tagger,
         writer,
         config.model.batch_size,

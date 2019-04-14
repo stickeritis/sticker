@@ -10,7 +10,7 @@ use getopts::Options;
 use stdinout::{Input, OrExit, Output};
 
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{Numberer, SentVectorizer};
+use sticker::{LayerEncoder, Numberer, SentVectorizer};
 use sticker_utils::{CborRead, Config, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
@@ -78,8 +78,9 @@ fn main() {
     let tagger = Tagger::load_weights(graph, labels, vectorizer, config.model.parameters)
         .or_exit("Cannot construct tagger", 1);
 
+    let decoder = LayerEncoder::new(config.labeler.layer.clone());
     let mut sent_proc = SentProcessor::new(
-        config.labeler.layer.clone(),
+        decoder,
         &tagger,
         writer,
         config.model.batch_size,
