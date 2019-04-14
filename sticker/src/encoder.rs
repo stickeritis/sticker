@@ -1,7 +1,21 @@
+use std::borrow::Borrow;
+
 use conllx::graph::{Node, Sentence};
 use failure::{format_err, Error};
 
 use crate::{Layer, LayerValue};
+
+/// Trait for sentence encoders.
+///
+/// A sentence encodes a representation of each token in a sentence,
+/// such as a part-of-speech tag or a topological field.
+pub trait SentenceDecoder {
+    type Encoding;
+
+    fn decode<E>(&self, labels: &[E], sentence: &mut Sentence) -> Result<(), Error>
+    where
+        E: Borrow<Self::Encoding>;
+}
 
 /// Trait for sentence encoders.
 ///
@@ -23,6 +37,31 @@ impl LayerEncoder {
     /// Construct a new layer encoder of the given layer.
     pub fn new(layer: Layer) -> Self {
         LayerEncoder { layer }
+    }
+}
+
+impl SentenceDecoder for LayerEncoder {
+    type Encoding = String;
+
+    fn decode<E>(&self, labels: &[E], sentence: &mut Sentence) -> Result<(), Error>
+    where
+        E: Borrow<Self::Encoding>,
+    {
+        assert_eq!(
+            labels.len(),
+            sentence.len() - 1,
+            "Labels and sentence length mismatch"
+        );
+
+        for (token, label) in sentence
+            .iter_mut()
+            .filter_map(Node::token_mut)
+            .zip(labels.iter())
+        {
+            token.set_value(&self.layer, label.borrow().as_str());
+        }
+
+        Ok(())
     }
 }
 

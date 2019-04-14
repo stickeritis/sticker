@@ -1,18 +1,19 @@
 use std::io::Write;
 
-use conllx::graph::{Node, Sentence};
+use conllx::graph::Sentence;
 use conllx::io::{WriteSentence, Writer};
 use failure::Error;
-use sticker::{Layer, LayerValue, Tag};
+use sticker::{SentenceDecoder, Tag};
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.
-pub struct SentProcessor<'a, T, W>
+pub struct SentProcessor<'a, D, T, W>
 where
-    T: Tag,
+    D: SentenceDecoder,
+    T: Tag<D::Encoding>,
     W: Write,
 {
-    layer: Layer,
+    decoder: D,
     tagger: &'a T,
     writer: Writer<W>,
     batch_size: usize,
@@ -20,13 +21,14 @@ where
     buffer: Vec<Sentence>,
 }
 
-impl<'a, T, W> SentProcessor<'a, T, W>
+impl<'a, D, T, W> SentProcessor<'a, D, T, W>
 where
-    T: Tag,
+    D: SentenceDecoder,
+    T: Tag<D::Encoding>,
     W: Write,
 {
     pub fn new(
-        layer: Layer,
+        decoder: D,
         tagger: &'a T,
         writer: Writer<W>,
         batch_size: usize,
@@ -36,7 +38,7 @@ where
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
         SentProcessor {
-            layer,
+            decoder,
             tagger,
             writer,
             batch_size,
@@ -62,8 +64,7 @@ where
 
         // Split in batches, tag, and merge results.
         for batch in sent_refs.chunks_mut(self.batch_size) {
-            let labels = labels_to_owned(self.tagger.tag_sentences(batch)?);
-            Self::merge_labels(&self.layer, batch, labels)?;
+            Self::merge_labels(&self.decoder, batch, self.tagger.tag_sentences(batch)?)?;
         }
 
         // Write out sentences.
@@ -77,22 +78,17 @@ where
     }
 
     fn merge_labels(
-        layer: &Layer,
+        decoder: &D,
         sentences: &mut [&mut Sentence],
-        labels: Vec<Vec<String>>,
+        labels: Vec<Vec<&D::Encoding>>,
     ) -> Result<(), Error>
     where
+        D: SentenceDecoder,
         W: Write,
     {
         for (sentence, sent_labels) in sentences.iter_mut().zip(labels) {
             {
-                for (token, label) in sentence
-                    .iter_mut()
-                    .filter_map(Node::token_mut)
-                    .zip(sent_labels)
-                {
-                    token.set_value(layer, label);
-                }
+                decoder.decode(sent_labels.as_slice(), sentence)?;
             }
         }
 
@@ -100,9 +96,10 @@ where
     }
 }
 
-impl<'a, T, W> Drop for SentProcessor<'a, T, W>
+impl<'a, D, T, W> Drop for SentProcessor<'a, D, T, W>
 where
-    T: Tag,
+    D: SentenceDecoder,
+    T: Tag<D::Encoding>,
     W: Write,
 {
     fn drop(&mut self) {
@@ -112,11 +109,4 @@ where
             }
         }
     }
-}
-
-fn labels_to_owned(labels: Vec<Vec<&str>>) -> Vec<Vec<String>> {
-    labels
-        .into_iter()
-        .map(|sv| sv.into_iter().map(str::to_owned).collect())
-        .collect()
 }

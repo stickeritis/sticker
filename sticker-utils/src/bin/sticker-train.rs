@@ -130,7 +130,7 @@ fn train_model(
 }
 
 fn run_epoch(
-    tagger: &Tagger,
+    tagger: &Tagger<String>,
     tensors: &CollectedTensors,
     is_training: bool,
     lr: f32,
