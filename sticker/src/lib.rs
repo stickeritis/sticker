@@ -1,6 +1,9 @@
 mod collector;
 pub use crate::collector::{Collector, NoopCollector};
 
+mod encoder;
+pub use crate::encoder::{LayerEncoder, SentenceEncoder};
+
 mod input;
 pub use crate::input::{Embeddings, LayerEmbeddings, SentVectorizer};
 

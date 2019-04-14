@@ -9,7 +9,7 @@ use getopts::Options;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
 
-use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
+use sticker::{Collector, Embeddings, LayerEncoder, NoopCollector, Numberer, SentVectorizer};
 use sticker_utils::{CborWrite, Config, TomlRead};
 
 /// Ad-hoc shapes structure, which can be used to construct the
@@ -71,7 +71,8 @@ fn main() {
         .or_exit("Cannot load embeddings", 1);
     let vectorizer = SentVectorizer::new(embeddings);
 
-    let mut collector = NoopCollector::new(config.labeler.layer.clone(), labels, vectorizer);
+    let encoder = LayerEncoder::new(config.labeler.layer.clone());
+    let mut collector = NoopCollector::new(encoder, labels, vectorizer);
 
     for sentence in treebank_reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
