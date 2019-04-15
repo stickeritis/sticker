@@ -85,6 +85,11 @@ if __name__ == '__main__':
         help="number of dilated convolution levels",
         default=7)
     parser.add_argument(
+        "--rnn_layers",
+        type=int,
+        help="stacked RNN layers",
+        default=1)
+    parser.add_argument(
         '--type',
         metavar='MODEL_TYPE',
         type=str,
@@ -101,9 +106,10 @@ if __name__ == '__main__':
     config.keep_prob_input = args.keep_prob_input
     config.kernel_size = args.kernel_size
     config.n_levels = args.levels
+    config.rnn_layers = args.rnn_layers
 
     if args.type == 'rnn':
-        print("Model: rnn, gru: %r, crf: %r" % (config.gru, config.crf))
+        print("Model: rnn, gru: %r, crf: %r, layers: %d" % (config.gru, config.crf, config.rnn_layers))
         model = RNNModel
     elif args.type == 'conv':
         model = ConvModel
