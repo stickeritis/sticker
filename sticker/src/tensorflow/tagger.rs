@@ -2,10 +2,12 @@ use std::borrow::Borrow;
 use std::cmp::min;
 use std::hash::Hash;
 use std::io::Read;
+use std::iter::FromIterator;
 use std::path::Path;
 
 use conllx::graph::Sentence;
 use failure::{err_msg, format_err, Error};
+use itertools::Itertools;
 use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
 use tensorflow::{
@@ -59,6 +61,7 @@ pub struct OpNames {
     pub accuracy_op: String,
     pub labels_op: String,
     pub predicted_op: String,
+    pub top_k_predicted_op: String,
 
     pub train_op: String,
 }
@@ -80,6 +83,7 @@ pub struct TaggerGraph {
     accuracy_op: Operation,
     labels_op: Operation,
     predicted_op: Operation,
+    top_k_predicted_op: Operation,
 
     train_op: Operation,
 }
@@ -115,6 +119,7 @@ impl TaggerGraph {
         let accuracy_op = Self::add_op(&graph, &op_names.accuracy_op)?;
         let labels_op = Self::add_op(&graph, &op_names.labels_op)?;
         let predicted_op = Self::add_op(&graph, &op_names.predicted_op)?;
+        let top_k_predicted_op = Self::add_op(&graph, &op_names.top_k_predicted_op)?;
 
         let train_op = Self::add_op(&graph, &op_names.train_op)?;
 
@@ -135,6 +140,7 @@ impl TaggerGraph {
             accuracy_op,
             labels_op,
             predicted_op,
+            top_k_predicted_op,
 
             train_op,
         })
@@ -238,7 +244,18 @@ where
         self.session.run(&mut args).map_err(status_to_error)
     }
 
-    fn tag_sentences_(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
+    fn input_dims(&self) -> usize {
+        self.vectorizer.layer_embeddings().token_embeddings().dims()
+            + self
+                .vectorizer
+                .layer_embeddings()
+                .tag_embeddings()
+                .as_ref()
+                .map(|e| e.dims())
+                .unwrap_or_default()
+    }
+
+    fn prepare_batch(&self, sentences: &[impl Borrow<Sentence>]) -> Result<TensorBuilder, Error> {
         // Find maximum sentence size.
         let max_seq_len = sentences
             .iter()
@@ -246,14 +263,7 @@ where
             .max()
             .unwrap_or(0);
 
-        let inputs_dims = self.vectorizer.layer_embeddings().token_embeddings().dims()
-            + self
-                .vectorizer
-                .layer_embeddings()
-                .tag_embeddings()
-                .as_ref()
-                .map(|e| e.dims())
-                .unwrap_or_default();
+        let inputs_dims = self.input_dims();
 
         let mut builder = TensorBuilder::new(sentences.len(), max_seq_len, inputs_dims);
 
@@ -263,10 +273,21 @@ where
             builder.add(&input);
         }
 
+        Ok(builder)
+    }
+
+    fn tag_sentences_(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
+        let builder = self.prepare_batch(sentences)?;
+
         // Tag the batch
-        let tag_tensor = self.tag_sequences(builder.seq_lens(), builder.inputs())?;
+        let tag_tensor = self.tag_sequences(
+            builder.seq_lens(),
+            builder.inputs(),
+            &self.graph.predicted_op,
+        )?;
 
         // Convert label numbers to labels.
+        let max_seq_len = tag_tensor.dims()[1] as usize;
         let mut labels = Vec::new();
         for (idx, sentence) in sentences.iter().enumerate() {
             let seq_len = min(max_seq_len, sentence.borrow().len());
@@ -283,10 +304,46 @@ where
         Ok(labels)
     }
 
+    fn tag_sentences_top_k_(
+        &self,
+        sentences: &[impl Borrow<Sentence>],
+    ) -> Result<Vec<Vec<Vec<&T>>>, Error> {
+        let builder = self.prepare_batch(sentences)?;
+
+        // Tag the batch
+        let tag_tensor = self.tag_sequences(
+            builder.seq_lens(),
+            builder.inputs(),
+            &self.graph.top_k_predicted_op,
+        )?;
+
+        // Convert label numbers to labels.
+        let max_seq_len = tag_tensor.dims()[1] as usize;
+        let k = tag_tensor.dims()[2] as usize;
+        let mut labels = Vec::new();
+        for (idx, sentence) in sentences.iter().enumerate() {
+            let seq_len = min(max_seq_len, sentence.borrow().len());
+            let offset = idx * max_seq_len * k;
+            let seq = &tag_tensor[offset..offset + seq_len * k];
+
+            labels.push(
+                seq.iter()
+                    .chunks(k)
+                    .into_iter()
+                    .map(|c| c.map(|&label| self.labels.value(label as usize).unwrap()))
+                    .map(Vec::from_iter)
+                    .collect(),
+            );
+        }
+
+        Ok(labels)
+    }
+
     fn tag_sequences(
         &self,
         seq_lens: &Tensor<i32>,
         inputs: &Tensor<f32>,
+        predicted_op: &Operation,
     ) -> Result<Tensor<i32>, Error> {
         let mut is_training = Tensor::new(&[]);
         is_training[0] = false;
@@ -299,7 +356,7 @@ where
         args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
         args.add_feed(&self.graph.inputs_op, 0, inputs);
 
-        let predictions_token = args.request_fetch(&self.graph.predicted_op, 0);
+        let predictions_token = args.request_fetch(predicted_op, 0);
 
         self.session.run(&mut args).map_err(status_to_error)?;
 
@@ -376,6 +433,13 @@ where
 {
     fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
         self.tag_sentences_(sentences)
+    }
+
+    fn tag_sentences_top_k(
+        &self,
+        sentences: &[impl Borrow<Sentence>],
+    ) -> Result<Vec<Vec<Vec<&T>>>, Error> {
+        self.tag_sentences_top_k_(sentences)
     }
 }
 

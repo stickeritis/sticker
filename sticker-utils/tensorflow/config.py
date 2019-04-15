@@ -11,6 +11,7 @@ class DefaultConfig:
     kernel_size = 3
     n_levels = 7
     rnn_layers = 1
+    top_k = 3
 
 
 def path_relative_to_conf(conf_path, file_path):

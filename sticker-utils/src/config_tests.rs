@@ -43,6 +43,7 @@ lazy_static! {
                 inputs_op: "prediction/model/inputs".to_owned(),
                 seq_lens_op: "prediction/model/seq_lens".to_owned(),
                 predicted_op: "prediction/model/predicted".to_owned(),
+                top_k_predicted_op: "prediction/model/top_k_predicted".to_owned(),
                 accuracy_op: "prediction/model/accuracy".to_owned(),
                 loss_op: "prediction/model/loss".to_owned(),
                 lr_op: "prediction/model/lr".to_owned(),

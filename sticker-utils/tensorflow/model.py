@@ -68,6 +68,15 @@ class Model:
         # Exclusion of padding shifts all classes by one.
         return tf.add(best_label, 1, name="%s_predictions" % prefix)
 
+    def top_k_predictions(self, prefix, logits, k):
+        # Get the best label, excluding padding.
+        (_, best_labels) = tf.math.top_k(
+            logits[:, :, 1:],
+            k=k)
+
+        # Exclusion of padding shifts all classes by one.
+        return tf.add(best_labels, 1, name="%s_top_k_predictions" % prefix)
+
     def setup_placeholders(self):
         self._is_training = tf.placeholder(tf.bool, [], "is_training")
 

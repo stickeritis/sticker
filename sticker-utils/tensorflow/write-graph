@@ -90,6 +90,11 @@ if __name__ == '__main__':
         help="stacked RNN layers",
         default=1)
     parser.add_argument(
+        "--top_k",
+        type=int,
+        help="number of predictions to return",
+        default=3)
+    parser.add_argument(
         '--type',
         metavar='MODEL_TYPE',
         type=str,
@@ -107,6 +112,7 @@ if __name__ == '__main__':
     config.kernel_size = args.kernel_size
     config.n_levels = args.levels
     config.rnn_layers = args.rnn_layers
+    config.top_k = args.top_k
 
     if args.type == 'rnn':
         print("Model: rnn, gru: %r, crf: %r, layers: %d" % (config.gru, config.crf, config.rnn_layers))
