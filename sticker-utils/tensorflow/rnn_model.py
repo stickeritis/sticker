@@ -74,7 +74,7 @@ class RNNModel(Model):
         (fstates, bstates), _ = rnn_layers(
             self.is_training,
             inputs,
-            num_layers=1,
+            num_layers=config.rnn_layers,
             output_size=config.hidden_size,
             output_dropout=config.keep_prob,
             state_dropout=config.keep_prob,
