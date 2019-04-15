@@ -195,6 +195,7 @@ class ConvModel(Model):
             loss = self.masked_softmax_loss(
                 "tag", logits, self.tags, self.mask)
             predictions = self.predictions("tag", logits)
+            self.top_k_predictions("tag", logits, config.top_k)
 
         self.accuracy("tag", predictions, self.tags)
 

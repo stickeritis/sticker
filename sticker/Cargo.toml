@@ -8,6 +8,7 @@ authors = ["Daniël de Kok <me@danieldk.eu>"]
 conllx = "0.11"
 failure = "0.1"
 finalfusion = "0.5"
+itertools = "0.8"
 ndarray = "0.12"
 protobuf = "1"
 serde = "1"
