@@ -5,16 +5,33 @@ use failure::{format_err, Error};
 
 use crate::{Layer, LayerValue};
 
-/// Trait for sentence encoders.
+/// Trait for sentence decoders.
 ///
-/// A sentence encodes a representation of each token in a sentence,
-/// such as a part-of-speech tag or a topological field.
+/// A sentence decoder adds a representation to each token in a
+/// sentence, such as a part-of-speech tag or a topological field.
 pub trait SentenceDecoder {
     type Encoding;
 
     fn decode<E>(&self, labels: &[E], sentence: &mut Sentence) -> Result<(), Error>
     where
         E: Borrow<Self::Encoding>;
+}
+
+/// Trait for top-k sentence decoders.
+///
+/// A sentence decoder adds a representation to each token in a
+/// sentence, such as a part-of-speech tag or a topological field.
+///
+/// In contrast to a `SentenceDecoder`, a `SentenceTopKDecoder`
+/// is provided with multiple possible encodings. When an encoding
+/// is not applicable, the decoder can try the next encoding.
+pub trait SentenceTopKDecoder {
+    type Encoding;
+
+    fn decode_top_k<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    where
+        E: Borrow<Self::Encoding>,
+        S: AsRef<[E]>;
 }
 
 /// Trait for sentence encoders.
