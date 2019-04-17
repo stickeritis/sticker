@@ -1,5 +1,6 @@
 use std::env::args;
 use std::fs::File;
+use std::hash::Hash;
 use std::io::BufReader;
 use std::path::Path;
 use std::process;
@@ -9,11 +10,12 @@ use failure::Error;
 use getopts::Options;
 use indicatif::{ProgressBar, ProgressStyle};
 use stdinout::OrExit;
+use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{
     CollectedTensors, LearningRateSchedule, Tagger, TaggerGraph, TensorCollector,
 };
-use sticker::{Collector, LayerEncoder, Numberer, SentVectorizer};
-use sticker_utils::{CborRead, Config, FileProgress, TomlRead};
+use sticker::{Collector, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
+use sticker_utils::{CborRead, Config, EncoderType, FileProgress, LabelerType, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!(
@@ -56,16 +58,39 @@ fn main() {
     eprintln!("Vectorizing validation instances...");
     let validation_tensors = collect_tensors(&config, &matches.free[2]);
 
-    train_model(&config, train_tensors, validation_tensors)
-        .or_exit("Error while training model", 1);
+    match config.labeler.labeler_type {
+        LabelerType::Sequence(_) => {
+            train_model_with_encoder::<LayerEncoder>(&config, train_tensors, validation_tensors)
+        }
+        LabelerType::Parser(EncoderType::RelativePOS) => {
+            train_model_with_encoder::<RelativePOSEncoder>(
+                &config,
+                train_tensors,
+                validation_tensors,
+            )
+        }
+        LabelerType::Parser(EncoderType::RelativePosition) => {
+            train_model_with_encoder::<RelativePositionEncoder>(
+                &config,
+                train_tensors,
+                validation_tensors,
+            )
+        }
+    }
+    .or_exit("Error while training model", 1);
 }
 
-fn train_model(
+fn train_model_with_encoder<E>(
     config: &Config,
     train_tensors: CollectedTensors,
     validation_tensors: CollectedTensors,
-) -> Result<(), Error> {
-    let labels = load_labels(&config).or_exit(
+) -> Result<(), Error>
+where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+    Numberer<E::Encoding>: CborRead,
+{
+    let labels: Numberer<E::Encoding> = config.labeler.load_labels().or_exit(
         format!(
             "Cannot load or create label file '{}'",
             config.labeler.labels
@@ -129,12 +154,15 @@ fn train_model(
     Ok(())
 }
 
-fn run_epoch(
-    tagger: &Tagger<String>,
+fn run_epoch<E>(
+    tagger: &Tagger<E>,
     tensors: &CollectedTensors,
     is_training: bool,
     lr: f32,
-) -> (f32, f32) {
+) -> (f32, f32)
+where
+    E: Clone + Eq + Hash,
+{
     let epoch_type = if is_training { "train" } else { "validation" };
 
     let mut instances = 0;
@@ -177,19 +205,44 @@ fn collect_tensors<P>(config: &Config, path: P) -> CollectedTensors
 where
     P: AsRef<Path>,
 {
-    let labels = load_labels(&config).or_exit(
+    let embeddings = config
+        .embeddings
+        .load_embeddings()
+        .or_exit("Cannot load embeddings", 1);
+    let vectorizer = SentVectorizer::new(embeddings);
+
+    match config.labeler.labeler_type {
+        LabelerType::Sequence(ref layer) => {
+            collect_tensors_with_encoder(config, vectorizer, LayerEncoder::new(layer.clone()), path)
+        }
+        LabelerType::Parser(EncoderType::RelativePOS) => {
+            collect_tensors_with_encoder(config, vectorizer, RelativePOSEncoder, path)
+        }
+        LabelerType::Parser(EncoderType::RelativePosition) => {
+            collect_tensors_with_encoder(config, vectorizer, RelativePositionEncoder, path)
+        }
+    }
+}
+
+fn collect_tensors_with_encoder<E, P>(
+    config: &Config,
+    vectorizer: SentVectorizer,
+    encoder: E,
+    path: P,
+) -> CollectedTensors
+where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+    Numberer<E::Encoding>: CborRead,
+    P: AsRef<Path>,
+{
+    let labels = config.labeler.load_labels().or_exit(
         format!(
             "Cannot load or create label file '{}'",
             config.labeler.labels
         ),
         1,
     );
-
-    let embeddings = config
-        .embeddings
-        .load_embeddings()
-        .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings);
 
     let input_file = File::open(path.as_ref()).or_exit(
         format!(
@@ -202,7 +255,6 @@ where
         FileProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
     ));
 
-    let encoder = LayerEncoder::new(config.labeler.layer.clone());
     let mut collector = TensorCollector::new(config.model.batch_size, encoder, labels, vectorizer);
     for sentence in reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
@@ -212,15 +264,4 @@ where
     }
 
     collector.into_parts()
-}
-
-fn load_labels(config: &Config) -> Result<Numberer<String>, Error> {
-    let labels_path = Path::new(&config.labeler.labels);
-
-    eprintln!("Loading labels from: {:?}", labels_path);
-
-    let f = File::open(labels_path)?;
-    let system = Numberer::from_cbor_read(f)?;
-
-    Ok(system)
 }

@@ -1,5 +1,7 @@
 mod config;
-pub use crate::config::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, Train};
+pub use crate::config::{
+    Config, Embedding, EmbeddingAlloc, Embeddings, EncoderType, Labeler, LabelerType, Train,
+};
 
 mod progress;
 pub use crate::progress::FileProgress;

@@ -1,17 +1,17 @@
 use std::env::args;
 use std::fs::File;
+use std::hash::Hash;
 use std::io::BufWriter;
-use std::path::Path;
 use std::process;
 
-use conllx::io::{ReadSentence, Reader, Writer};
-use failure::Error;
+use conllx::io::{ReadSentence, Reader, WriteSentence, Writer};
 use getopts::Options;
 use stdinout::{Input, OrExit, Output};
 
+use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{LayerEncoder, Numberer, SentVectorizer};
-use sticker_utils::{CborRead, Config, SentProcessor, TomlRead};
+use sticker::{LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
+use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options] CONFIG [INPUT] [OUTPUT]", program);
@@ -54,11 +54,6 @@ fn main() {
         output.write().or_exit("Cannot open output for writing", 1),
     ));
 
-    let labels = load_labels(&config).or_exit(
-        format!("Cannot load label file '{}'", config.labeler.labels),
-        1,
-    );
-
     let embeddings = config
         .embeddings
         .load_embeddings()
@@ -75,30 +70,68 @@ fn main() {
     let graph = TaggerGraph::load_graph(graph_reader, &config.model)
         .or_exit("Cannot load computation graph", 1);
 
-    let tagger = Tagger::load_weights(graph, labels, vectorizer, config.model.parameters)
+    match config.labeler.labeler_type {
+        LabelerType::Sequence(ref layer) => process_with_decoder(
+            &config,
+            vectorizer,
+            graph,
+            LayerEncoder::new(layer.clone()),
+            reader,
+            writer,
+        ),
+        LabelerType::Parser(EncoderType::RelativePOS) => process_with_decoder(
+            &config,
+            vectorizer,
+            graph,
+            RelativePOSEncoder,
+            reader,
+            writer,
+        ),
+        LabelerType::Parser(EncoderType::RelativePosition) => process_with_decoder(
+            &config,
+            vectorizer,
+            graph,
+            RelativePositionEncoder,
+            reader,
+            writer,
+        ),
+    };
+}
+
+fn process_with_decoder<D, R, W>(
+    config: &Config,
+    vectorizer: SentVectorizer,
+    graph: TaggerGraph,
+    decoder: D,
+    read: R,
+    write: W,
+) where
+    D: SentenceDecoder,
+    D::Encoding: Clone + Eq + Hash,
+    Numberer<D::Encoding>: CborRead,
+    R: ReadSentence,
+    W: WriteSentence,
+{
+    let labels = config.labeler.load_labels().or_exit(
+        format!("Cannot load label file '{}'", config.labeler.labels),
+        1,
+    );
+
+    let tagger = Tagger::load_weights(graph, labels, vectorizer, &config.model.parameters)
         .or_exit("Cannot construct tagger", 1);
 
-    let decoder = LayerEncoder::new(config.labeler.layer.clone());
     let mut sent_proc = SentProcessor::new(
         decoder,
         &tagger,
-        writer,
+        write,
         config.model.batch_size,
         config.labeler.read_ahead,
     );
 
-    for sentence in reader.sentences() {
+    for sentence in read.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
         sent_proc
             .process(sentence)
             .or_exit("Error processing sentence", 1);
     }
-}
-fn load_labels(config: &Config) -> Result<Numberer<String>, Error> {
-    let labels_path = Path::new(&config.labeler.labels);
-
-    eprintln!("Loading labels from: {:?}", labels_path);
-
-    let f = File::open(labels_path)?;
-    Numberer::from_cbor_read(f)
 }

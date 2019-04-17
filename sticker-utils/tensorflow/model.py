@@ -56,7 +56,10 @@ class Model:
     def crf_predictions(self, prefix, logits, transitions):
         predictions, _ = tf.contrib.crf.crf_decode(
             logits, transitions, self.seq_lens)
-        return tf.identity(predictions, name="%s_predictions" % prefix)
+        top_k_predictions = tf.expand_dims(predictions, 2)
+        return predictions, tf.identity(
+            top_k_predictions, name="%s_top_k_predictions" %
+            prefix)
 
     def predictions(self, prefix, logits):
         # Get the best label, excluding padding.
