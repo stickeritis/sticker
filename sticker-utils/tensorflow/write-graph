@@ -88,7 +88,7 @@ if __name__ == '__main__':
         "--rnn_layers",
         type=int,
         help="stacked RNN layers",
-        default=1)
+        default=2)
     parser.add_argument(
         "--top_k",
         type=int,

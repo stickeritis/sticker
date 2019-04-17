@@ -15,7 +15,7 @@ def dropout_wrapper(cell, is_training, keep_prob):
         cell, output_keep_prob=keep_prob)
 
 
-def rnn_layers(
+def bidi_rnn_layers(
         is_training,
         inputs,
         num_layers=1,
@@ -23,35 +23,25 @@ def rnn_layers(
         output_dropout=1,
         state_dropout=1,
         seq_lens=None,
-        bidirectional=False,
         gru=False):
     if gru:
         cell = tf.nn.rnn_cell.GRUCell
     else:
         cell = tf.contrib.rnn.BasicLSTMCell
 
-    forward_cell = cell(output_size)
-    forward_cell = dropout_wrapper(
-        cell=forward_cell,
+    fw_cells = [dropout_wrapper(
+        cell=cell(output_size),
         is_training=is_training,
-        keep_prob=output_dropout)
+        keep_prob=output_dropout) for i in range(num_layers)]
 
-    if not bidirectional:
-        return tf.nn.dynamic_rnn(
-            forward_cell,
-            inputs,
-            dtype=tf.float32,
-            sequence_length=seq_lens)
-
-    backward_cell = cell(output_size)
-    backward_cell = dropout_wrapper(
-        cell=backward_cell,
+    bw_cells = [dropout_wrapper(
+        cell=cell(output_size),
         is_training=is_training,
-        keep_prob=output_dropout)
+        keep_prob=output_dropout) for i in range(num_layers)]
 
-    return tf.nn.bidirectional_dynamic_rnn(
-        forward_cell,
-        backward_cell,
+    return tf.contrib.rnn.stack_bidirectional_dynamic_rnn(
+        fw_cells,
+        bw_cells,
         inputs,
         dtype=tf.float32,
         sequence_length=seq_lens)
@@ -71,7 +61,7 @@ class RNNModel(Model):
             keep_prob=config.keep_prob_input,
             is_training=self.is_training)
 
-        (fstates, bstates), _ = rnn_layers(
+        hidden_states, _, _ = bidi_rnn_layers(
             self.is_training,
             inputs,
             num_layers=config.rnn_layers,
@@ -79,13 +69,7 @@ class RNNModel(Model):
             output_dropout=config.keep_prob,
             state_dropout=config.keep_prob,
             seq_lens=self._seq_lens,
-            bidirectional=True,
             gru=config.gru)
-        hidden_states = tf.concat([fstates, bstates], axis=2)
-
-        hidden_states, _ = rnn_layers(self.is_training, hidden_states, num_layers=1, output_size=config.hidden_size,
-                                      output_dropout=config.keep_prob,
-                                      state_dropout=config.keep_prob, seq_lens=self._seq_lens, gru=config.gru)
 
         hidden_states = batch_norm(
             hidden_states,
@@ -107,7 +91,6 @@ class RNNModel(Model):
                 "tag", logits, self.tags, self.mask)
             predictions = self.predictions("tag", logits)
             self.top_k_predictions("tag", logits, config.top_k)
-
 
         self.accuracy("tag", predictions, self.tags)
 
