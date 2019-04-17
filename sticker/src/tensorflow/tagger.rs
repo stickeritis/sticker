@@ -60,7 +60,6 @@ pub struct OpNames {
     pub loss_op: String,
     pub accuracy_op: String,
     pub labels_op: String,
-    pub predicted_op: String,
     pub top_k_predicted_op: String,
 
     pub train_op: String,
@@ -82,7 +81,6 @@ pub struct TaggerGraph {
     loss_op: Operation,
     accuracy_op: Operation,
     labels_op: Operation,
-    predicted_op: Operation,
     top_k_predicted_op: Operation,
 
     train_op: Operation,
@@ -118,7 +116,6 @@ impl TaggerGraph {
         let loss_op = Self::add_op(&graph, &op_names.loss_op)?;
         let accuracy_op = Self::add_op(&graph, &op_names.accuracy_op)?;
         let labels_op = Self::add_op(&graph, &op_names.labels_op)?;
-        let predicted_op = Self::add_op(&graph, &op_names.predicted_op)?;
         let top_k_predicted_op = Self::add_op(&graph, &op_names.top_k_predicted_op)?;
 
         let train_op = Self::add_op(&graph, &op_names.train_op)?;
@@ -139,7 +136,6 @@ impl TaggerGraph {
             loss_op,
             accuracy_op,
             labels_op,
-            predicted_op,
             top_k_predicted_op,
 
             train_op,
@@ -276,35 +272,7 @@ where
         Ok(builder)
     }
 
-    fn tag_sentences_(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
-        let builder = self.prepare_batch(sentences)?;
-
-        // Tag the batch
-        let tag_tensor = self.tag_sequences(
-            builder.seq_lens(),
-            builder.inputs(),
-            &self.graph.predicted_op,
-        )?;
-
-        // Convert label numbers to labels.
-        let max_seq_len = tag_tensor.dims()[1] as usize;
-        let mut labels = Vec::new();
-        for (idx, sentence) in sentences.iter().enumerate() {
-            let seq_len = min(max_seq_len, sentence.borrow().len());
-            let offset = idx * max_seq_len;
-            let seq = &tag_tensor[offset..offset + seq_len];
-
-            labels.push(
-                seq.iter()
-                    .map(|&label| self.labels.value(label as usize).unwrap())
-                    .collect(),
-            );
-        }
-
-        Ok(labels)
-    }
-
-    fn tag_sentences_top_k_(
+    fn tag_sentences_(
         &self,
         sentences: &[impl Borrow<Sentence>],
     ) -> Result<Vec<Vec<Vec<&T>>>, Error> {
@@ -431,15 +399,12 @@ impl<T> Tag<T> for Tagger<T>
 where
     T: Clone + Eq + Hash,
 {
-    fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error> {
-        self.tag_sentences_(sentences)
-    }
-
-    fn tag_sentences_top_k(
+    /// Tag sentences, returning the top-k results for every token.
+    fn tag_sentences(
         &self,
         sentences: &[impl Borrow<Sentence>],
     ) -> Result<Vec<Vec<Vec<&T>>>, Error> {
-        self.tag_sentences_top_k_(sentences)
+        self.tag_sentences_(sentences)
     }
 }
 

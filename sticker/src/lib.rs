@@ -2,7 +2,7 @@ mod collector;
 pub use crate::collector::{Collector, NoopCollector};
 
 mod encoder;
-pub use crate::encoder::{LayerEncoder, SentenceDecoder, SentenceEncoder, SentenceTopKDecoder};
+pub use crate::encoder::{LayerEncoder, SentenceDecoder, SentenceEncoder};
 
 pub mod depparse;
 

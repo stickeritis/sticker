@@ -1,20 +1,20 @@
 use std::env::args;
 use std::fs::File;
+use std::hash::Hash;
 use std::io::{BufReader, BufWriter, Write};
 use std::net::{TcpListener, TcpStream};
-use std::path::Path;
 use std::process;
 use std::sync::Arc;
 
 use conllx::io::{ReadSentence, Reader, Writer};
-use failure::Error;
 use getopts::Options;
 use stdinout::OrExit;
 use threadpool::ThreadPool;
 
+use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{LayerEncoder, Numberer, SentVectorizer};
-use sticker_utils::{CborRead, Config, SentProcessor, TomlRead};
+use sticker::{LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
+use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("Usage: {} [options] CONFIG [INPUT] [OUTPUT]", program);
@@ -63,11 +63,6 @@ fn main() {
         .relativize_paths(&matches.free[0])
         .or_exit("Cannot relativize paths in configuration", 1);
 
-    let labels = load_labels(&config).or_exit(
-        format!("Cannot load label file '{}'", config.labeler.labels),
-        1,
-    );
-
     // Parallel processing is useless without the same parallelism in Tensorflow.
     config.model.inter_op_parallelism_threads = n_threads;
     config.model.intra_op_parallelism_threads = n_threads;
@@ -88,29 +83,84 @@ fn main() {
 
     let graph = TaggerGraph::load_graph(graph_reader, &config.model)
         .or_exit("Cannot load computation graph", 1);
+
+    let pool = ThreadPool::new(n_threads);
+
+    let addr = &matches.free[1];
+    let listener = TcpListener::bind(addr).or_exit(format!("Cannot listen on '{}'", addr), 1);
+
+    match config.labeler.labeler_type {
+        LabelerType::Sequence(ref layer) => serve_with_decoder(
+            &config,
+            pool,
+            vectorizer,
+            graph,
+            LayerEncoder::new(layer.clone()),
+            listener,
+        ),
+        LabelerType::Parser(EncoderType::RelativePOS) => serve_with_decoder(
+            &config,
+            pool,
+            vectorizer,
+            graph,
+            RelativePOSEncoder,
+            listener,
+        ),
+        LabelerType::Parser(EncoderType::RelativePosition) => serve_with_decoder(
+            &config,
+            pool,
+            vectorizer,
+            graph,
+            RelativePositionEncoder,
+            listener,
+        ),
+    }
+}
+
+fn serve_with_decoder<D>(
+    config: &Config,
+    pool: ThreadPool,
+    vectorizer: SentVectorizer,
+    graph: TaggerGraph,
+    decoder: D,
+    listener: TcpListener,
+) where
+    D: 'static + Clone + Send + SentenceDecoder,
+    D::Encoding: Clone + Eq + Hash + Send + Sync,
+    Numberer<D::Encoding>: CborRead,
+{
+    let labels = config.labeler.load_labels().or_exit(
+        format!("Cannot load label file '{}'", config.labeler.labels),
+        1,
+    );
+
     let tagger = Arc::new(
         Tagger::load_weights(graph, labels, vectorizer, config.model.parameters.clone())
             .or_exit("Cannot construct tagger", 1),
     );
 
-    let addr = &matches.free[1];
-    let pool = ThreadPool::new(n_threads);
-
-    let listener = TcpListener::bind(addr).or_exit(format!("Cannot listen on '{}'", addr), 1);
-
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
                 let config = config.clone();
+                let decoder = decoder.clone();
                 let tagger = tagger.clone();
-                pool.execute(move || handle_client(config, tagger, stream))
+                pool.execute(move || handle_client_with_decoder(config, tagger, decoder, stream))
             }
             Err(err) => eprintln!("Error processing stream: {}", err),
         }
     }
 }
 
-fn handle_client(config: Config, tagger: Arc<Tagger<String>>, mut stream: TcpStream) {
+fn handle_client_with_decoder<D>(
+    config: Config,
+    tagger: Arc<Tagger<D::Encoding>>,
+    decoder: D,
+    mut stream: TcpStream,
+) where
+    D: SentenceDecoder,
+    D::Encoding: Clone + Eq + Hash,
+{
     let peer_addr = stream
         .peer_addr()
         .map(|addr| addr.to_string())
@@ -128,7 +178,6 @@ fn handle_client(config: Config, tagger: Arc<Tagger<String>>, mut stream: TcpStr
     let reader = Reader::new(BufReader::new(&conllx_stream));
     let writer = Writer::new(BufWriter::new(&conllx_stream));
 
-    let decoder = LayerEncoder::new(config.labeler.layer.clone());
     let mut sent_proc = SentProcessor::new(
         decoder,
         &*tagger,
@@ -152,13 +201,4 @@ fn handle_client(config: Config, tagger: Arc<Tagger<String>>, mut stream: TcpStr
     }
 
     eprintln!("Finished processing for {}", peer_addr);
-}
-
-fn load_labels(config: &Config) -> Result<Numberer<String>, Error> {
-    let labels_path = Path::new(&config.labeler.labels);
-
-    eprintln!("Loading labels from: {:?}", labels_path);
-
-    let f = File::open(labels_path)?;
-    Numberer::from_cbor_read(f)
 }

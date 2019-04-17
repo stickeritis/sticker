@@ -6,7 +6,7 @@ use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
 use super::{DecodeError, DependencyEncoding, EncodeError};
-use crate::{SentenceDecoder, SentenceEncoder, SentenceTopKDecoder};
+use crate::{SentenceDecoder, SentenceEncoder};
 
 /// Relative head position by part-of-speech.
 ///
@@ -169,22 +169,7 @@ impl SentenceEncoder for RelativePOSEncoder {
 impl SentenceDecoder for RelativePOSEncoder {
     type Encoding = DependencyEncoding<RelativePOS>;
 
-    fn decode<E>(&self, labels: &[E], sentence: &mut Sentence) -> Result<(), Error>
-    where
-        E: Borrow<Self::Encoding>,
-    {
-        // This rewrapping has some potential overhead due to the auxiliary
-        // Vec. But this avoids having two separate implementations for
-        // decoding.
-        let labels = labels.iter().map(|e| [e.borrow()]).collect::<Vec<_>>();
-        self.decode_top_k(&labels, sentence)
-    }
-}
-
-impl SentenceTopKDecoder for RelativePOSEncoder {
-    type Encoding = DependencyEncoding<RelativePOS>;
-
-    fn decode_top_k<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
         E: Borrow<Self::Encoding>,
         S: AsRef<[E]>,
@@ -239,7 +224,7 @@ mod tests {
 
     use super::{RelativePOS, RelativePOSEncoder};
     use crate::depparse::{DecodeError, DependencyEncoding};
-    use crate::SentenceTopKDecoder;
+    use crate::SentenceDecoder;
 
     // Small tests for relative part-of-speech encoder. Automatic
     // testing is performed in the module tests.
@@ -303,7 +288,7 @@ mod tests {
             },
         ]];
 
-        decoder.decode_top_k(&labels, &mut sent).unwrap();
+        decoder.decode(&labels, &mut sent).unwrap();
 
         assert_eq!(
             sent.dep_graph().head(1),

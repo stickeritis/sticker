@@ -1,6 +1,7 @@
 use std::io::{Read, Write};
 
 use failure::Error;
+use sticker::depparse::{DependencyEncoding, RelativePOS, RelativePosition};
 use sticker::Numberer;
 
 use serde_cbor;
@@ -26,10 +27,11 @@ impl TomlRead for Config {
     }
 }
 
-pub trait CborRead {
-    type Value;
-
-    fn from_cbor_read<R>(read: R) -> Result<Self::Value, Error>
+pub trait CborRead
+where
+    Self: Sized,
+{
+    fn from_cbor_read<R>(read: R) -> Result<Self, Error>
     where
         R: Read;
 }
@@ -37,19 +39,19 @@ pub trait CborRead {
 macro_rules! cbor_read {
     ($type: ty) => {
         impl CborRead for $type {
-            type Value = $type;
-
-            fn from_cbor_read<R>(read: R) -> Result<$type, Error>
+            fn from_cbor_read<R>(read: R) -> Result<Self, Error>
             where
                 R: Read,
             {
-                let system = serde_cbor::from_reader(read)?;
-                Ok(system)
+                let labels = serde_cbor::from_reader(read)?;
+                Ok(labels)
             }
         }
     };
 }
 
+cbor_read!(Numberer<DependencyEncoding<RelativePOS>>);
+cbor_read!(Numberer<DependencyEncoding<RelativePosition>>);
 cbor_read!(Numberer<String>);
 
 pub trait CborWrite {
@@ -87,4 +89,6 @@ macro_rules! cbor_write {
     };
 }
 
+cbor_write!(Numberer<DependencyEncoding<RelativePOS>>);
+cbor_write!(Numberer<DependencyEncoding<RelativePosition>>);
 cbor_write!(Numberer<String>);

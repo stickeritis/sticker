@@ -1,5 +1,7 @@
 use std::env::args;
 use std::fs::File;
+use std::hash::Hash;
+use std::io::Write;
 use std::path::Path;
 use std::process;
 
@@ -9,8 +11,11 @@ use getopts::Options;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
 
-use sticker::{Collector, Embeddings, LayerEncoder, NoopCollector, Numberer, SentVectorizer};
-use sticker_utils::{CborWrite, Config, TomlRead};
+use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::{
+    Collector, Embeddings, LayerEncoder, NoopCollector, Numberer, SentVectorizer, SentenceEncoder,
+};
+use sticker_utils::{CborWrite, Config, EncoderType, LabelerType, TomlRead};
 
 /// Ad-hoc shapes structure, which can be used to construct the
 /// Tensorflow parsing graph.
@@ -61,9 +66,7 @@ fn main() {
             .or_exit("Cannot open corpus for reading", 1),
     );
     let output = Output::from(matches.free.get(2));
-    let mut shapes_write = output.write().or_exit("Cannot create shapes file", 1);
-
-    let labels = Numberer::new(1);
+    let shapes_write = output.write().or_exit("Cannot create shapes file", 1);
 
     let embeddings = config
         .embeddings
@@ -71,18 +74,81 @@ fn main() {
         .or_exit("Cannot load embeddings", 1);
     let vectorizer = SentVectorizer::new(embeddings);
 
-    let encoder = LayerEncoder::new(config.labeler.layer.clone());
-    let mut collector = NoopCollector::new(encoder, labels, vectorizer);
+    match config.labeler.labeler_type {
+        LabelerType::Sequence(ref layer) => prepare_with_encoder(
+            &config,
+            vectorizer,
+            LayerEncoder::new(layer.clone()),
+            treebank_reader,
+            shapes_write,
+        ),
+        LabelerType::Parser(EncoderType::RelativePOS) => prepare_with_encoder(
+            &config,
+            vectorizer,
+            RelativePOSEncoder,
+            treebank_reader,
+            shapes_write,
+        ),
+        LabelerType::Parser(EncoderType::RelativePosition) => prepare_with_encoder(
+            &config,
+            vectorizer,
+            RelativePositionEncoder,
+            treebank_reader,
+            shapes_write,
+        ),
+    };
+}
 
-    for sentence in treebank_reader.sentences() {
+fn prepare_with_encoder<E, R, W>(
+    config: &Config,
+    vectorizer: SentVectorizer,
+    encoder: E,
+    read: R,
+    shapes_write: W,
+) where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+    Numberer<E::Encoding>: CborWrite,
+    R: ReadSentence,
+    W: Write,
+{
+    let labels = Numberer::new(1);
+    let mut collector = NoopCollector::new(encoder, labels, vectorizer);
+    collect_sentences(&mut collector, read);
+    write_labels(&config, collector.labels()).or_exit("Cannot write labels", 1);
+    write_shapes(shapes_write, &collector);
+}
+
+fn collect_sentences<E, R>(collector: &mut NoopCollector<E>, reader: R)
+where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+    R: ReadSentence,
+{
+    for sentence in reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
         collector
             .collect(&sentence)
             .or_exit("Cannot collect sentence", 1);
     }
+}
 
-    write_labels(&config, collector.labels()).or_exit("Cannot write labels", 1);
+fn write_labels<T>(config: &Config, labels: &Numberer<T>) -> Result<(), Error>
+where
+    T: Eq + Hash,
+    Numberer<T>: CborWrite,
+{
+    let labels_path = Path::new(&config.labeler.labels);
+    let mut f = File::create(labels_path)?;
+    labels.to_cbor_write(&mut f)
+}
 
+fn write_shapes<W, E>(mut shapes_write: W, collector: &NoopCollector<E>)
+where
+    W: Write,
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+{
     let shapes = Shapes {
         n_labels: collector.labels().len(),
         token_embed_dims: collector
@@ -104,10 +170,4 @@ fn main() {
         toml::to_string(&shapes).or_exit("Cannot write to shapes file", 1)
     )
     .or_exit("Cannot write shapes", 1);
-}
-
-fn write_labels(config: &Config, labels: &Numberer<String>) -> Result<(), Error> {
-    let labels_path = Path::new(&config.labeler.labels);
-    let mut f = File::create(labels_path)?;
-    labels.to_cbor_write(&mut f)
 }

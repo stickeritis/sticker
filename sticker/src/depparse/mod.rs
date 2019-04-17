@@ -63,7 +63,12 @@ mod tests {
             let sentence = sentence.unwrap();
 
             // Encode
-            let encodings = encoder_decoder.encode(&sentence).unwrap();
+            let encodings = encoder_decoder
+                .encode(&sentence)
+                .unwrap()
+                .into_iter()
+                .map(|e| [e])
+                .collect::<Vec<_>>();
 
             // Decode
             let mut test_sentence = copy_sentence_without_deprels(&sentence);

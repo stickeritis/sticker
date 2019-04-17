@@ -1,7 +1,5 @@
-use std::io::Write;
-
 use conllx::graph::Sentence;
-use conllx::io::{WriteSentence, Writer};
+use conllx::io::WriteSentence;
 use failure::Error;
 use sticker::{SentenceDecoder, Tag};
 
@@ -11,11 +9,11 @@ pub struct SentProcessor<'a, D, T, W>
 where
     D: SentenceDecoder,
     T: Tag<D::Encoding>,
-    W: Write,
+    W: WriteSentence,
 {
     decoder: D,
     tagger: &'a T,
-    writer: Writer<W>,
+    writer: W,
     batch_size: usize,
     read_ahead: usize,
     buffer: Vec<Sentence>,
@@ -25,15 +23,9 @@ impl<'a, D, T, W> SentProcessor<'a, D, T, W>
 where
     D: SentenceDecoder,
     T: Tag<D::Encoding>,
-    W: Write,
+    W: WriteSentence,
 {
-    pub fn new(
-        decoder: D,
-        tagger: &'a T,
-        writer: Writer<W>,
-        batch_size: usize,
-        read_ahead: usize,
-    ) -> Self {
+    pub fn new(decoder: D, tagger: &'a T, writer: W, batch_size: usize, read_ahead: usize) -> Self {
         assert!(batch_size > 0, "Batch size should at least be 1.");
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
@@ -80,16 +72,13 @@ where
     fn merge_labels(
         decoder: &D,
         sentences: &mut [&mut Sentence],
-        labels: Vec<Vec<&D::Encoding>>,
+        labels: Vec<Vec<Vec<&D::Encoding>>>,
     ) -> Result<(), Error>
     where
         D: SentenceDecoder,
-        W: Write,
     {
         for (sentence, sent_labels) in sentences.iter_mut().zip(labels) {
-            {
-                decoder.decode(sent_labels.as_slice(), sentence)?;
-            }
+            decoder.decode(sent_labels.as_slice(), sentence)?;
         }
 
         Ok(())
@@ -100,7 +89,7 @@ impl<'a, D, T, W> Drop for SentProcessor<'a, D, T, W>
 where
     D: SentenceDecoder,
     T: Tag<D::Encoding>,
-    W: Write,
+    W: WriteSentence,
 {
     fn drop(&mut self) {
         if !self.buffer.is_empty() {

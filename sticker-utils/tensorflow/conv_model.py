@@ -189,7 +189,7 @@ class ConvModel(Model):
         if config.crf:
             loss, transitions = self.crf_loss(
                 "tag", logits, self.tags)
-            predictions = self.crf_predictions(
+            predictions, top_k_predictions = self.crf_predictions(
                 "tag", logits, transitions)
         else:
             loss = self.masked_softmax_loss(

@@ -63,9 +63,7 @@ impl LayerValue for Token {
 
 /// Trait for sequence taggers.
 pub trait Tag<T> {
-    fn tag_sentences(&self, sentences: &[impl Borrow<Sentence>]) -> Result<Vec<Vec<&T>>, Error>;
-
-    fn tag_sentences_top_k(
+    fn tag_sentences(
         &self,
         sentences: &[impl Borrow<Sentence>],
     ) -> Result<Vec<Vec<Vec<&T>>>, Error>;
