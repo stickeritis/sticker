@@ -46,6 +46,7 @@ pub trait SentenceEncoder {
 }
 
 /// Encode sentences using a CoNLL-X layer.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LayerEncoder {
     layer: Layer,
 }

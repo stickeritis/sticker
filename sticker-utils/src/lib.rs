@@ -1,11 +1,13 @@
 mod config;
-pub use crate::config::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, Train};
+pub use crate::config::{
+    Config, Embedding, EmbeddingAlloc, Embeddings, EncoderType, Labeler, LabelerType, Train,
+};
 
 mod progress;
 pub use crate::progress::FileProgress;
 
 mod sent_proc;
-pub use crate::sent_proc::SentProcessor;
+pub use crate::sent_proc::{SentProcessor, SentTopKProcessor};
 
 mod serialization;
 pub use crate::serialization::{CborRead, CborWrite, TomlRead};

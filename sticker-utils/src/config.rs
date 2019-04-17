@@ -1,4 +1,5 @@
 use std::fs::File;
+use std::hash::Hash;
 use std::io::BufReader;
 use std::path::Path;
 
@@ -9,7 +10,9 @@ use ordered_float::NotNan;
 use serde_derive::{Deserialize, Serialize};
 
 use sticker::tensorflow::{ModelConfig, PlateauLearningRate};
-use sticker::{Layer, LayerEmbeddings};
+use sticker::{Layer, LayerEmbeddings, Numberer};
+
+use crate::CborRead;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Config {
@@ -83,11 +86,42 @@ pub enum EmbeddingAlloc {
     Read,
 }
 
+#[serde(rename_all = "lowercase")]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub enum EncoderType {
+    RelativePosition,
+    RelativePOS,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct Labeler {
     pub labels: String,
-    pub layer: Layer,
     pub read_ahead: usize,
+    pub labeler_type: LabelerType,
+}
+
+impl Labeler {
+    pub fn load_labels<E>(&self) -> Result<Numberer<E>, Error>
+    where
+        E: Eq + Hash,
+        Numberer<E>: CborRead,
+    {
+        let labels_path = Path::new(&self.labels);
+
+        eprintln!("Loading labels from: {:?}", labels_path);
+
+        let f = File::open(labels_path)?;
+        let labels = Numberer::from_cbor_read(f)?;
+
+        Ok(labels)
+    }
+}
+
+#[serde(rename_all = "lowercase")]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+pub enum LabelerType {
+    Parser(EncoderType),
+    Sequence(Layer),
 }
 
 fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> {

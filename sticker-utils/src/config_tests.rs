@@ -5,12 +5,12 @@ use ordered_float::NotNan;
 use sticker::tensorflow::{ModelConfig, OpNames};
 use sticker::Layer;
 
-use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, TomlRead, Train};
+use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, LabelerType, TomlRead, Train};
 
 lazy_static! {
     static ref BASIC_LABELER_CHECK: Config = Config {
         labeler: Labeler {
-            layer: Layer::Feature("tf".to_string()),
+            labeler_type: LabelerType::Sequence(Layer::Feature("tf".to_string())),
             labels: "sticker.labels".to_owned(),
             read_ahead: 10,
         },
