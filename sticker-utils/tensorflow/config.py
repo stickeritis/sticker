@@ -10,7 +10,7 @@ class DefaultConfig:
     keep_prob_input = 0.80
     kernel_size = 3
     n_levels = 7
-    rnn_layers = 1
+    rnn_layers = 2
     top_k = 3
 
 
