@@ -322,7 +322,7 @@ where
         let k = tag_tensor.dims()[2] as usize;
         let mut labels = Vec::new();
         for (idx, sentence) in sentences.iter().enumerate() {
-            let seq_len = min(max_seq_len, sentence.borrow().len());
+            let seq_len = min(max_seq_len, sentence.borrow().len() - 1);
             let offset = idx * max_seq_len * k;
             let seq = &tag_tensor[offset..offset + seq_len * k];
 
