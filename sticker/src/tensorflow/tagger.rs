@@ -28,9 +28,6 @@ pub struct ModelConfig {
     /// The filename of the Tensorflow graph.
     pub graph: String,
 
-    /// Operation names for the frozen tensorflow graph.
-    pub op_names: OpNames,
-
     /// Thread pool size for parallel processing within a computation
     /// graph op.
     pub intra_op_parallelism_threads: usize,
@@ -43,26 +40,25 @@ pub struct ModelConfig {
     pub parameters: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct OpNames {
-    pub init_op: String,
+mod op_names {
+    pub const INIT_OP: &str = "init";
 
-    pub restore_op: String,
-    pub save_op: String,
-    pub save_path_op: String,
+    pub const RESTORE_OP: &str = "save/restore_all";
+    pub const SAVE_OP: &str = "save/control_dependency";
+    pub const SAVE_PATH_OP: &str = "save/Const";
 
-    pub is_training_op: String,
-    pub lr_op: String,
+    pub const IS_TRAINING_OP: &str = "model/is_training";
+    pub const LR_OP: &str = "model/lr";
 
-    pub inputs_op: String,
-    pub seq_lens_op: String,
+    pub const INPUTS_OP: &str = "model/inputs";
+    pub const SEQ_LENS_OP: &str = "model/seq_lens";
 
-    pub loss_op: String,
-    pub accuracy_op: String,
-    pub labels_op: String,
-    pub top_k_predicted_op: String,
+    pub const LOSS_OP: &str = "model/tag_loss";
+    pub const ACCURACY_OP: &str = "model/tag_accuracy";
+    pub const LABELS_OP: &str = "model/tags";
+    pub const TOP_K_PREDICTED_OP: &str = "model/tag_top_k_predictions";
 
-    pub train_op: String,
+    pub const TRAIN_OP: &str = "model/train";
 }
 
 pub struct TaggerGraph {
@@ -100,25 +96,23 @@ impl TaggerGraph {
             .import_graph_def(&data, &opts)
             .map_err(status_to_error)?;
 
-        let op_names = &model_config.op_names;
+        let restore_op = Self::add_op(&graph, op_names::RESTORE_OP)?;
+        let save_op = Self::add_op(&graph, op_names::SAVE_OP)?;
+        let save_path_op = Self::add_op(&graph, op_names::SAVE_PATH_OP)?;
+        let init_op = Self::add_op(&graph, op_names::INIT_OP)?;
 
-        let restore_op = Self::add_op(&graph, &op_names.restore_op)?;
-        let save_op = Self::add_op(&graph, &op_names.save_op)?;
-        let save_path_op = Self::add_op(&graph, &op_names.save_path_op)?;
-        let init_op = Self::add_op(&graph, &op_names.init_op)?;
+        let is_training_op = Self::add_op(&graph, op_names::IS_TRAINING_OP)?;
+        let lr_op = Self::add_op(&graph, op_names::LR_OP)?;
 
-        let is_training_op = Self::add_op(&graph, &op_names.is_training_op)?;
-        let lr_op = Self::add_op(&graph, &op_names.lr_op)?;
+        let inputs_op = Self::add_op(&graph, op_names::INPUTS_OP)?;
+        let seq_lens_op = Self::add_op(&graph, op_names::SEQ_LENS_OP)?;
 
-        let inputs_op = Self::add_op(&graph, &op_names.inputs_op)?;
-        let seq_lens_op = Self::add_op(&graph, &op_names.seq_lens_op)?;
+        let loss_op = Self::add_op(&graph, op_names::LOSS_OP)?;
+        let accuracy_op = Self::add_op(&graph, op_names::ACCURACY_OP)?;
+        let labels_op = Self::add_op(&graph, op_names::LABELS_OP)?;
+        let top_k_predicted_op = Self::add_op(&graph, op_names::TOP_K_PREDICTED_OP)?;
 
-        let loss_op = Self::add_op(&graph, &op_names.loss_op)?;
-        let accuracy_op = Self::add_op(&graph, &op_names.accuracy_op)?;
-        let labels_op = Self::add_op(&graph, &op_names.labels_op)?;
-        let top_k_predicted_op = Self::add_op(&graph, &op_names.top_k_predicted_op)?;
-
-        let train_op = Self::add_op(&graph, &op_names.train_op)?;
+        let train_op = Self::add_op(&graph, op_names::TRAIN_OP)?;
 
         Ok(TaggerGraph {
             graph,

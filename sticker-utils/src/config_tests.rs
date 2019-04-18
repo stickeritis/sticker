@@ -2,7 +2,7 @@ use std::fs::File;
 
 use lazy_static::lazy_static;
 use ordered_float::NotNan;
-use sticker::tensorflow::{ModelConfig, OpNames};
+use sticker::tensorflow::ModelConfig;
 use sticker::Layer;
 
 use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, LabelerType, TomlRead, Train};
@@ -36,21 +36,6 @@ lazy_static! {
             parameters: "sticker.model".to_owned(),
             intra_op_parallelism_threads: 4,
             inter_op_parallelism_threads: 4,
-            op_names: OpNames {
-                is_training_op: "prediction/model/is_training".to_owned(),
-                init_op: "prediction/model/init".to_owned(),
-                labels_op: "prediction/model/labels".to_owned(),
-                inputs_op: "prediction/model/inputs".to_owned(),
-                seq_lens_op: "prediction/model/seq_lens".to_owned(),
-                top_k_predicted_op: "prediction/model/top_k_predicted".to_owned(),
-                accuracy_op: "prediction/model/accuracy".to_owned(),
-                loss_op: "prediction/model/loss".to_owned(),
-                lr_op: "prediction/model/lr".to_owned(),
-                save_op: "prediction/model/save".to_owned(),
-                save_path_op: "prediction/model/save_path".to_owned(),
-                restore_op: "prediction/model/restore".to_owned(),
-                train_op: "prediction/model/train".to_owned(),
-            },
         }
     };
 }
