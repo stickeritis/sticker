@@ -1,5 +1,7 @@
 use conllx::graph::{DepTriple, Sentence};
 use ordered_float::OrderedFloat;
+use petgraph::algo::tarjan_scc;
+use petgraph::graph::DiGraph;
 
 use super::DependencyEncoding;
 use crate::EncodingProb;
@@ -25,6 +27,50 @@ where
             sentence
                 .dep_graph_mut()
                 .add_deprel(DepTriple::new(head_idx, Some(relation), idx));
+        }
+    }
+}
+
+/// Break cycles in the graph.
+///
+/// Panics when a token does not have a head. To ensure that each
+/// token has a head, apply `attach_orphans` to the dependency graph
+/// before this function.
+pub fn break_cycles(sent: &mut Sentence, root_idx: usize) {
+    loop {
+        let components = {
+            let digraph: &DiGraph<_, _> = (&*sent).into();
+            tarjan_scc(digraph)
+                .into_iter()
+                .filter(|c| c.len() > 1)
+                .collect::<Vec<_>>()
+        };
+
+        // We are done if there are no more cycles.
+        if components.is_empty() {
+            break;
+        }
+
+        for cycle in components.into_iter() {
+            // Find the first token in the cycle, exclude the root
+            // token to avoid self-cycles.
+            let first_token = cycle
+                .into_iter()
+                .filter(|idx| idx.index() != root_idx)
+                .min()
+                .expect("Cannot get minimum, but iterator is non-empty")
+                .index();
+
+            // Reattach the token to the root.
+            let head_rel = sent
+                .dep_graph()
+                .head(first_token)
+                .expect("Token without a head")
+                .relation()
+                .map(ToOwned::to_owned);
+
+            sent.dep_graph_mut()
+                .add_deprel(DepTriple::new(root_idx, head_rel, first_token));
         }
     }
 }
@@ -113,7 +159,7 @@ mod tests {
     use conllx::graph::{DepTriple, Sentence};
     use conllx::token::TokenBuilder;
 
-    use super::{attach_orphans, find_or_create_root, first_root, ROOT_RELATION};
+    use super::{attach_orphans, break_cycles, find_or_create_root, first_root, ROOT_RELATION};
     use crate::depparse::{
         pos_position_table, DependencyEncoding, RelativePOS, RelativePOSEncoder,
     };
@@ -129,6 +175,24 @@ mod tests {
             .add_deprel(DepTriple::new(2, Some("det"), 1));
         sent.dep_graph_mut()
             .add_deprel(DepTriple::new(3, Some("subj"), 2));
+        sent.dep_graph_mut()
+            .add_deprel(DepTriple::new(0, Some(ROOT_RELATION), 3));
+        sent.dep_graph_mut()
+            .add_deprel(DepTriple::new(3, Some("obj"), 4));
+
+        sent
+    }
+
+    fn test_graph_cycle() -> Sentence {
+        let mut sent = Sentence::new();
+        sent.push(TokenBuilder::new("Die").pos("det").into());
+        sent.push(TokenBuilder::new("AWO").pos("noun").into());
+        sent.push(TokenBuilder::new("veruntreute").pos("verb").into());
+        sent.push(TokenBuilder::new("Spendengeld").pos("noun").into());
+        sent.dep_graph_mut()
+            .add_deprel(DepTriple::new(2, Some("det"), 1));
+        sent.dep_graph_mut()
+            .add_deprel(DepTriple::new(1, Some("subj"), 2));
         sent.dep_graph_mut()
             .add_deprel(DepTriple::new(0, Some(ROOT_RELATION), 3));
         sent.dep_graph_mut()
@@ -229,5 +293,21 @@ mod tests {
         });
 
         assert_eq!(sent, test_graph());
+    }
+
+    #[test]
+    fn break_simple_cycle() {
+        let mut check = test_graph_cycle();
+        // Token 1 is the leftmost token in the cycle and
+        // should be reattached to the head.
+        check
+            .dep_graph_mut()
+            .add_deprel(DepTriple::new(3, Some("det"), 1));
+
+        // Detect cycle and break it.
+        let mut sent = test_graph_cycle();
+        break_cycles(&mut sent, 3);
+
+        assert_eq!(sent, check);
     }
 }
