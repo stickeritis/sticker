@@ -3,6 +3,9 @@ use serde_derive::{Deserialize, Serialize};
 mod errors;
 pub use crate::depparse::errors::*;
 
+mod post_processing;
+pub(crate) use crate::depparse::post_processing::*;
+
 mod relative_position;
 pub use crate::depparse::relative_position::*;
 
@@ -38,7 +41,7 @@ mod tests {
     use conllx::io::Reader;
 
     use super::{RelativePOSEncoder, RelativePositionEncoder};
-    use crate::{SentenceDecoder, SentenceEncoder};
+    use crate::{EncodingProb, SentenceDecoder, SentenceEncoder};
 
     static NON_PROJECTIVE_DATA: &'static str = "testdata/nonprojective.conll";
 
@@ -55,6 +58,7 @@ mod tests {
     where
         P: AsRef<Path>,
         E: SentenceEncoder<Encoding = C> + SentenceDecoder<Encoding = C>,
+        C: 'static + Clone,
     {
         let f = File::open(path).unwrap();
         let reader = Reader::new(BufReader::new(f));
@@ -67,7 +71,7 @@ mod tests {
                 .encode(&sentence)
                 .unwrap()
                 .into_iter()
-                .map(|e| [e])
+                .map(|e| [EncodingProb::new_from_owned(e, 1.)])
                 .collect::<Vec<_>>();
 
             // Decode

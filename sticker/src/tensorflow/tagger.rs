@@ -17,7 +17,7 @@ use tensorflow::{
 use tf_proto::ConfigProto;
 
 use super::tensor::TensorBuilder;
-use crate::{ModelPerformance, Numberer, SentVectorizer, Tag};
+use crate::{EncodingProb, ModelPerformance, Numberer, SentVectorizer, Tag};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ModelConfig {
@@ -57,6 +57,7 @@ mod op_names {
     pub const ACCURACY_OP: &str = "model/tag_accuracy";
     pub const LABELS_OP: &str = "model/tags";
     pub const TOP_K_PREDICTED_OP: &str = "model/tag_top_k_predictions";
+    pub const TOP_K_PROBS_OP: &str = "model/tag_top_k_probs";
 
     pub const TRAIN_OP: &str = "model/train";
 }
@@ -78,6 +79,7 @@ pub struct TaggerGraph {
     accuracy_op: Operation,
     labels_op: Operation,
     top_k_predicted_op: Operation,
+    top_k_probs_op: Operation,
 
     train_op: Operation,
 }
@@ -111,6 +113,7 @@ impl TaggerGraph {
         let accuracy_op = Self::add_op(&graph, op_names::ACCURACY_OP)?;
         let labels_op = Self::add_op(&graph, op_names::LABELS_OP)?;
         let top_k_predicted_op = Self::add_op(&graph, op_names::TOP_K_PREDICTED_OP)?;
+        let top_k_probs_op = Self::add_op(&graph, op_names::TOP_K_PROBS_OP)?;
 
         let train_op = Self::add_op(&graph, op_names::TRAIN_OP)?;
 
@@ -131,6 +134,7 @@ impl TaggerGraph {
             accuracy_op,
             labels_op,
             top_k_predicted_op,
+            top_k_probs_op,
 
             train_op,
         })
@@ -269,14 +273,15 @@ where
     fn tag_sentences_(
         &self,
         sentences: &[impl Borrow<Sentence>],
-    ) -> Result<Vec<Vec<Vec<&T>>>, Error> {
+    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error> {
         let builder = self.prepare_batch(sentences)?;
 
         // Tag the batch
-        let tag_tensor = self.tag_sequences(
+        let (tag_tensor, probs_tensor) = self.tag_sequences(
             builder.seq_lens(),
             builder.inputs(),
             &self.graph.top_k_predicted_op,
+            &self.graph.top_k_probs_op,
         )?;
 
         // Convert label numbers to labels.
@@ -287,12 +292,18 @@ where
             let seq_len = min(max_seq_len, sentence.borrow().len() - 1);
             let offset = idx * max_seq_len * k;
             let seq = &tag_tensor[offset..offset + seq_len * k];
+            let probs = &probs_tensor[offset..offset + seq_len * k];
 
             labels.push(
                 seq.iter()
+                    .zip(probs)
                     .chunks(k)
                     .into_iter()
-                    .map(|c| c.map(|&label| self.labels.value(label as usize).unwrap()))
+                    .map(|c| {
+                        c.map(|(&label, &prob)| {
+                            EncodingProb::new(self.labels.value(label as usize).unwrap(), prob)
+                        })
+                    })
                     .map(Vec::from_iter)
                     .collect(),
             );
@@ -306,7 +317,8 @@ where
         seq_lens: &Tensor<i32>,
         inputs: &Tensor<f32>,
         predicted_op: &Operation,
-    ) -> Result<Tensor<i32>, Error> {
+        probs_op: &Operation,
+    ) -> Result<(Tensor<i32>, Tensor<f32>), Error> {
         let mut is_training = Tensor::new(&[]);
         is_training[0] = false;
 
@@ -318,11 +330,15 @@ where
         args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
         args.add_feed(&self.graph.inputs_op, 0, inputs);
 
+        let probs_token = args.request_fetch(probs_op, 0);
         let predictions_token = args.request_fetch(predicted_op, 0);
 
         self.session.run(&mut args).map_err(status_to_error)?;
 
-        Ok(args.fetch(predictions_token).map_err(status_to_error)?)
+        Ok((
+            args.fetch(predictions_token).map_err(status_to_error)?,
+            args.fetch(probs_token).map_err(status_to_error)?,
+        ))
     }
 
     pub fn train(
@@ -397,7 +413,7 @@ where
     fn tag_sentences(
         &self,
         sentences: &[impl Borrow<Sentence>],
-    ) -> Result<Vec<Vec<Vec<&T>>>, Error> {
+    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error> {
         self.tag_sentences_(sentences)
     }
 }

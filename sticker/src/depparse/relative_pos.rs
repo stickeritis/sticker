@@ -1,12 +1,11 @@
-use std::borrow::Borrow;
 use std::collections::HashMap;
 
 use conllx::graph::{DepTriple, Node, Sentence};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
-use super::{DecodeError, DependencyEncoding, EncodeError};
-use crate::{SentenceDecoder, SentenceEncoder};
+use super::{attach_orphans, find_or_create_root, DecodeError, DependencyEncoding, EncodeError};
+use crate::{EncodingProb, SentenceDecoder, SentenceEncoder};
 
 /// Relative head position by part-of-speech.
 ///
@@ -16,8 +15,18 @@ use crate::{SentenceDecoder, SentenceEncoder};
 /// preceding noun.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct RelativePOS {
-    position: isize,
     pos: String,
+    position: isize,
+}
+
+impl RelativePOS {
+    #[allow(dead_code)]
+    pub(crate) fn new(pos: impl Into<String>, position: isize) -> Self {
+        RelativePOS {
+            pos: pos.into(),
+            position,
+        }
+    }
 }
 
 impl ToString for DependencyEncoding<RelativePOS> {
@@ -35,7 +44,7 @@ impl ToString for DependencyEncoding<RelativePOS> {
 pub struct RelativePOSEncoder;
 
 impl RelativePOSEncoder {
-    fn decode_idx(
+    pub(crate) fn decode_idx(
         pos_table: &HashMap<String, Vec<usize>>,
         idx: usize,
         encoding: &DependencyEncoding<RelativePOS>,
@@ -169,10 +178,10 @@ impl SentenceEncoder for RelativePOSEncoder {
 impl SentenceDecoder for RelativePOSEncoder {
     type Encoding = DependencyEncoding<RelativePOS>;
 
-    fn decode<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        E: Borrow<Self::Encoding>,
-        S: AsRef<[E]>,
+        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
+        Self::Encoding: 'a,
     {
         let pos_table = pos_position_table(&sentence);
 
@@ -183,7 +192,7 @@ impl SentenceDecoder for RelativePOSEncoder {
         for (idx, encodings) in token_indices.into_iter().zip(labels) {
             for encoding in encodings.as_ref() {
                 if let Ok(triple) =
-                    RelativePOSEncoder::decode_idx(&pos_table, idx, encoding.borrow())
+                    RelativePOSEncoder::decode_idx(&pos_table, idx, encoding.encoding())
                 {
                     sentence.dep_graph_mut().add_deprel(triple);
                     break;
@@ -191,11 +200,17 @@ impl SentenceDecoder for RelativePOSEncoder {
             }
         }
 
+        // Fixup tree.
+        let root = find_or_create_root(labels, sentence, |idx, encoding| {
+            Self::decode_idx(&pos_table, idx, encoding).ok()
+        });
+        attach_orphans(labels, sentence, root);
+
         Ok(())
     }
 }
 
-fn pos_position_table(sentence: &Sentence) -> HashMap<String, Vec<usize>> {
+pub(crate) fn pos_position_table(sentence: &Sentence) -> HashMap<String, Vec<usize>> {
     let mut table = HashMap::new();
 
     for (idx, node) in sentence.iter().enumerate() {
@@ -224,7 +239,7 @@ mod tests {
 
     use super::{RelativePOS, RelativePOSEncoder};
     use crate::depparse::{DecodeError, DependencyEncoding};
-    use crate::SentenceDecoder;
+    use crate::{EncodingProb, SentenceDecoder};
 
     // Small tests for relative part-of-speech encoder. Automatic
     // testing is performed in the module tests.
@@ -272,20 +287,26 @@ mod tests {
 
         let decoder = RelativePOSEncoder;
         let labels = vec![vec![
-            DependencyEncoding {
-                label: "ROOT".into(),
-                head: RelativePOS {
-                    pos: "ROOT".into(),
-                    position: -2,
+            EncodingProb::new_from_owned(
+                DependencyEncoding {
+                    label: "ROOT".into(),
+                    head: RelativePOS {
+                        pos: "ROOT".into(),
+                        position: -2,
+                    },
                 },
-            },
-            DependencyEncoding {
-                label: "ROOT".into(),
-                head: RelativePOS {
-                    pos: "ROOT".into(),
-                    position: -1,
+                1.0,
+            ),
+            EncodingProb::new_from_owned(
+                DependencyEncoding {
+                    label: "ROOT".into(),
+                    head: RelativePOS {
+                        pos: "ROOT".into(),
+                        position: -1,
+                    },
                 },
-            },
+                1.0,
+            ),
         ]];
 
         decoder.decode(&labels, &mut sent).unwrap();

@@ -1,21 +1,71 @@
-use std::borrow::Borrow;
+use std::borrow::{Borrow, Cow};
 
 use conllx::graph::{Node, Sentence};
 use failure::{format_err, Error};
 
 use crate::{Layer, LayerValue};
 
+/// An encoding with its probability.
+pub struct EncodingProb<'a, E>
+where
+    E: ToOwned,
+{
+    encoding: Cow<'a, E>,
+    prob: f32,
+}
+
+impl<E> EncodingProb<'static, E>
+where
+    E: ToOwned,
+{
+    /// Create an encoding with its probability.
+    ///
+    /// This constructor takes an owned encoding.
+    #[allow(dead_code)]
+    pub(crate) fn new_from_owned(encoding: E::Owned, prob: f32) -> Self {
+        EncodingProb {
+            encoding: Cow::Owned(encoding),
+            prob,
+        }
+    }
+}
+
+impl<'a, E> EncodingProb<'a, E>
+where
+    E: ToOwned,
+{
+    /// Create an encoding with its probability.
+    ///
+    /// This constructor takes a borrowed encoding.
+    pub(crate) fn new(encoding: &'a E, prob: f32) -> Self {
+        EncodingProb {
+            encoding: Cow::Borrowed(encoding),
+            prob,
+        }
+    }
+
+    /// Get the encoding.
+    pub fn encoding(&self) -> &E {
+        self.encoding.borrow()
+    }
+
+    /// Get the probability of the encoding.
+    pub fn prob(&self) -> f32 {
+        self.prob
+    }
+}
+
 /// Trait for sentence decoders.
 ///
 /// A sentence decoder adds a representation to each token in a
 /// sentence, such as a part-of-speech tag or a topological field.
 pub trait SentenceDecoder {
-    type Encoding;
+    type Encoding: ToOwned;
 
-    fn decode<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        E: Borrow<Self::Encoding>,
-        S: AsRef<[E]>;
+        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
+        Self::Encoding: 'a;
 }
 
 /// Trait for sentence encoders.
@@ -45,10 +95,10 @@ impl LayerEncoder {
 impl SentenceDecoder for LayerEncoder {
     type Encoding = String;
 
-    fn decode<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        E: Borrow<Self::Encoding>,
-        S: AsRef<[E]>,
+        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
+        Self::Encoding: 'a,
     {
         assert_eq!(
             labels.len(),
@@ -62,7 +112,7 @@ impl SentenceDecoder for LayerEncoder {
             .zip(labels.iter())
         {
             if let Some(label) = token_labels.as_ref().get(0) {
-                token.set_value(&self.layer, label.borrow().as_str());
+                token.set_value(&self.layer, label.encoding().as_str());
             }
         }
 
