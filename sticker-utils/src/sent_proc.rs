@@ -1,7 +1,7 @@
 use conllx::graph::Sentence;
 use conllx::io::WriteSentence;
 use failure::Error;
-use sticker::{SentenceDecoder, Tag};
+use sticker::{EncodingProb, SentenceDecoder, Tag};
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.
@@ -72,7 +72,7 @@ where
     fn merge_labels(
         decoder: &D,
         sentences: &mut [&mut Sentence],
-        labels: Vec<Vec<Vec<&D::Encoding>>>,
+        labels: Vec<Vec<Vec<EncodingProb<D::Encoding>>>>,
     ) -> Result<(), Error>
     where
         D: SentenceDecoder,

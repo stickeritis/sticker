@@ -1,11 +1,9 @@
-use std::borrow::Borrow;
-
 use conllx::graph::{DepTriple, Sentence};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
-use super::{DecodeError, DependencyEncoding, EncodeError};
-use crate::{SentenceDecoder, SentenceEncoder};
+use super::{attach_orphans, find_or_create_root, DecodeError, DependencyEncoding, EncodeError};
+use crate::{EncodingProb, SentenceDecoder, SentenceEncoder};
 
 /// Relative head position.
 ///
@@ -81,10 +79,10 @@ impl SentenceEncoder for RelativePositionEncoder {
 impl SentenceDecoder for RelativePositionEncoder {
     type Encoding = DependencyEncoding<RelativePosition>;
 
-    fn decode<S, E>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        E: Borrow<Self::Encoding>,
-        S: AsRef<[E]>,
+        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
+        Self::Encoding: 'a,
     {
         let token_indices: Vec<_> = (0..sentence.len())
             .filter(|&idx| sentence[idx].is_token())
@@ -93,13 +91,20 @@ impl SentenceDecoder for RelativePositionEncoder {
         for (idx, encodings) in token_indices.into_iter().zip(labels) {
             for encoding in encodings.as_ref() {
                 if let Ok(triple) =
-                    RelativePositionEncoder::decode_idx(idx, sentence.len(), encoding.borrow())
+                    RelativePositionEncoder::decode_idx(idx, sentence.len(), encoding.encoding())
                 {
                     sentence.dep_graph_mut().add_deprel(triple);
                     break;
                 }
             }
         }
+
+        // Fixup tree.
+        let sentence_len = sentence.len();
+        let root = find_or_create_root(labels, sentence, |idx, encoding| {
+            Self::decode_idx(idx, sentence_len, encoding).ok()
+        });
+        attach_orphans(labels, sentence, root);
 
         Ok(())
     }
@@ -112,7 +117,7 @@ mod tests {
 
     use super::{RelativePosition, RelativePositionEncoder};
     use crate::depparse::{DecodeError, DependencyEncoding};
-    use crate::SentenceDecoder;
+    use crate::{EncodingProb, SentenceDecoder};
 
     // Small tests for the relative position encoder. Automatic
     // testing is performed in the module tests.
@@ -143,14 +148,20 @@ mod tests {
 
         let decoder = RelativePositionEncoder;
         let labels = vec![vec![
-            DependencyEncoding {
-                label: "ROOT".into(),
-                head: RelativePosition(-2),
-            },
-            DependencyEncoding {
-                label: "ROOT".into(),
-                head: RelativePosition(-1),
-            },
+            EncodingProb::new_from_owned(
+                DependencyEncoding {
+                    label: "ROOT".into(),
+                    head: RelativePosition(-2),
+                },
+                1.0,
+            ),
+            EncodingProb::new_from_owned(
+                DependencyEncoding {
+                    label: "ROOT".into(),
+                    head: RelativePosition(-1),
+                },
+                1.0,
+            ),
         ]];
 
         decoder.decode(&labels, &mut sent).unwrap();

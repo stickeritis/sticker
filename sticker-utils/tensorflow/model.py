@@ -72,13 +72,20 @@ class Model:
         return tf.add(best_label, 1, name="%s_predictions" % prefix)
 
     def top_k_predictions(self, prefix, logits, k):
+        probs = tf.nn.softmax(logits)
+
+        # Exclude padding.
+        non_pad_probs = probs[:, :, 1:]
+
         # Get the best label, excluding padding.
-        (_, best_labels) = tf.math.top_k(
-            logits[:, :, 1:],
+        best_probs, best_labels = tf.nn.top_k(
+            non_pad_probs,
             k=k)
 
-        # Exclusion of padding shifts all classes by one.
-        return tf.add(best_labels, 1, name="%s_top_k_predictions" % prefix)
+        probs = tf.identity(best_probs, name="%s_top_k_probs" % prefix)
+        labels = tf.add(best_labels, 1, name="%s_top_k_predictions" % prefix)
+
+        return probs, labels
 
     def setup_placeholders(self):
         self._is_training = tf.placeholder(tf.bool, [], "is_training")
