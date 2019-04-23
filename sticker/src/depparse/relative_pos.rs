@@ -4,7 +4,9 @@ use conllx::graph::{DepTriple, Node, Sentence};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
-use super::{attach_orphans, find_or_create_root, DecodeError, DependencyEncoding, EncodeError};
+use super::{
+    attach_orphans, break_cycles, find_or_create_root, DecodeError, DependencyEncoding, EncodeError,
+};
 use crate::{EncodingProb, SentenceDecoder, SentenceEncoder};
 
 /// Relative head position by part-of-speech.
@@ -201,10 +203,11 @@ impl SentenceDecoder for RelativePOSEncoder {
         }
 
         // Fixup tree.
-        let root = find_or_create_root(labels, sentence, |idx, encoding| {
+        let root_idx = find_or_create_root(labels, sentence, |idx, encoding| {
             Self::decode_idx(&pos_table, idx, encoding).ok()
         });
-        attach_orphans(labels, sentence, root);
+        attach_orphans(labels, sentence, root_idx);
+        break_cycles(sentence, root_idx);
 
         Ok(())
     }
