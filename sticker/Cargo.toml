@@ -1,8 +1,13 @@
 [package]
 name = "sticker"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
+description = "Neural sequence labeler"
+documentation = "https://github.com/danieldk/sticker"
+homepage = "https://github.com/danieldk/sticker"
+repository = "https://github.com/danieldk/sticker.git"
+license = "Apache-2.0"
 
 [dependencies]
 conllx = "0.11"
