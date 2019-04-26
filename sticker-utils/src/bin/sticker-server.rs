@@ -17,7 +17,7 @@ use sticker::{LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
 use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} [options] CONFIG [INPUT] [OUTPUT]", program);
+    let brief = format!("Usage: {} [options] CONFIG ADDR", program);
     print!("{}", opts.usage(&brief));
     process::exit(1);
 }
