@@ -91,6 +91,17 @@ impl SentVectorizer {
         SentVectorizer { layer_embeddings }
     }
 
+    /// Get the length of the input representation.
+    pub fn input_len(&self) -> usize {
+        self.layer_embeddings.token_embeddings().dims()
+            + self
+                .layer_embeddings
+                .tag_embeddings()
+                .as_ref()
+                .map(|e| e.dims())
+                .unwrap_or_default()
+    }
+
     /// Get the layer embeddings.
     pub fn layer_embeddings(&self) -> &LayerEmbeddings {
         &self.layer_embeddings
