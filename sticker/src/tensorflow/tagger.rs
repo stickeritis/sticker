@@ -238,17 +238,6 @@ where
         self.session.run(&mut args).map_err(status_to_error)
     }
 
-    fn input_dims(&self) -> usize {
-        self.vectorizer.layer_embeddings().token_embeddings().dims()
-            + self
-                .vectorizer
-                .layer_embeddings()
-                .tag_embeddings()
-                .as_ref()
-                .map(|e| e.dims())
-                .unwrap_or_default()
-    }
-
     fn prepare_batch(&self, sentences: &[impl Borrow<Sentence>]) -> Result<TensorBuilder, Error> {
         // Find maximum sentence size.
         let max_seq_len = sentences
@@ -257,9 +246,8 @@ where
             .max()
             .unwrap_or(0);
 
-        let inputs_dims = self.input_dims();
-
-        let mut builder = TensorBuilder::new(sentences.len(), max_seq_len, inputs_dims);
+        let mut builder =
+            TensorBuilder::new(sentences.len(), max_seq_len, self.vectorizer.input_len());
 
         // Fill the batch.
         for sentence in sentences {
