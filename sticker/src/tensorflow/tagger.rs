@@ -16,7 +16,7 @@ use tensorflow::{
 };
 use tf_proto::ConfigProto;
 
-use super::tensor::TensorBuilder;
+use super::tensor::{NoLabels, TensorBuilder};
 use crate::{EncodingProb, ModelPerformance, Numberer, SentVectorizer, Tag};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -238,7 +238,10 @@ where
         self.session.run(&mut args).map_err(status_to_error)
     }
 
-    fn prepare_batch(&self, sentences: &[impl Borrow<Sentence>]) -> Result<TensorBuilder, Error> {
+    fn prepare_batch(
+        &self,
+        sentences: &[impl Borrow<Sentence>],
+    ) -> Result<TensorBuilder<NoLabels>, Error> {
         // Find maximum sentence size.
         let max_seq_len = sentences
             .iter()
@@ -252,7 +255,7 @@ where
         // Fill the batch.
         for sentence in sentences {
             let input = self.vectorizer.realize(sentence.borrow())?;
-            builder.add(&input);
+            builder.add_without_labels(&input);
         }
 
         Ok(builder)
