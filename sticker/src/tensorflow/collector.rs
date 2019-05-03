@@ -6,6 +6,8 @@ use tensorflow::Tensor;
 
 use crate::{Collector, Numberer, SentVectorizer, SentenceEncoder};
 
+use super::tensor::{LabelTensor, TensorBuilder};
+
 pub struct CollectedTensors {
     pub sequence_lens: Vec<Tensor<i32>>,
     pub inputs: Vec<Tensor<f32>>,
@@ -58,33 +60,21 @@ where
         }
 
         let batch_size = self.cur_labels.len();
-
-        let mut batch_seq_lens = Tensor::new(&[batch_size as u64]);
-        self.cur_labels
-            .iter()
-            .enumerate()
-            .for_each(|(idx, labels)| batch_seq_lens[idx] = labels.len() as i32);
-
         let max_seq_len = self.cur_labels.iter().map(Vec::len).max().unwrap_or(0);
         let inputs_dims = self.cur_inputs[0].len() / self.cur_labels[0].len();
 
-        let mut batch_inputs =
-            Tensor::new(&[batch_size as u64, max_seq_len as u64, inputs_dims as u64]);
-        let mut batch_labels = Tensor::new(&[batch_size as u64, max_seq_len as u64]);
+        let mut builder: TensorBuilder<LabelTensor> =
+            TensorBuilder::new(batch_size, max_seq_len, inputs_dims);
 
-        for i in 0..batch_size {
-            let offset = i * max_seq_len;
-            let inputs_offset = offset * inputs_dims;
-            let seq_len = self.cur_labels[i].len();
-
-            batch_inputs[inputs_offset..inputs_offset + inputs_dims * seq_len]
-                .copy_from_slice(&self.cur_inputs[i]);
-            batch_labels[offset..offset + seq_len].copy_from_slice(&self.cur_labels[i]);
+        for (inputs, labels) in self.cur_inputs.iter().zip(&self.cur_labels) {
+            builder.add_with_labels(inputs, labels);
         }
+
+        let (batch_inputs, batch_seq_lens, batch_labels) = builder.into_parts();
 
         self.sequence_lens.push(batch_seq_lens);
         self.inputs.push(batch_inputs);
-        self.labels.push(batch_labels);
+        self.labels.push(batch_labels.0);
 
         self.cur_inputs.clear();
         self.cur_labels.clear();
