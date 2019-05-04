@@ -477,6 +477,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndarray-tensorflow"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "nodrop"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -884,6 +893,7 @@ dependencies = [
  "finalfusion 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ndarray-tensorflow 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "petgraph 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "protobuf 1.7.4 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1149,6 +1159,7 @@ dependencies = [
 "checksum miniz_oxide_c_api 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "b7fe927a42e3807ef71defb191dc87d4e24479b221e67015fe38ae2b7b447bab"
 "checksum ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)" = "7cf380a8af901ad627594013a3bbac903ae0a6f94e176e47e46b5bbc1877b928"
 "checksum ndarray-parallel 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f837a5313776eac07e3361168f461e15cec093a2f4a2790a8b22de4da813f35c"
+"checksum ndarray-tensorflow 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e87927e8412bcf734029615c2b88075d7df5110727777efd86b59ea29b1a5c39"
 "checksum nodrop 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "2f9667ddcc6cc8a43afc9b7917599d7216aa09c463919ea32c59ed6cac8bc945"
 "checksum num-complex 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "107b9be86cd2481930688277b675b0114578227f034674726605b8a482d8baf8"
 "checksum num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)" = "0b3a5d7cc97d6d30d8b9bc8fa19bf45349ffe46241e8816f50f62f6d6aaabee1"

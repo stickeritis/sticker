@@ -8,6 +8,8 @@ use std::path::Path;
 use conllx::graph::Sentence;
 use failure::{err_msg, format_err, Error};
 use itertools::Itertools;
+use ndarray::{Ix1, Ix2, Ix3};
+use ndarray_tensorflow::NdTensor;
 use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
 use tensorflow::{
@@ -305,8 +307,8 @@ where
 
     fn tag_sequences(
         &self,
-        seq_lens: &Tensor<i32>,
-        inputs: &Tensor<f32>,
+        seq_lens: &NdTensor<i32, Ix1>,
+        inputs: &NdTensor<f32, Ix3>,
         predicted_op: &Operation,
         probs_op: &Operation,
     ) -> Result<(Tensor<i32>, Tensor<f32>), Error> {
@@ -318,8 +320,8 @@ where
         args.add_feed(&self.graph.is_training_op, 0, &is_training);
 
         // Sequence inputs
-        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
-        args.add_feed(&self.graph.inputs_op, 0, inputs);
+        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens.inner_ref());
+        args.add_feed(&self.graph.inputs_op, 0, inputs.inner_ref());
 
         let probs_token = args.request_fetch(probs_op, 0);
         let predictions_token = args.request_fetch(predicted_op, 0);
@@ -334,9 +336,9 @@ where
 
     pub fn train(
         &self,
-        seq_lens: &Tensor<i32>,
-        inputs: &Tensor<f32>,
-        labels: &Tensor<i32>,
+        seq_lens: &NdTensor<i32, Ix1>,
+        inputs: &NdTensor<f32, Ix3>,
+        labels: &NdTensor<i32, Ix2>,
         learning_rate: f32,
     ) -> ModelPerformance {
         let mut is_training = Tensor::new(&[]);
@@ -355,9 +357,9 @@ where
 
     pub fn validate(
         &self,
-        seq_lens: &Tensor<i32>,
-        inputs: &Tensor<f32>,
-        labels: &Tensor<i32>,
+        seq_lens: &NdTensor<i32, Ix1>,
+        inputs: &NdTensor<f32, Ix3>,
+        labels: &NdTensor<i32, Ix2>,
     ) -> ModelPerformance {
         let mut is_training = Tensor::new(&[]);
         is_training[0] = false;
@@ -370,17 +372,17 @@ where
 
     fn validate_<'l>(
         &'l self,
-        seq_lens: &'l Tensor<i32>,
-        inputs: &'l Tensor<f32>,
-        labels: &'l Tensor<i32>,
+        seq_lens: &'l NdTensor<i32, Ix1>,
+        inputs: &'l NdTensor<f32, Ix3>,
+        labels: &'l NdTensor<i32, Ix2>,
         mut args: SessionRunArgs<'l>,
     ) -> ModelPerformance {
         // Add inputs.
-        args.add_feed(&self.graph.inputs_op, 0, inputs);
-        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens);
+        args.add_feed(&self.graph.inputs_op, 0, inputs.inner_ref());
+        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens.inner_ref());
 
         // Add gold labels.
-        args.add_feed(&self.graph.labels_op, 0, labels);
+        args.add_feed(&self.graph.labels_op, 0, labels.inner_ref());
 
         let accuracy_token = args.request_fetch(&self.graph.accuracy_op, 0);
         let loss_token = args.request_fetch(&self.graph.loss_op, 0);

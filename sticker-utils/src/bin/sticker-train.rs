@@ -186,7 +186,7 @@ where
             tagger.validate(seq_lens, tokens, labels)
         };
 
-        let n_tokens = seq_lens.iter().sum::<i32>();
+        let n_tokens = seq_lens.view().iter().sum::<i32>();
         loss += n_tokens as f32 * batch_perf.loss;
         acc += n_tokens as f32 * batch_perf.accuracy;
         instances += n_tokens;
