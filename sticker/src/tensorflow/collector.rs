@@ -2,16 +2,17 @@ use std::hash::Hash;
 
 use conllx::graph::Sentence;
 use failure::Error;
-use tensorflow::Tensor;
+use ndarray::{Ix1, Ix2, Ix3};
+use ndarray_tensorflow::NdTensor;
 
 use crate::{Collector, Numberer, SentVectorizer, SentenceEncoder};
 
 use super::tensor::{LabelTensor, TensorBuilder};
 
 pub struct CollectedTensors {
-    pub sequence_lens: Vec<Tensor<i32>>,
-    pub inputs: Vec<Tensor<f32>>,
-    pub labels: Vec<Tensor<i32>>,
+    pub sequence_lens: Vec<NdTensor<i32, Ix1>>,
+    pub inputs: Vec<NdTensor<f32, Ix3>>,
+    pub labels: Vec<NdTensor<i32, Ix2>>,
 }
 
 pub struct TensorCollector<E>
@@ -23,9 +24,9 @@ where
     numberer: Numberer<E::Encoding>,
     vectorizer: SentVectorizer,
     batch_size: usize,
-    sequence_lens: Vec<Tensor<i32>>,
-    inputs: Vec<Tensor<f32>>,
-    labels: Vec<Tensor<i32>>,
+    sequence_lens: Vec<NdTensor<i32, Ix1>>,
+    inputs: Vec<NdTensor<f32, Ix3>>,
+    labels: Vec<NdTensor<i32, Ix2>>,
     cur_labels: Vec<Vec<i32>>,
     cur_inputs: Vec<Vec<f32>>,
 }

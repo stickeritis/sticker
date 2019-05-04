@@ -1,10 +1,11 @@
 use std::cmp::min;
 
-use tensorflow::Tensor;
+use ndarray::{s, ArrayView2, Ix1, Ix2, Ix3};
+use ndarray_tensorflow::NdTensor;
 
 mod labels {
     pub trait Labels {
-        fn from_shape(batch_size: u64, time_steps: u64) -> Self;
+        fn from_shape(batch_size: usize, time_steps: usize) -> Self;
     }
 }
 
@@ -13,25 +14,25 @@ mod labels {
 pub struct NoLabels;
 
 impl labels::Labels for NoLabels {
-    fn from_shape(_batch_size: u64, _time_steps: u64) -> Self {
+    fn from_shape(_batch_size: usize, _time_steps: usize) -> Self {
         NoLabels
     }
 }
 
 /// Labels stored in a `Tensor<i32>`.
-pub struct LabelTensor(pub Tensor<i32>);
+pub struct LabelTensor(pub NdTensor<i32, Ix2>);
 
 impl labels::Labels for LabelTensor {
-    fn from_shape(batch_size: u64, time_steps: u64) -> Self {
-        LabelTensor(Tensor::new(&[batch_size, time_steps]))
+    fn from_shape(batch_size: usize, time_steps: usize) -> Self {
+        LabelTensor(NdTensor::zeros([batch_size, time_steps]))
     }
 }
 
 /// Build `Tensor`s from Rust slices.
 pub struct TensorBuilder<L> {
     sequence: usize,
-    sequence_lens: Tensor<i32>,
-    inputs: Tensor<f32>,
+    sequence_lens: NdTensor<i32, Ix1>,
+    inputs: NdTensor<f32, Ix3>,
     labels: L,
 }
 
@@ -46,9 +47,9 @@ where
     pub fn new(batch_size: usize, time_steps: usize, inputs_size: usize) -> Self {
         TensorBuilder {
             sequence: 0,
-            sequence_lens: Tensor::new(&[batch_size as u64]),
-            inputs: Tensor::new(&[batch_size as u64, time_steps as u64, inputs_size as u64]),
-            labels: L::from_shape(batch_size as u64, time_steps as u64),
+            sequence_lens: NdTensor::zeros([batch_size]),
+            inputs: NdTensor::zeros([batch_size, time_steps, inputs_size]),
+            labels: L::from_shape(batch_size, time_steps),
         }
     }
 }
@@ -56,19 +57,22 @@ where
 impl<L> TensorBuilder<L> {
     /// Add an input.
     fn add_input(&mut self, input: &[f32]) {
-        assert!((self.sequence as u64) < self.inputs.dims()[0]);
+        assert!(self.sequence < self.inputs.view().shape()[0]);
 
-        let max_seq_len = self.inputs.dims()[1] as usize;
-        let token_repr_size = self.inputs.dims()[2] as usize;
+        let token_repr_size = self.inputs.view().shape()[2];
 
-        // Number of time steps to copy.
-        let timesteps = min(max_seq_len, input.len() / token_repr_size);
-        self.sequence_lens[self.sequence] = timesteps as i32;
+        let input = ArrayView2::from_shape([input.len() / token_repr_size, token_repr_size], input)
+            .unwrap();
 
-        let token_offset = self.sequence * max_seq_len * token_repr_size;
-        let token_seq =
-            &mut self.inputs[token_offset..token_offset + (token_repr_size * timesteps)];
-        token_seq.copy_from_slice(&input[..token_repr_size * timesteps]);
+        let timesteps = min(self.inputs.view().shape()[1], input.shape()[0]);
+
+        self.sequence_lens.view_mut()[self.sequence] = timesteps as i32;
+
+        #[allow(clippy::deref_addrof)]
+        self.inputs
+            .view_mut()
+            .slice_mut(s![self.sequence, 0..timesteps, ..])
+            .assign(&input.slice(s![0..timesteps, ..]));
     }
 
     /// Get the constructed tensors.
@@ -78,12 +82,12 @@ impl<L> TensorBuilder<L> {
     /// * The input tensor.
     /// * The sequence lengths tensor.
     /// * The labels.
-    pub fn into_parts(self) -> (Tensor<f32>, Tensor<i32>, L) {
+    pub fn into_parts(self) -> (NdTensor<f32, Ix3>, NdTensor<i32, Ix1>, L) {
         (self.inputs, self.sequence_lens, self.labels)
     }
 
     /// Get the inputs lengths tensor.
-    pub fn inputs(&self) -> &Tensor<f32> {
+    pub fn inputs(&self) -> &NdTensor<f32, Ix3> {
         &self.inputs
     }
 
@@ -94,7 +98,7 @@ impl<L> TensorBuilder<L> {
     }
 
     /// Get the sequence lengths tensor.
-    pub fn seq_lens(&self) -> &Tensor<i32> {
+    pub fn seq_lens(&self) -> &NdTensor<i32, Ix1> {
         &self.sequence_lens
     }
 }
@@ -104,15 +108,16 @@ impl TensorBuilder<LabelTensor> {
     pub fn add_with_labels(&mut self, input: &[f32], labels: &[i32]) {
         self.add_input(input);
 
-        let max_seq_len = self.inputs.dims()[1] as usize;
-        let token_repr_size = self.inputs.dims()[2] as usize;
+        let token_repr_size = self.inputs.view().shape()[2] as usize;
 
         // Number of time steps to copy
-        let timesteps = min(max_seq_len, input.len() / token_repr_size);
-
-        let label_offset = self.sequence * max_seq_len;
-        let label_seq = &mut self.labels.0[label_offset..label_offset + timesteps];
-        label_seq.copy_from_slice(labels);
+        let timesteps = min(self.inputs.view().shape()[1], input.len() / token_repr_size);
+        #[allow(clippy::deref_addrof)]
+        self.labels
+            .0
+            .view_mut()
+            .slice_mut(s![self.sequence, 0..timesteps])
+            .assign(&labels.into());
 
         self.sequence += 1;
     }
