@@ -52,10 +52,6 @@ if __name__ == '__main__':
         help="use CRF layer for classification",
         action="store_true")
     parser.add_argument(
-        "--glu",
-        help="use GLU activiation in convolutions",
-        action="store_true")
-    parser.add_argument(
         "--gru",
         help="use GRU RNN cells",
         action="store_true")
@@ -85,6 +81,10 @@ if __name__ == '__main__':
         help="number of dilated convolution levels",
         default=7)
     parser.add_argument(
+        "--relu",
+        help="use ReLU activiation in convolutions in place of GLU",
+        action="store_true")
+    parser.add_argument(
         "--rnn_layers",
         type=int,
         help="stacked RNN layers",
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     config = DefaultConfig()
     config.crf = args.crf
-    config.glu = args.glu
+    config.glu = not args.relu
     config.gru = args.gru
     config.hidden_size = args.hidden_size
     config.keep_prob = args.keep_prob

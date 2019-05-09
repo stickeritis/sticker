@@ -28,7 +28,7 @@ def dilated_convolution(
         n_levels,
         is_training,
         mask,
-        glu=False,
+        glu=True,
         keep_prob=1.0):
     layer = x
 
@@ -73,7 +73,7 @@ def residual_block(
         dilation,
         is_training,
         mask,
-        glu=False,
+        glu=True,
         keep_prob=1.0,
         sharing=Sharing.none):
     if sharing == Sharing.initial or sharing == Sharing.succeeding:
@@ -117,7 +117,7 @@ def residual_unit(
         dilation,
         is_training,
         mask,
-        glu=False,
+        glu=True,
         keep_prob=1.0):
     if glu:
         # For GLU we need the hidden representation, plus an equal number
