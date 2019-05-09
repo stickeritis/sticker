@@ -6,13 +6,23 @@ from enum import Enum
 from model import Model
 
 
-def dropout_wrapper(cell, is_training, keep_prob):
-    keep_prob = tf.cond(
+def dropout_wrapper(
+        cell,
         is_training,
-        lambda: tf.constant(keep_prob),
+        output_keep_prob=1.0,
+        state_keep_prob=1.0):
+    output_keep_prob = tf.cond(
+        is_training,
+        lambda: tf.constant(output_keep_prob),
+        lambda: tf.constant(1.0))
+    state_keep_prob = tf.cond(
+        is_training,
+        lambda: tf.constant(state_keep_prob),
         lambda: tf.constant(1.0))
     return tf.contrib.rnn.DropoutWrapper(
-        cell, output_keep_prob=keep_prob)
+        cell,
+        output_keep_prob=output_keep_prob,
+        state_keep_prob=state_keep_prob)
 
 
 def bidi_rnn_layers(
@@ -20,24 +30,28 @@ def bidi_rnn_layers(
         inputs,
         num_layers=1,
         output_size=50,
-        output_dropout=1,
-        state_dropout=1,
+        output_keep_prob=1.0,
+        state_keep_prob=1.0,
         seq_lens=None,
         gru=False):
     if gru:
         cell = tf.nn.rnn_cell.GRUCell
     else:
-        cell = tf.contrib.rnn.BasicLSTMCell
+        cell = tf.contrib.rnn.LSTMCell
 
-    fw_cells = [dropout_wrapper(
-        cell=cell(output_size),
-        is_training=is_training,
-        keep_prob=output_dropout) for i in range(num_layers)]
+    fw_cells = [
+        dropout_wrapper(
+            cell=cell(output_size),
+            is_training=is_training,
+            state_keep_prob=state_keep_prob,
+            output_keep_prob=output_keep_prob) for i in range(num_layers)]
 
-    bw_cells = [dropout_wrapper(
-        cell=cell(output_size),
-        is_training=is_training,
-        keep_prob=output_dropout) for i in range(num_layers)]
+    bw_cells = [
+        dropout_wrapper(
+            cell=cell(output_size),
+            is_training=is_training,
+            state_keep_prob=state_keep_prob,
+            output_keep_prob=output_keep_prob) for i in range(num_layers)]
 
     return tf.contrib.rnn.stack_bidirectional_dynamic_rnn(
         fw_cells,
@@ -66,8 +80,7 @@ class RNNModel(Model):
             inputs,
             num_layers=config.rnn_layers,
             output_size=config.hidden_size,
-            output_dropout=config.keep_prob,
-            state_dropout=config.keep_prob,
+            output_keep_prob=config.keep_prob,
             seq_lens=self._seq_lens,
             gru=config.gru)
 
