@@ -1,7 +1,6 @@
 use conllx::graph::{DepTriple, Sentence};
 use ordered_float::OrderedFloat;
 use petgraph::algo::tarjan_scc;
-use petgraph::graph::DiGraph;
 
 use super::DependencyEncoding;
 use crate::EncodingProb;
@@ -39,8 +38,7 @@ where
 pub fn break_cycles(sent: &mut Sentence, root_idx: usize) {
     loop {
         let components = {
-            let digraph: &DiGraph<_, _> = (&*sent).into();
-            tarjan_scc(digraph)
+            tarjan_scc(sent.get_ref())
                 .into_iter()
                 .filter(|c| c.len() > 1)
                 .collect::<Vec<_>>()
