@@ -12,7 +12,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use stdinout::OrExit;
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{
-    CollectedTensors, LearningRateSchedule, Tagger, TaggerGraph, TensorCollector,
+    CollectedTensors, LearningRateSchedule, TaggerGraph, TaggerTrainer, TensorCollector,
 };
 use sticker::{Collector, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
 use sticker_utils::{CborRead, Config, EncoderType, FileProgress, LabelerType, TomlRead};
@@ -58,56 +58,18 @@ fn main() {
     eprintln!("Vectorizing validation instances...");
     let validation_tensors = collect_tensors(&config, &matches.free[2]);
 
-    match config.labeler.labeler_type {
-        LabelerType::Sequence(_) => {
-            train_model_with_encoder::<LayerEncoder>(&config, train_tensors, validation_tensors)
-        }
-        LabelerType::Parser(EncoderType::RelativePOS) => {
-            train_model_with_encoder::<RelativePOSEncoder>(
-                &config,
-                train_tensors,
-                validation_tensors,
-            )
-        }
-        LabelerType::Parser(EncoderType::RelativePosition) => {
-            train_model_with_encoder::<RelativePositionEncoder>(
-                &config,
-                train_tensors,
-                validation_tensors,
-            )
-        }
-    }
-    .or_exit("Error while training model", 1);
+    train_model(&config, train_tensors, validation_tensors)
+        .or_exit("Error while training model", 1);
 }
 
-fn train_model_with_encoder<E>(
+fn train_model(
     config: &Config,
     train_tensors: CollectedTensors,
     validation_tensors: CollectedTensors,
-) -> Result<(), Error>
-where
-    E: SentenceEncoder,
-    E::Encoding: Clone + Eq + Hash,
-    Numberer<E::Encoding>: CborRead,
-{
-    let labels: Numberer<E::Encoding> = config.labeler.load_labels().or_exit(
-        format!(
-            "Cannot load or create label file '{}'",
-            config.labeler.labels
-        ),
-        1,
-    );
-
-    let embeddings = config
-        .embeddings
-        .load_embeddings()
-        .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings);
-
+) -> Result<(), Error> {
     let graph_read = BufReader::new(File::open(&config.model.graph)?);
     let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
-    let tagger =
-        Tagger::random_weights(graph, labels, vectorizer).or_exit("Cannot construct tagger", 1);
+    let trainer = TaggerTrainer::random_weights(graph).or_exit("Cannot construct trainer", 1);
 
     let mut best_epoch = 0;
     let mut best_acc = 0.0;
@@ -118,14 +80,14 @@ where
     for epoch in 0.. {
         let lr = lr_schedule.learning_rate(epoch, last_acc);
 
-        let (loss, acc) = run_epoch(&tagger, &train_tensors, true, lr);
+        let (loss, acc) = run_epoch(&trainer, &train_tensors, true, lr);
 
         eprintln!(
             "Epoch {} (train, lr: {:.4}): loss: {:.4}, acc: {:.4}",
             epoch, lr, loss, acc
         );
 
-        let (loss, acc) = run_epoch(&tagger, &validation_tensors, false, lr);
+        let (loss, acc) = run_epoch(&trainer, &validation_tensors, false, lr);
 
         last_acc = acc;
         if acc > best_acc {
@@ -138,7 +100,7 @@ where
             epoch, loss, acc, best_epoch, best_acc
         );
 
-        tagger
+        trainer
             .save(format!("epoch-{}", epoch))
             .or_exit(format!("Cannot save model for epoch {}", epoch), 1);
 
@@ -154,15 +116,12 @@ where
     Ok(())
 }
 
-fn run_epoch<E>(
-    tagger: &Tagger<E>,
+fn run_epoch(
+    trainer: &TaggerTrainer,
     tensors: &CollectedTensors,
     is_training: bool,
     lr: f32,
-) -> (f32, f32)
-where
-    E: Clone + Eq + Hash,
-{
+) -> (f32, f32) {
     let epoch_type = if is_training { "train" } else { "validation" };
 
     let mut instances = 0;
@@ -181,9 +140,9 @@ where
         let labels = &tensors.labels[i];
 
         let batch_perf = if is_training {
-            tagger.train(seq_lens, tokens, labels, lr)
+            trainer.train(seq_lens, tokens, labels, lr)
         } else {
-            tagger.validate(seq_lens, tokens, labels)
+            trainer.validate(seq_lens, tokens, labels)
         };
 
         let n_tokens = seq_lens.view().iter().sum::<i32>();
