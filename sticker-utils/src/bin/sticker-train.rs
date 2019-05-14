@@ -15,7 +15,7 @@ use sticker::tensorflow::{
     CollectedTensors, LearningRateSchedule, TaggerGraph, TaggerTrainer, TensorCollector,
 };
 use sticker::{Collector, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
-use sticker_utils::{CborRead, Config, EncoderType, FileProgress, LabelerType, TomlRead};
+use sticker_utils::{CborRead, Config, EncoderType, LabelerType, ReadProgress, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!(
@@ -211,7 +211,7 @@ where
         1,
     );
     let reader = Reader::new(BufReader::new(
-        FileProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
+        ReadProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
     ));
 
     let mut collector = TensorCollector::new(config.model.batch_size, encoder, labels, vectorizer);
