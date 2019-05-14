@@ -163,28 +163,6 @@ impl<T> Tagger<T>
 where
     T: Clone + Eq + Hash,
 {
-    /// Create a new session with randomized weights.
-    pub fn random_weights(
-        graph: TaggerGraph,
-        labels: Numberer<T>,
-        vectorizer: SentVectorizer,
-    ) -> Result<Tagger<T>, Error> {
-        // Initialize parameters.
-        let mut args = SessionRunArgs::new();
-        args.add_target(&graph.init_op);
-        let session = Self::new_session(&graph)?;
-        session
-            .run(&mut args)
-            .expect("Cannot initialize parameters");
-
-        Ok(Tagger {
-            graph,
-            labels,
-            session,
-            vectorizer,
-        })
-    }
-
     /// Load a tagger with weights.
     ///
     /// This constructor will load the model parameters (such as weights) from
@@ -194,7 +172,7 @@ where
         labels: Numberer<T>,
         vectorizer: SentVectorizer,
         parameters_path: P,
-    ) -> Result<Tagger<T>, Error>
+    ) -> Result<Self, Error>
     where
         P: AsRef<Path>,
     {
@@ -221,23 +199,6 @@ where
             .map_err(status_to_error)?;
 
         Session::new(&session_opts, &graph.graph).map_err(status_to_error)
-    }
-
-    /// Save the model parameters.
-    ///
-    /// The model parameters are stored as the given path.
-    pub fn save<P>(&self, path: P) -> Result<(), Error>
-    where
-        P: AsRef<Path>,
-    {
-        // Add leading directory component if absent.
-        let path_tensor = prepare_path(path)?.into();
-
-        // Call the save op.
-        let mut args = SessionRunArgs::new();
-        args.add_feed(&self.graph.save_path_op, 0, &path_tensor);
-        args.add_target(&self.graph.save_op);
-        self.session.run(&mut args).map_err(status_to_error)
     }
 
     fn prepare_batch(
@@ -333,7 +294,79 @@ where
             args.fetch(probs_token).map_err(status_to_error)?,
         ))
     }
+}
 
+impl<T> Tag<T> for Tagger<T>
+where
+    T: Clone + Eq + Hash,
+{
+    /// Tag sentences, returning the top-k results for every token.
+    fn tag_sentences(
+        &self,
+        sentences: &[impl Borrow<Sentence>],
+    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error> {
+        self.tag_sentences_(sentences)
+    }
+}
+
+fn tf_model_config_to_protobuf(model_config: &ModelConfig) -> Result<Vec<u8>, Error> {
+    let mut config_proto = ConfigProto::new();
+    config_proto.intra_op_parallelism_threads = model_config.intra_op_parallelism_threads as i32;
+    config_proto.inter_op_parallelism_threads = model_config.inter_op_parallelism_threads as i32;
+
+    let mut bytes = Vec::new();
+    config_proto.write_to_vec(&mut bytes)?;
+
+    Ok(bytes)
+}
+
+/// Trainer for a sequence labeling model.
+pub struct TaggerTrainer {
+    graph: TaggerGraph,
+    session: Session,
+}
+
+impl TaggerTrainer {
+    /// Create a new session with randomized weights.
+    pub fn random_weights(graph: TaggerGraph) -> Result<Self, Error> {
+        // Initialize parameters.
+        let mut args = SessionRunArgs::new();
+        args.add_target(&graph.init_op);
+        let session = Self::new_session(&graph)?;
+        session
+            .run(&mut args)
+            .expect("Cannot initialize parameters");
+
+        Ok(TaggerTrainer { graph, session })
+    }
+
+    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
+        let mut session_opts = SessionOptions::new();
+        session_opts
+            .set_config(&tf_model_config_to_protobuf(&graph.model_config)?)
+            .map_err(status_to_error)?;
+
+        Session::new(&session_opts, &graph.graph).map_err(status_to_error)
+    }
+
+    /// Save the model parameters.
+    ///
+    /// The model parameters are stored as the given path.
+    pub fn save<P>(&self, path: P) -> Result<(), Error>
+    where
+        P: AsRef<Path>,
+    {
+        // Add leading directory component if absent.
+        let path_tensor = prepare_path(path)?.into();
+
+        // Call the save op.
+        let mut args = SessionRunArgs::new();
+        args.add_feed(&self.graph.save_path_op, 0, &path_tensor);
+        args.add_target(&self.graph.save_op);
+        self.session.run(&mut args).map_err(status_to_error)
+    }
+
+    /// Train on a batch of inputs and labels.
     pub fn train(
         &self,
         seq_lens: &NdTensor<i32, Ix1>,
@@ -355,6 +388,7 @@ where
         self.validate_(seq_lens, inputs, labels, args)
     }
 
+    /// Perform validation using a batch of inputs and labels.
     pub fn validate(
         &self,
         seq_lens: &NdTensor<i32, Ix1>,
@@ -396,30 +430,6 @@ where
                 .expect("Unable to retrieve accuracy")[0],
         }
     }
-}
-
-impl<T> Tag<T> for Tagger<T>
-where
-    T: Clone + Eq + Hash,
-{
-    /// Tag sentences, returning the top-k results for every token.
-    fn tag_sentences(
-        &self,
-        sentences: &[impl Borrow<Sentence>],
-    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error> {
-        self.tag_sentences_(sentences)
-    }
-}
-
-fn tf_model_config_to_protobuf(model_config: &ModelConfig) -> Result<Vec<u8>, Error> {
-    let mut config_proto = ConfigProto::new();
-    config_proto.intra_op_parallelism_threads = model_config.intra_op_parallelism_threads as i32;
-    config_proto.inter_op_parallelism_threads = model_config.inter_op_parallelism_threads as i32;
-
-    let mut bytes = Vec::new();
-    config_proto.write_to_vec(&mut bytes)?;
-
-    Ok(bytes)
 }
 
 /// Tensorflow requires a path that contains a directory component.
