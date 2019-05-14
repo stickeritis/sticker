@@ -4,7 +4,7 @@ pub use crate::config::{
 };
 
 mod progress;
-pub use crate::progress::FileProgress;
+pub use crate::progress::ReadProgress;
 
 mod sent_proc;
 pub use crate::sent_proc::SentProcessor;
