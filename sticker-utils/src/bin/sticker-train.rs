@@ -125,7 +125,7 @@ where
             epoch, lr, loss, acc
         );
 
-        let (_, acc) = run_epoch(&tagger, &validation_tensors, false, lr);
+        let (loss, acc) = run_epoch(&tagger, &validation_tensors, false, lr);
 
         last_acc = acc;
         if acc > best_acc {
