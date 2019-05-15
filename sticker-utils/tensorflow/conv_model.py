@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
 from enum import Enum
