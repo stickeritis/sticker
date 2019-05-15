@@ -1,17 +1,15 @@
 use conllx::graph::Sentence;
 use conllx::io::WriteSentence;
 use failure::Error;
-use sticker::{EncodingProb, SentenceDecoder, Tag};
+use sticker::Tag;
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.
-pub struct SentProcessor<'a, D, T, W>
+pub struct SentProcessor<'a, T, W>
 where
-    D: SentenceDecoder,
-    T: Tag<D::Encoding>,
+    T: Tag,
     W: WriteSentence,
 {
-    decoder: D,
     tagger: &'a T,
     writer: W,
     batch_size: usize,
@@ -19,18 +17,16 @@ where
     buffer: Vec<Sentence>,
 }
 
-impl<'a, D, T, W> SentProcessor<'a, D, T, W>
+impl<'a, T, W> SentProcessor<'a, T, W>
 where
-    D: SentenceDecoder,
-    T: Tag<D::Encoding>,
+    T: Tag,
     W: WriteSentence,
 {
-    pub fn new(decoder: D, tagger: &'a T, writer: W, batch_size: usize, read_ahead: usize) -> Self {
+    pub fn new(tagger: &'a T, writer: W, batch_size: usize, read_ahead: usize) -> Self {
         assert!(batch_size > 0, "Batch size should at least be 1.");
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
         SentProcessor {
-            decoder,
             tagger,
             writer,
             batch_size,
@@ -56,7 +52,7 @@ where
 
         // Split in batches, tag, and merge results.
         for batch in sent_refs.chunks_mut(self.batch_size) {
-            Self::merge_labels(&self.decoder, batch, self.tagger.tag_sentences(batch)?)?;
+            self.tagger.tag_sentences(batch)?;
         }
 
         // Write out sentences.
@@ -68,27 +64,11 @@ where
 
         Ok(())
     }
-
-    fn merge_labels(
-        decoder: &D,
-        sentences: &mut [&mut Sentence],
-        labels: Vec<Vec<Vec<EncodingProb<D::Encoding>>>>,
-    ) -> Result<(), Error>
-    where
-        D: SentenceDecoder,
-    {
-        for (sentence, sent_labels) in sentences.iter_mut().zip(labels) {
-            decoder.decode(sent_labels.as_slice(), sentence)?;
-        }
-
-        Ok(())
-    }
 }
 
-impl<'a, D, T, W> Drop for SentProcessor<'a, D, T, W>
+impl<'a, T, W> Drop for SentProcessor<'a, T, W>
 where
-    D: SentenceDecoder,
-    T: Tag<D::Encoding>,
+    T: Tag,
     W: WriteSentence,
 {
     fn drop(&mut self) {

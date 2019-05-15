@@ -1,11 +1,9 @@
-use std::hash::Hash;
-
 use conllx::graph::Sentence;
 use failure::Error;
 use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
 
-use crate::{Collector, Numberer, SentVectorizer, SentenceEncoder};
+use crate::{Collector, SentVectorizer, SentenceEncoder};
 
 use super::tensor::{LabelTensor, TensorBuilder};
 
@@ -17,11 +15,9 @@ pub struct CollectedTensors {
 
 pub struct TensorCollector<E>
 where
-    E: SentenceEncoder,
-    E::Encoding: Eq + Hash,
+    E: SentenceEncoder<Encoding = usize>,
 {
     encoder: E,
-    numberer: Numberer<E::Encoding>,
     vectorizer: SentVectorizer,
     batch_size: usize,
     sequence_lens: Vec<NdTensor<i32, Ix1>>,
@@ -33,19 +29,12 @@ where
 
 impl<E> TensorCollector<E>
 where
-    E: SentenceEncoder,
-    E::Encoding: Eq + Hash,
+    E: SentenceEncoder<Encoding = usize>,
 {
-    pub fn new(
-        batch_size: usize,
-        encoder: E,
-        numberer: Numberer<E::Encoding>,
-        vectorizer: SentVectorizer,
-    ) -> Self {
+    pub fn new(batch_size: usize, encoder: E, vectorizer: SentVectorizer) -> Self {
         TensorCollector {
             batch_size,
             encoder,
-            numberer,
             vectorizer,
             labels: Vec::new(),
             inputs: Vec::new(),
@@ -94,8 +83,7 @@ where
 
 impl<E> Collector for TensorCollector<E>
 where
-    E: SentenceEncoder,
-    E::Encoding: Clone + Eq + Hash,
+    E: SentenceEncoder<Encoding = usize>,
 {
     fn collect(&mut self, sentence: &Sentence) -> Result<(), Error> {
         if self.cur_labels.len() == self.batch_size {
@@ -106,7 +94,7 @@ where
         let mut labels = Vec::with_capacity(sentence.len());
 
         for encoding in self.encoder.encode(&sentence)? {
-            labels.push(self.numberer.add(encoding) as i32);
+            labels.push(encoding as i32);
         }
 
         self.cur_inputs.push(input);

@@ -14,7 +14,9 @@ use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{
     CollectedTensors, LearningRateSchedule, TaggerGraph, TaggerTrainer, TensorCollector,
 };
-use sticker::{Collector, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
+use sticker::{
+    CategoricalEncoder, Collector, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder,
+};
 use sticker_utils::{CborRead, Config, EncoderType, LabelerType, ReadProgress, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
@@ -203,6 +205,8 @@ where
         1,
     );
 
+    let encoder = CategoricalEncoder::new(encoder, labels);
+
     let input_file = File::open(path.as_ref()).or_exit(
         format!(
             "Cannot open '{}' for reading",
@@ -214,7 +218,7 @@ where
         ReadProgress::new(input_file).or_exit("Cannot create file progress bar", 1),
     ));
 
-    let mut collector = TensorCollector::new(config.model.batch_size, encoder, labels, vectorizer);
+    let mut collector = TensorCollector::new(config.model.batch_size, encoder, vectorizer);
     for sentence in reader.sentences() {
         let sentence = sentence.or_exit("Cannot parse sentence", 1);
         collector

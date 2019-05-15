@@ -54,7 +54,7 @@ mod tests {
         copy
     }
 
-    fn test_encoding<P, E, C>(path: P, encoder_decoder: E)
+    fn test_encoding<P, E, C>(path: P, mut encoder_decoder: E)
     where
         P: AsRef<Path>,
         E: SentenceEncoder<Encoding = C> + SentenceDecoder<Encoding = C>,

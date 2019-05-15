@@ -54,7 +54,7 @@ impl RelativePositionEncoder {
 impl SentenceEncoder for RelativePositionEncoder {
     type Encoding = DependencyEncoding<RelativePosition>;
 
-    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
+    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
         let mut encoded = Vec::with_capacity(sentence.len());
         for idx in 0..sentence.len() {
             let token = &sentence[idx];
