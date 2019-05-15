@@ -13,7 +13,7 @@ use threadpool::ThreadPool;
 
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
+use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
 use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
@@ -125,7 +125,7 @@ fn serve_with_decoder<D>(
     decoder: D,
     listener: TcpListener,
 ) where
-    D: 'static + Clone + Send + SentenceDecoder,
+    D: 'static + Clone + Send + SentenceDecoder + Sync,
     D::Encoding: Clone + Eq + Hash + Send + Sync,
     Numberer<D::Encoding>: CborRead,
 {
@@ -134,30 +134,32 @@ fn serve_with_decoder<D>(
         1,
     );
 
+    let categorical_decoder = CategoricalEncoder::new(decoder, labels);
+
     let tagger = Arc::new(
-        Tagger::load_weights(graph, labels, vectorizer, config.model.parameters.clone())
-            .or_exit("Cannot construct tagger", 1),
+        Tagger::load_weights(
+            graph,
+            categorical_decoder,
+            vectorizer,
+            config.model.parameters.clone(),
+        )
+        .or_exit("Cannot construct tagger", 1),
     );
 
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
                 let config = config.clone();
-                let decoder = decoder.clone();
                 let tagger = tagger.clone();
-                pool.execute(move || handle_client_with_decoder(config, tagger, decoder, stream))
+                pool.execute(move || handle_client_with_decoder(config, tagger, stream))
             }
             Err(err) => eprintln!("Error processing stream: {}", err),
         }
     }
 }
 
-fn handle_client_with_decoder<D>(
-    config: Config,
-    tagger: Arc<Tagger<D::Encoding>>,
-    decoder: D,
-    mut stream: TcpStream,
-) where
+fn handle_client_with_decoder<D>(config: Config, tagger: Arc<Tagger<D>>, mut stream: TcpStream)
+where
     D: SentenceDecoder,
     D::Encoding: Clone + Eq + Hash,
 {
@@ -179,7 +181,6 @@ fn handle_client_with_decoder<D>(
     let writer = Writer::new(BufWriter::new(&conllx_stream));
 
     let mut sent_proc = SentProcessor::new(
-        decoder,
         &*tagger,
         writer,
         config.model.batch_size,

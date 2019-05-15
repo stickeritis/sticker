@@ -1,11 +1,9 @@
-use std::borrow::Borrow;
+use std::borrow::BorrowMut;
 
 use conllx::graph::Sentence;
 use conllx::token::{Features, Token};
-use failure::Error;
+use failure::Fallible;
 use serde_derive::{Deserialize, Serialize};
-
-use crate::EncodingProb;
 
 /// Tagging layer.
 #[serde(rename_all = "lowercase")]
@@ -64,14 +62,8 @@ impl LayerValue for Token {
 }
 
 /// Trait for sequence taggers.
-pub trait Tag<T>
-where
-    T: ToOwned,
-{
-    fn tag_sentences(
-        &self,
-        sentences: &[impl Borrow<Sentence>],
-    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error>;
+pub trait Tag {
+    fn tag_sentences(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()>;
 }
 
 /// Results of validation.

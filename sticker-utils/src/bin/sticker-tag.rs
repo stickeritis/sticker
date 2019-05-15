@@ -10,7 +10,7 @@ use stdinout::{Input, OrExit, Output};
 
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
+use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
 use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
 
 fn print_usage(program: &str, opts: Options) {
@@ -117,11 +117,17 @@ fn process_with_decoder<D, R, W>(
         1,
     );
 
-    let tagger = Tagger::load_weights(graph, labels, vectorizer, &config.model.parameters)
-        .or_exit("Cannot construct tagger", 1);
+    let categorical_decoder = CategoricalEncoder::new(decoder, labels);
+
+    let tagger = Tagger::load_weights(
+        graph,
+        categorical_decoder,
+        vectorizer,
+        &config.model.parameters,
+    )
+    .or_exit("Cannot construct tagger", 1);
 
     let mut sent_proc = SentProcessor::new(
-        decoder,
         &tagger,
         write,
         config.model.batch_size,

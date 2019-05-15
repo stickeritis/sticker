@@ -1,4 +1,4 @@
-use std::borrow::Borrow;
+use std::borrow::{Borrow, BorrowMut};
 use std::cmp::min;
 use std::hash::Hash;
 use std::io::Read;
@@ -6,7 +6,7 @@ use std::iter::FromIterator;
 use std::path::Path;
 
 use conllx::graph::Sentence;
-use failure::{err_msg, format_err, Error};
+use failure::{err_msg, format_err, Error, Fallible};
 use itertools::Itertools;
 use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
@@ -19,7 +19,8 @@ use tensorflow::{
 use tf_proto::ConfigProto;
 
 use super::tensor::{NoLabels, TensorBuilder};
-use crate::{EncodingProb, ModelPerformance, Numberer, SentVectorizer, Tag};
+use crate::encoder::{CategoricalEncoder, SentenceDecoder};
+use crate::{EncodingProb, ModelPerformance, SentVectorizer, Tag};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct ModelConfig {
@@ -149,19 +150,21 @@ impl TaggerGraph {
     }
 }
 
-pub struct Tagger<T>
+pub struct Tagger<D>
 where
-    T: Eq + Hash,
+    D: SentenceDecoder,
+    D::Encoding: Eq + Hash,
 {
     graph: TaggerGraph,
-    labels: Numberer<T>,
+    decoder: CategoricalEncoder<D, D::Encoding>,
     session: Session,
     vectorizer: SentVectorizer,
 }
 
-impl<T> Tagger<T>
+impl<D> Tagger<D>
 where
-    T: Clone + Eq + Hash,
+    D: SentenceDecoder,
+    D::Encoding: Clone + Eq + Hash,
 {
     /// Load a tagger with weights.
     ///
@@ -169,7 +172,7 @@ where
     /// the file specified in `parameters_path`.
     pub fn load_weights<P>(
         graph: TaggerGraph,
-        labels: Numberer<T>,
+        decoder: CategoricalEncoder<D, D::Encoding>,
         vectorizer: SentVectorizer,
         parameters_path: P,
     ) -> Result<Self, Error>
@@ -186,7 +189,7 @@ where
 
         Ok(Tagger {
             graph,
-            labels,
+            decoder,
             session,
             vectorizer,
         })
@@ -224,10 +227,7 @@ where
         Ok(builder)
     }
 
-    fn tag_sentences_(
-        &self,
-        sentences: &[impl Borrow<Sentence>],
-    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error> {
+    fn tag_sentences_(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()> {
         let builder = self.prepare_batch(sentences)?;
 
         // Tag the batch
@@ -238,32 +238,34 @@ where
             &self.graph.top_k_probs_op,
         )?;
 
-        // Convert label numbers to labels.
+        // Decode label numbers.
         let max_seq_len = tag_tensor.dims()[1] as usize;
         let k = tag_tensor.dims()[2] as usize;
-        let mut labels = Vec::new();
-        for (idx, sentence) in sentences.iter().enumerate() {
-            let seq_len = min(max_seq_len, sentence.borrow().len() - 1);
+        for (idx, sentence) in sentences.iter_mut().map(BorrowMut::borrow_mut).enumerate() {
+            // BorrowMut derives from borrow, but the borrowed type cannot
+            // be inferred with a borrow() call here?
+            let seq_len = min(max_seq_len, sentence.len() - 1);
             let offset = idx * max_seq_len * k;
             let seq = &tag_tensor[offset..offset + seq_len * k];
             let probs = &probs_tensor[offset..offset + seq_len * k];
 
-            labels.push(
-                seq.iter()
-                    .zip(probs)
-                    .chunks(k)
-                    .into_iter()
-                    .map(|c| {
-                        c.map(|(&label, &prob)| {
-                            EncodingProb::new(self.labels.value(label as usize).unwrap(), prob)
-                        })
-                    })
-                    .map(Vec::from_iter)
-                    .collect(),
-            );
+            // Get the label numbers with their probabilities.
+            let encoded = seq
+                .iter()
+                .zip(probs)
+                .chunks(k)
+                .into_iter()
+                .map(|c| {
+                    c.map(|(&label, &prob)| EncodingProb::new_from_owned(label as usize, prob))
+                })
+                .map(Vec::from_iter)
+                .collect::<Vec<_>>();
+
+            // And decode the labels.
+            self.decoder.decode(&encoded, sentence)?;
         }
 
-        Ok(labels)
+        Ok(())
     }
 
     fn tag_sequences(
@@ -296,15 +298,13 @@ where
     }
 }
 
-impl<T> Tag<T> for Tagger<T>
+impl<D> Tag for Tagger<D>
 where
-    T: Clone + Eq + Hash,
+    D: SentenceDecoder,
+    D::Encoding: Clone + Eq + Hash,
 {
     /// Tag sentences, returning the top-k results for every token.
-    fn tag_sentences(
-        &self,
-        sentences: &[impl Borrow<Sentence>],
-    ) -> Result<Vec<Vec<Vec<EncodingProb<T>>>>, Error> {
+    fn tag_sentences(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()> {
         self.tag_sentences_(sentences)
     }
 }
