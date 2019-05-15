@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+from conv_model import ConvModel
+from write_helper import get_common_parser, parse_common_config, create_graph
+
+if __name__ == '__main__':
+    parser = get_common_parser()
+
+    parser.add_argument(
+        "--kernel_size",
+        type=int,
+        help="convolution model kernel size",
+        default=3)
+    parser.add_argument(
+        "--levels",
+        type=int,
+        help="number of dilated convolution levels",
+        default=7)
+    parser.add_argument(
+        "--relu",
+        help="use ReLU activiation in convolutions in place of GLU",
+        action="store_true")
+    parser.add_argument(
+        "--keep_prob",
+        type=float,
+        help="dropout keep probability",
+        default=0.85)
+    parser.add_argument(
+        "--keep_prob_input",
+        type=float,
+        help="input keep probability",
+        default=0.80)
+
+    args = parser.parse_args()
+
+    config = parse_common_config(args)
+    config.glu = not args.relu
+    config.kernel_size = args.kernel_size
+    config.n_levels = args.levels
+    config.keep_prob = args.keep_prob
+    config.keep_prob_input = args.keep_prob_input
+    model = ConvModel
+
+    print("Model: convolution, kernel: %d, levels: %d, glu: %r, crf: %r\n"
+          "Dropout input: %.2f, hidden: %.2f" %
+          (config.kernel_size, config.n_levels, config.glu,
+           config.crf, config.keep_prob_input, config.keep_prob))
+
+    create_graph(config, model, args)
