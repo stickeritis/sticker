@@ -19,12 +19,11 @@ impl labels::Labels for NoLabels {
     }
 }
 
-/// Labels stored in a `Tensor<i32>`.
-pub struct LabelTensor(pub NdTensor<i32, Ix2>);
+pub type LabelTensor = NdTensor<i32, Ix2>;
 
 impl labels::Labels for LabelTensor {
     fn from_shape(batch_size: usize, time_steps: usize) -> Self {
-        LabelTensor(NdTensor::zeros([batch_size, time_steps]))
+        NdTensor::zeros([batch_size, time_steps])
     }
 }
 
@@ -114,7 +113,6 @@ impl TensorBuilder<LabelTensor> {
         let timesteps = min(self.inputs.view().shape()[1], input.len() / token_repr_size);
         #[allow(clippy::deref_addrof)]
         self.labels
-            .0
             .view_mut()
             .slice_mut(s![self.sequence, 0..timesteps])
             .assign(&labels.into());

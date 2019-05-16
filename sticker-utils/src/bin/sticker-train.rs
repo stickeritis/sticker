@@ -211,9 +211,9 @@ where
         let (inputs, seq_lens, labels) = batch.or_exit("Cannot read batch", 1).into_parts();
 
         let batch_perf = if is_training {
-            trainer.train(&seq_lens, &inputs, &labels.0, lr)
+            trainer.train(&seq_lens, &inputs, &labels, lr)
         } else {
-            trainer.validate(&seq_lens, &inputs, &labels.0)
+            trainer.validate(&seq_lens, &inputs, &labels)
         };
 
         let n_tokens = seq_lens.view().iter().sum::<i32>();
