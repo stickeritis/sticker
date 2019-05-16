@@ -6,6 +6,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     pkgconfig
     latest.rustChannels.stable.rust
+    python3Packages.pytest
   ];
 
   buildInputs = [
@@ -13,4 +14,8 @@ stdenv.mkDerivation rec {
     libtensorflow
     openssl
   ] ++ lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
+
+  propagatedBuildInputs = [
+    python3Packages.tensorflow
+  ];
 }
