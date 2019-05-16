@@ -1,6 +1,3 @@
-mod collector;
-pub use self::collector::{CollectedTensors, TensorCollector};
-
 mod dataset;
 pub use dataset::{ConllxDataSet, DataSet};
 
