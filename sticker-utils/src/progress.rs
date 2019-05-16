@@ -4,7 +4,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 
 pub struct ReadProgress<R> {
     inner: R,
-    progress: ProgressBar,
+    progress_bar: ProgressBar,
 }
 
 /// A progress bar that implements the `Read` and `Seek` traits.
@@ -17,17 +17,18 @@ where
 {
     pub fn new(mut read: R) -> io::Result<Self> {
         let len = read.seek(SeekFrom::End(0))? + 1;
-        let progress = ProgressBar::new(len);
-        progress.set_style(ProgressStyle::default_bar().template("{bar} {bytes}/{total_bytes}"));
+        let progress_bar = ProgressBar::new(len);
+        progress_bar
+            .set_style(ProgressStyle::default_bar().template("{bar} {bytes}/{total_bytes}"));
 
         Ok(ReadProgress {
             inner: read,
-            progress,
+            progress_bar,
         })
     }
 
-    pub fn set_style(&self, style: ProgressStyle) {
-        self.progress.set_style(style)
+    pub fn progress_bar(&self) -> &ProgressBar {
+        &self.progress_bar
     }
 }
 
@@ -38,7 +39,7 @@ where
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let n_read = self.inner.read(buf)?;
         let pos = self.inner.seek(SeekFrom::Current(0))?;
-        self.progress.set_position(pos);
+        self.progress_bar.set_position(pos);
         Ok(n_read)
     }
 }
@@ -49,13 +50,13 @@ where
 {
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
         let pos = self.inner.seek(pos)?;
-        self.progress.set_position(pos);
+        self.progress_bar.set_position(pos);
         Ok(pos)
     }
 }
 
 impl<R> Drop for ReadProgress<R> {
     fn drop(&mut self) {
-        self.progress.finish();
+        self.progress_bar.finish();
     }
 }
