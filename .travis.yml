@@ -1,4 +1,3 @@
-language: rust
 dist: xenial
 env:
   global:
@@ -10,16 +9,28 @@ addons:
 matrix:
   fast_finish: true
   include:
-  - os: linux
+  - language: python
+    python: 3.6
+    before_script:
+      - cd sticker-utils/tensorflow/
+    script:
+      - pip install numpy
+      - pip install "tensorflow==1.13.1"
+      - python -m unittest discover -s . -p "*test.py"
+  - language: rust
+    os: linux
     rust: stable
     env: TARGET=x86_64-unknown-linux-gnu
-  - os: osx
+  - language: rust
+    os: osx
     rust: stable
     env: TARGET=x86_64-apple-darwin
-  - os: linux
+  - language: rust
+    os: linux
     rust: 1.34.0
     env: TARGET=x86_64-unknown-linux-gnu
-  - os: linux
+  - language: rust
+    os: linux
     rust: nightly
     env: TARGET=x86_64-unknown-linux-gnu
   allow_failures:
