@@ -2,7 +2,7 @@ import argparse
 import tensorflow as tf
 import toml
 
-from config import DefaultConfig
+from sticker_graph.config import DefaultConfig
 
 
 def read_shapes(args):

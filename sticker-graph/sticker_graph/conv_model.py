@@ -1,9 +1,9 @@
+from enum import Enum
+
 import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
-from enum import Enum
-from model import Model
-
-from weight_norm import WeightNorm
+from sticker_graph.model import Model
+from sticker_graph.weight_norm import WeightNorm
 
 
 class Sharing(Enum):
