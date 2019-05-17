@@ -12,7 +12,7 @@ matrix:
   - language: python
     python: 3.6
     before_script:
-      - cd sticker-utils/tensorflow/
+      - cd sticker-graph
     script:
       - pip install numpy
       - pip install "tensorflow==1.13.1"
