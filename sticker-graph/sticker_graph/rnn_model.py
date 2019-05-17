@@ -1,7 +1,6 @@
 import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
-from enum import Enum
-from model import Model
+from sticker_graph.model import Model
 
 
 def dropout_wrapper(

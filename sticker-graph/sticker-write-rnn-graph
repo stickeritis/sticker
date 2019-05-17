@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from rnn_model import RNNModel
-from write_helper import get_common_parser, parse_common_config, create_graph
+from sticker_graph.rnn_model import RNNModel
+from sticker_graph.write_helper import get_common_parser, parse_common_config, create_graph
 
 if __name__ == '__main__':
     parser = get_common_parser()

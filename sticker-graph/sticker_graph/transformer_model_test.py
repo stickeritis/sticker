@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import tensorflow as tf
 
-from transformer_model import split_heads, self_attention
+from sticker_graph.transformer_model import split_heads, self_attention
 
 
 class TransformerTest(unittest.TestCase):

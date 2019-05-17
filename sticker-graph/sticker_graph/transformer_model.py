@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from model import Model
+from sticker_graph.model import Model
 
 
 def split_heads(t, num_heads):

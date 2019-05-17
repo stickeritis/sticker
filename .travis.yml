@@ -14,9 +14,7 @@ matrix:
     before_script:
       - cd sticker-graph
     script:
-      - pip install numpy
-      - pip install "tensorflow==1.13.1"
-      - python -m unittest discover -s . -p "*test.py"
+      - python setup.py test
   - language: rust
     os: linux
     rust: stable
