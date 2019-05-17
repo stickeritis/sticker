@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+
+import toml
+
+from sticker_graph.transformer_model import TransformerModel
+from sticker_graph.write_helper  import get_common_parser, parse_common_config, create_graph
+
+
+if __name__ == '__main__':
+    parser = get_common_parser()
+
+    parser.add_argument(
+        "--num_layers",
+        help="Number of transformer layers.",
+        type=int,
+        default=5)
+    parser.add_argument(
+        "--num_heads",
+        metavar="NUM_HEADS",
+        help="Number of attention heads.",
+        type=int,
+        default=12)
+    parser.add_argument(
+        "--outer_hsize",
+        help="Number of parameters of the outer layer. "
+             "Needs to be evenly dividable by NUM_HEADS.",
+        type=int,
+        default=384)
+    parser.add_argument(
+        "--inner_hsize",
+        help="Number of parameters of the inner layer.",
+        type=int,
+        default=1560)
+    parser.add_argument(
+        "--keep_prob_inner",
+        type=float,
+        help="Dropout keep probability of the inner layer.",
+        default=0.9)
+    parser.add_argument(
+        "--keep_prob_outer",
+        type=float,
+        help="Dropout keep probability of the outer layer.",
+        default=0.9)
+    parser.add_argument(
+        "--keep_prob_attention",
+        type=float,
+        help="Dropout keep probability of the attention layer.",
+        default=0.9)
+    parser.add_argument(
+        "--keep_prob_input",
+        type=float,
+        help="Dropout keep probability of the input.",
+        default=0.9)
+    parser.add_argument(
+        "--activation",
+        type=str,
+        help="The activation function. One of ['relu','gelu']",
+        choices=['relu', 'gelu'],
+        default='relu'
+    )
+    parser.add_argument(
+        "--pass_inputs",
+        help="Do not pass the inputs through a dense layer. Setting this option"
+             "means that outer_hsize needs to be equal to the input.shape[-1].",
+        action='store_true',
+    )
+    parser.add_argument(
+        "--embed_time",
+        help="Do not use sinusoidal time signal but learned embeddings. If this "
+             "option is set, `--max_time` needs to be set too. Using learned "
+             "time embeddings means every timestep beyond '--max_time' will "
+             "get the same time representation. Use with care!",
+        action='store_true',
+    )
+    parser.add_argument(
+        "--max_time",
+        metavar="MAX_TIME",
+        help="ONLY ACTIVE with '--embed_time'! "
+             "Sets the last timestep to receive a unique time embedding. "
+             "All positions greater than 'MAX_TIME' receive the same time "
+             "embedding.",
+        type=int
+    )
+
+    args = parser.parse_args()
+
+    # sanity checks
+    if args.embed_time and args.max_time is None:
+        parser.error("'--embed_time' requires '--max_time'")
+    if args.outer_hsize % args.num_heads != 0:
+        parser.error("outer_hsize % NUM_HEADS != 0. "
+                     "outer_hsize: {} NUM_HEADS: {}"
+                     .format(args.outer_hsize, args.num_heads))
+    
+    config = parse_common_config(args)
+    config.pass_inputs = args.pass_inputs
+    config.num_layers = args.num_layers
+    config.num_heads = args.num_heads
+    config.inner_hsize = args.inner_hsize
+    config.outer_hsize = args.outer_hsize
+    config.activation = args.activation
+    config.embed_time = args.embed_time
+    if args.embed_time:
+        config.max_position = args.max_time
+    config.keep_prob_input = args.keep_prob_input
+    config.keep_prob_inner = args.keep_prob_inner
+    config.keep_prob_outer = args.keep_prob_outer
+    config.keep_prob_attention = args.keep_prob_attention
+
+    model = TransformerModel
+
+    print("Model = Transformer",
+          toml.dumps(args.__dict__),
+          sep="\n")
+
+    create_graph(config, model, args)
