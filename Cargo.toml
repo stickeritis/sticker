@@ -1,2 +1,2 @@
 [workspace]
-members = ["sticker", "sticker-utils"]
+members = ["tf-proto", "sticker", "sticker-utils"]
