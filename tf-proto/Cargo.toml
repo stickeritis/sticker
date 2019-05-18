@@ -1,0 +1,15 @@
+[package]
+name = "tf-proto"
+version = "0.1.0"
+authors = ["Daniël de Kok <me@danieldk.eu>"]
+edition = "2018"
+license = "Apache-2.0"
+
+[dependencies]
+protobuf = "2"
+
+[build-dependencies]
+protoc-rust = { version = "2", optional = true }
+
+[features]
+proto-compile = [ "protoc-rust" ]

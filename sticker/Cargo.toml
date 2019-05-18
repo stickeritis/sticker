@@ -17,10 +17,10 @@ itertools = "0.8"
 ndarray = "0.12"
 ordered-float = "1"
 petgraph = "0.4"
-protobuf = "1"
+protobuf = "2"
 serde = "1"
 serde_derive = "1"
-tf-proto = { git = "https://github.com/danieldk/tf-proto-rs", tag = "v1.4.0" }
+tf-proto = { path = "../tf-proto" }
 tensorflow = "0.13"
 
 [dev-dependencies]
