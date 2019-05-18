@@ -20,11 +20,11 @@ def create_graph(config, model, args):
 
     with tf.Graph().as_default(), tf.Session(config=tfconfig) as session:
         with tf.variable_scope("model", reuse=None):
-            m = model(config=config, shapes=shapes)
+            model(config=config, shapes=shapes)
 
-        init = tf.variables_initializer(tf.global_variables(), name='init')
+        tf.variables_initializer(tf.global_variables(), name='init')
 
-        saver = tf.train.Saver(tf.global_variables())
+        tf.train.Saver(tf.global_variables())
 
         tf.train.write_graph(
             session.graph_def,
