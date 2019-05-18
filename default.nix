@@ -17,5 +17,6 @@ stdenv.mkDerivation rec {
 
   propagatedBuildInputs = [
     python3Packages.tensorflow
+    python3Packages.toml
   ];
 }
