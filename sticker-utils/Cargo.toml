@@ -10,10 +10,10 @@ repository = "https://github.com/danieldk/sticker.git"
 license = "Apache-2.0"
 
 [dependencies]
+clap = "2"
 conllx = "0.11"
 failure = "0.1"
 finalfusion = "0.5"
-getopts = "0.2"
 indicatif = "0.11"
 ordered-float = { version = "1", features = ["serde"] }
 serde = "1"

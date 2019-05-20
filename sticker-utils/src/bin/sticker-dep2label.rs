@@ -1,60 +1,77 @@
-use std::env::args;
 use std::io::BufWriter;
 use std::process;
 
+use clap::{App, AppSettings, Arg};
 use conllx::graph::Node;
 use conllx::io::{ReadSentence, WriteSentence};
 use conllx::token::Features;
-use getopts::Options;
 use stdinout::{Input, OrExit, Output};
 
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::SentenceEncoder;
 
-fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} [options] [INPUT] [OUTPUT]", program);
-    print!("{}", opts.usage(&brief));
-    process::exit(1);
+static ENCODER: &str = "ENCODER";
+static INPUT: &str = "INPUT";
+static OUTPUT: &str = "OUTPUT";
+
+static DEFAULT_CLAP_SETTINGS: &[AppSettings] = &[
+    AppSettings::DontCollapseArgsInUsage,
+    AppSettings::UnifiedHelpMessage,
+];
+
+pub struct Dep2LabelApp {
+    encoder: String,
+    input: Option<String>,
+    output: Option<String>,
+}
+
+impl Dep2LabelApp {
+    fn new() -> Self {
+        let matches = App::new("sticker-dep2label")
+            .settings(DEFAULT_CLAP_SETTINGS)
+            .arg(
+                Arg::with_name(ENCODER)
+                    .short("e")
+                    .long("encoder")
+                    .value_name("ENC")
+                    .help("Dependency encoder")
+                    .possible_values(&["rel_pos", "rel_position"])
+                    .default_value("rel_pos"),
+            )
+            .arg(Arg::with_name(INPUT).help("Input data").index(1))
+            .arg(Arg::with_name(OUTPUT).help("Output data").index(2))
+            .get_matches();
+
+        let encoder = matches.value_of(ENCODER).unwrap().into();
+        let input = matches.value_of(INPUT).map(ToOwned::to_owned);
+        let output = matches.value_of(OUTPUT).map(ToOwned::to_owned);
+
+        Dep2LabelApp {
+            encoder,
+            input,
+            output,
+        }
+    }
+}
+
+impl Default for Dep2LabelApp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 fn main() {
-    let args: Vec<String> = args().collect();
-    let program = args[0].clone();
-
-    let mut opts = Options::new();
-    opts.optopt(
-        "e",
-        "encoder",
-        "dependency encoder",
-        "rel_pos or rel_position (default: rel_pos)",
-    );
-    opts.optflag("h", "help", "print this help menu");
-    let matches = opts.parse(&args[1..]).or_exit("Cannot parse options", 1);
-
-    if matches.opt_present("h") {
-        print_usage(&program, opts);
-        return;
-    }
-
-    if matches.free.len() > 2 {
-        print_usage(&program, opts);
-        return;
-    }
-
-    let input = Input::from(matches.free.get(0));
+    let app = Dep2LabelApp::new();
+    let input = Input::from(app.input);
     let reader =
         conllx::io::Reader::new(input.buf_read().or_exit("Cannot open input for reading", 1));
 
-    let output = Output::from(matches.free.get(1));
+    let output = Output::from(app.output);
     let writer = conllx::io::Writer::new(BufWriter::new(
         output.write().or_exit("Cannot open output for writing", 1),
     ));
 
-    match matches
-        .opt_str("e")
-        .unwrap_or_else(|| "rel_pos".to_owned())
-        .as_str()
-    {
+    match app.encoder.as_str() {
         "rel_pos" => label_with_encoder(RelativePOSEncoder, reader, writer),
         "rel_position" => label_with_encoder(RelativePositionEncoder, reader, writer),
         unknown => {

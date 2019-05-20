@@ -1,13 +1,11 @@
-use std::env::args;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::Write;
 use std::path::Path;
-use std::process;
 
+use clap::Arg;
 use conllx::io::{ReadSentence, Reader};
 use failure::Error;
-use getopts::Options;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
 
@@ -15,7 +13,11 @@ use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::{
     Collector, Embeddings, LayerEncoder, NoopCollector, Numberer, SentVectorizer, SentenceEncoder,
 };
-use sticker_utils::{CborWrite, Config, EncoderType, LabelerType, TomlRead};
+use sticker_utils::{sticker_app, CborWrite, Config, EncoderType, LabelerType, TomlRead};
+
+static CONFIG: &str = "CONFIG";
+static TRAIN_DATA: &str = "TRAIN_DATA";
+static SHAPES: &str = "SHAPES";
 
 /// Ad-hoc shapes structure, which can be used to construct the
 /// Tensorflow parsing graph.
@@ -26,46 +28,56 @@ struct Shapes {
     tag_embed_dims: usize,
 }
 
-fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} [options] CONFIG DATA SHAPES", program);
-    print!("{}", opts.usage(&brief));
-    process::exit(1);
+pub struct PrepareApp {
+    config: String,
+    train_data: Option<String>,
+    shapes: Option<String>,
+}
+
+impl PrepareApp {
+    fn new() -> Self {
+        let matches = sticker_app("sticker-prepare")
+            .arg(Arg::with_name(TRAIN_DATA).help("Training data").index(2))
+            .arg(Arg::with_name(SHAPES).help("Shape output file").index(3))
+            .get_matches();
+
+        let config = matches.value_of(CONFIG).unwrap().into();
+        let train_data = matches.value_of(TRAIN_DATA).map(ToOwned::to_owned);
+        let shapes = matches.value_of(SHAPES).map(ToOwned::to_owned);
+
+        PrepareApp {
+            config,
+            train_data,
+            shapes,
+        }
+    }
+}
+
+impl Default for PrepareApp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 fn main() {
-    let args: Vec<String> = args().collect();
-    let program = args[0].clone();
+    let app = PrepareApp::new();
 
-    let mut opts = Options::new();
-    opts.optflag("h", "help", "print this help menu");
-    let matches = opts.parse(&args[1..]).or_exit("Cannot parse options", 1);
-
-    if matches.opt_present("h") {
-        print_usage(&program, opts);
-        return;
-    }
-
-    if matches.free.is_empty() || matches.free.len() > 3 {
-        print_usage(&program, opts);
-        std::process::exit(1);
-    }
-
-    let config_file = File::open(&matches.free[0]).or_exit(
-        format!("Cannot open configuration file '{}'", &matches.free[0]),
+    let config_file = File::open(&app.config).or_exit(
+        format!("Cannot open configuration file '{}'", &app.config),
         1,
     );
     let mut config = Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
     config
-        .relativize_paths(&matches.free[0])
+        .relativize_paths(app.config)
         .or_exit("Cannot relativize paths in configuration", 1);
 
-    let input = Input::from(matches.free.get(1));
+    let input = Input::from(app.train_data);
     let treebank_reader = Reader::new(
         input
             .buf_read()
             .or_exit("Cannot open corpus for reading", 1),
     );
-    let output = Output::from(matches.free.get(2));
+    let output = Output::from(app.shapes);
     let shapes_write = output.write().or_exit("Cannot create shapes file", 1);
 
     let embeddings = config

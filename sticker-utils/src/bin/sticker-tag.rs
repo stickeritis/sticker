@@ -1,55 +1,69 @@
-use std::env::args;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::BufWriter;
-use std::process;
 
+use clap::Arg;
 use conllx::io::{ReadSentence, Reader, WriteSentence, Writer};
-use getopts::Options;
 use stdinout::{Input, OrExit, Output};
 
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
 use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
-use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
+use sticker_utils::{
+    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead,
+};
 
-fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} [options] CONFIG [INPUT] [OUTPUT]", program);
-    print!("{}", opts.usage(&brief));
-    process::exit(1);
+static CONFIG: &str = "CONFIG";
+static INPUT: &str = "INPUT";
+static OUTPUT: &str = "OUTPUT";
+
+pub struct TagApp {
+    config: String,
+    input: Option<String>,
+    output: Option<String>,
+}
+
+impl TagApp {
+    fn new() -> Self {
+        let matches = sticker_app("sticker-tag")
+            .arg(Arg::with_name(INPUT).help("Input data").index(2))
+            .arg(Arg::with_name(OUTPUT).help("Output data").index(3))
+            .get_matches();
+
+        let config = matches.value_of(CONFIG).unwrap().into();
+        let input = matches.value_of(INPUT).map(ToOwned::to_owned);
+        let output = matches.value_of(OUTPUT).map(ToOwned::to_owned);
+
+        TagApp {
+            config,
+            input,
+            output,
+        }
+    }
+}
+
+impl Default for TagApp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 fn main() {
-    let args: Vec<String> = args().collect();
-    let program = args[0].clone();
+    let app = TagApp::new();
 
-    let mut opts = Options::new();
-    opts.optflag("h", "help", "print this help menu");
-    let matches = opts.parse(&args[1..]).or_exit("Cannot parse options", 1);
-
-    if matches.opt_present("h") {
-        print_usage(&program, opts);
-        return;
-    }
-
-    if matches.free.is_empty() || matches.free.len() > 3 {
-        print_usage(&program, opts);
-        return;
-    }
-
-    let config_file = File::open(&matches.free[0]).or_exit(
-        format!("Cannot open configuration file '{}'", &matches.free[0]),
+    let config_file = File::open(&app.config).or_exit(
+        format!("Cannot open configuration file '{}'", app.config),
         1,
     );
     let mut config = Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
     config
-        .relativize_paths(&matches.free[0])
+        .relativize_paths(app.config)
         .or_exit("Cannot relativize paths in configuration", 1);
 
-    let input = Input::from(matches.free.get(1));
+    let input = Input::from(app.input);
     let reader = Reader::new(input.buf_read().or_exit("Cannot open input for reading", 1));
 
-    let output = Output::from(matches.free.get(2));
+    let output = Output::from(app.output);
     let writer = Writer::new(BufWriter::new(
         output.write().or_exit("Cannot open output for writing", 1),
     ));
