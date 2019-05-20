@@ -1,71 +1,86 @@
-use std::env::args;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::{BufReader, BufWriter, Write};
 use std::net::{TcpListener, TcpStream};
-use std::process;
 use std::sync::Arc;
 
+use clap::Arg;
 use conllx::io::{ReadSentence, Reader, Writer};
-use getopts::Options;
 use stdinout::OrExit;
 use threadpool::ThreadPool;
 
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
 use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
-use sticker_utils::{CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead};
+use sticker_utils::{
+    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead,
+};
 
-fn print_usage(program: &str, opts: Options) {
-    let brief = format!("Usage: {} [options] CONFIG ADDR", program);
-    print!("{}", opts.usage(&brief));
-    process::exit(1);
+static CONFIG: &str = "CONFIG";
+static ADDR: &str = "ADDR";
+static THREADS: &str = "THREADS";
+
+pub struct ServerApp {
+    config: String,
+    addr: String,
+    n_threads: usize,
+}
+
+impl ServerApp {
+    fn new() -> Self {
+        let matches = sticker_app("sticker-server")
+            .arg(
+                Arg::with_name(THREADS)
+                    .short("t")
+                    .long("threads")
+                    .value_name("N")
+                    .help("Number of threads")
+                    .default_value("4"),
+            )
+            .arg(
+                Arg::with_name(ADDR)
+                    .help("Address to bind to (e.g. localhost:4000)")
+                    .index(2)
+                    .required(true),
+            )
+            .get_matches();
+
+        let config = matches.value_of(CONFIG).unwrap().into();
+        let addr = matches.value_of(ADDR).unwrap().into();
+        let n_threads = matches
+            .value_of(THREADS)
+            .map(|v| v.parse().or_exit("Cannot parse number of threads", 1))
+            .unwrap();
+
+        ServerApp {
+            config,
+            addr,
+            n_threads,
+        }
+    }
+}
+
+impl Default for ServerApp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 fn main() {
-    let args: Vec<String> = args().collect();
-    let program = args[0].clone();
+    let app = ServerApp::new();
 
-    let mut opts = Options::new();
-    opts.optflag("h", "help", "print this help menu");
-    opts.optopt(
-        "t",
-        "threads",
-        "default server threadpool size (default: 4)",
-        "N",
-    );
-    let matches = opts.parse(&args[1..]).or_exit("Cannot parse options", 1);
-
-    if matches.opt_present("h") {
-        print_usage(&program, opts);
-        return;
-    }
-
-    if matches.free.len() != 2 {
-        print_usage(&program, opts);
-    }
-
-    let n_threads = matches
-        .opt_str("t")
-        .as_ref()
-        .map(|t| {
-            t.parse()
-                .or_exit(format!("Invalid number of threads: {}", t), 1)
-        })
-        .unwrap_or(4);
-
-    let config_file = File::open(&matches.free[0]).or_exit(
-        format!("Cannot open configuration file '{}'", &matches.free[0]),
+    let config_file = File::open(&app.config).or_exit(
+        format!("Cannot open configuration file '{}'", app.config),
         1,
     );
     let mut config = Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
     config
-        .relativize_paths(&matches.free[0])
+        .relativize_paths(app.config)
         .or_exit("Cannot relativize paths in configuration", 1);
 
     // Parallel processing is useless without the same parallelism in Tensorflow.
-    config.model.inter_op_parallelism_threads = n_threads;
-    config.model.intra_op_parallelism_threads = n_threads;
+    config.model.inter_op_parallelism_threads = app.n_threads;
+    config.model.intra_op_parallelism_threads = app.n_threads;
 
     let embeddings = config
         .embeddings
@@ -84,10 +99,10 @@ fn main() {
     let graph = TaggerGraph::load_graph(graph_reader, &config.model)
         .or_exit("Cannot load computation graph", 1);
 
-    let pool = ThreadPool::new(n_threads);
+    let pool = ThreadPool::new(app.n_threads);
 
-    let addr = &matches.free[1];
-    let listener = TcpListener::bind(addr).or_exit(format!("Cannot listen on '{}'", addr), 1);
+    let listener =
+        TcpListener::bind(&app.addr).or_exit(format!("Cannot listen on '{}'", app.addr), 1);
 
     match config.labeler.labeler_type {
         LabelerType::Sequence(ref layer) => serve_with_decoder(

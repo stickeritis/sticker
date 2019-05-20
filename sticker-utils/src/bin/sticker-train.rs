@@ -1,11 +1,9 @@
-use std::env::args;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::BufReader;
-use std::process;
 
+use clap::Arg;
 use failure::Error;
-use getopts::Options;
 use indicatif::ProgressStyle;
 use stdinout::OrExit;
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
@@ -13,47 +11,70 @@ use sticker::tensorflow::{
     ConllxDataSet, DataSet, LearningRateSchedule, TaggerGraph, TaggerTrainer,
 };
 use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
-use sticker_utils::{CborRead, Config, EncoderType, LabelerType, ReadProgress, TomlRead};
+use sticker_utils::{
+    sticker_app, CborRead, Config, EncoderType, LabelerType, ReadProgress, TomlRead,
+};
 
-fn print_usage(program: &str, opts: Options) {
-    let brief = format!(
-        "Usage: {} [options] CONFIG TRAINING_DATA VALIDATION_DATA",
-        program
-    );
-    print!("{}", opts.usage(&brief));
-    process::exit(1);
+static CONFIG: &str = "CONFIG";
+static TRAIN_DATA: &str = "TRAIN_DATA";
+static VALIDATION_DATA: &str = "VALIDATION_DATA";
+
+pub struct TrainApp {
+    config: String,
+    train_data: String,
+    validation_data: String,
+}
+
+impl TrainApp {
+    fn new() -> Self {
+        let matches = sticker_app("sticker-train")
+            .arg(
+                Arg::with_name(TRAIN_DATA)
+                    .help("Training data")
+                    .index(2)
+                    .required(true),
+            )
+            .arg(
+                Arg::with_name(VALIDATION_DATA)
+                    .help("Validation data")
+                    .index(3)
+                    .required(true),
+            )
+            .get_matches();
+
+        let config = matches.value_of(CONFIG).unwrap().into();
+        let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
+        let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
+
+        TrainApp {
+            config,
+            train_data,
+            validation_data,
+        }
+    }
+}
+
+impl Default for TrainApp {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 fn main() {
-    let args: Vec<String> = args().collect();
-    let program = args[0].clone();
+    let app = TrainApp::new();
 
-    let mut opts = Options::new();
-    opts.optflag("h", "help", "print this help menu");
-    let matches = opts.parse(&args[1..]).or_exit("Cannot parse options", 1);
-
-    if matches.opt_present("h") {
-        print_usage(&program, opts);
-        return;
-    }
-
-    if matches.free.len() != 3 {
-        print_usage(&program, opts);
-        return;
-    }
-
-    let config_file = File::open(&matches.free[0]).or_exit(
-        format!("Cannot open configuration file '{}'", &matches.free[0]),
+    let config_file = File::open(&app.config).or_exit(
+        format!("Cannot open configuration file '{}'", app.config),
         1,
     );
     let mut config = Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
     config
-        .relativize_paths(&matches.free[0])
+        .relativize_paths(app.config)
         .or_exit("Cannot relativize paths in configuration", 1);
 
-    let train_file = File::open(&matches.free[1]).or_exit("Cannot open train file for reading", 1);
+    let train_file = File::open(app.train_data).or_exit("Cannot open train file for reading", 1);
     let validation_file =
-        File::open(&matches.free[2]).or_exit("Cannot open validation file for reading", 1);
+        File::open(app.validation_data).or_exit("Cannot open validation file for reading", 1);
 
     match config.labeler.labeler_type {
         LabelerType::Sequence(ref layer) => train_model_with_encoder::<LayerEncoder>(
