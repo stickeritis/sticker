@@ -1,5 +1,5 @@
 mod dataset;
-pub use dataset::{ConllxDataSet, DataSet};
+pub use self::dataset::{ConllxDataSet, DataSet};
 
 mod lr;
 pub use self::lr::{
