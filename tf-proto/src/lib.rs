@@ -9,7 +9,7 @@ mod cluster;
 
 #[allow(renamed_and_removed_lints)]
 mod config;
-pub use config::ConfigProto;
+pub use crate::config::ConfigProto;
 
 #[allow(renamed_and_removed_lints)]
 mod cost_graph;
