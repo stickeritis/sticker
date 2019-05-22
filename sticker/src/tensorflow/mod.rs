@@ -7,6 +7,11 @@ pub use self::lr::{
 };
 
 mod tagger;
-pub use self::tagger::{ModelConfig, Tagger, TaggerGraph, TaggerTrainer};
+pub use self::tagger::{ModelConfig, Tagger, TaggerGraph};
+
+mod trainer;
+pub use self::trainer::TaggerTrainer;
 
 mod tensor;
+
+mod util;

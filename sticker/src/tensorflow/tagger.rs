@@ -6,21 +6,21 @@ use std::iter::FromIterator;
 use std::path::Path;
 
 use conllx::graph::Sentence;
-use failure::{err_msg, format_err, Error, Fallible};
+use failure::{Error, Fallible};
 use itertools::Itertools;
-use ndarray::{Ix1, Ix2, Ix3};
+use ndarray::{Ix1, Ix3};
 use ndarray_tensorflow::NdTensor;
 use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
 use tensorflow::{
-    Graph, ImportGraphDefOptions, Operation, Session, SessionOptions, SessionRunArgs, Status,
-    Tensor,
+    Graph, ImportGraphDefOptions, Operation, Session, SessionOptions, SessionRunArgs, Tensor,
 };
 use tf_proto::ConfigProto;
 
 use super::tensor::{NoLabels, TensorBuilder};
+use super::util::{prepare_path, status_to_error};
 use crate::encoder::{CategoricalEncoder, SentenceDecoder};
-use crate::{EncodingProb, ModelPerformance, SentVectorizer, Tag};
+use crate::{EncodingProb, SentVectorizer, Tag};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -42,6 +42,19 @@ pub struct ModelConfig {
 
     /// The filename of the trained graph parameters.
     pub parameters: String,
+}
+
+impl ModelConfig {
+    pub fn to_protobuf(&self) -> Result<Vec<u8>, Error> {
+        let mut config_proto = ConfigProto::new();
+        config_proto.intra_op_parallelism_threads = self.intra_op_parallelism_threads as i32;
+        config_proto.inter_op_parallelism_threads = self.inter_op_parallelism_threads as i32;
+
+        let mut bytes = Vec::new();
+        config_proto.write_to_vec(&mut bytes)?;
+
+        Ok(bytes)
+    }
 }
 
 mod op_names {
@@ -67,25 +80,25 @@ mod op_names {
 }
 
 pub struct TaggerGraph {
-    graph: Graph,
-    model_config: ModelConfig,
+    pub(crate) graph: Graph,
+    pub(crate) model_config: ModelConfig,
 
-    init_op: Operation,
-    restore_op: Operation,
-    save_op: Operation,
-    save_path_op: Operation,
-    lr_op: Operation,
-    is_training_op: Operation,
-    inputs_op: Operation,
-    seq_lens_op: Operation,
+    pub(crate) init_op: Operation,
+    pub(crate) restore_op: Operation,
+    pub(crate) save_op: Operation,
+    pub(crate) save_path_op: Operation,
+    pub(crate) lr_op: Operation,
+    pub(crate) is_training_op: Operation,
+    pub(crate) inputs_op: Operation,
+    pub(crate) seq_lens_op: Operation,
 
-    loss_op: Operation,
-    accuracy_op: Operation,
-    labels_op: Operation,
-    top_k_predicted_op: Operation,
-    top_k_probs_op: Operation,
+    pub(crate) loss_op: Operation,
+    pub(crate) accuracy_op: Operation,
+    pub(crate) labels_op: Operation,
+    pub(crate) top_k_predicted_op: Operation,
+    pub(crate) top_k_probs_op: Operation,
 
-    train_op: Operation,
+    pub(crate) train_op: Operation,
 }
 
 impl TaggerGraph {
@@ -199,7 +212,7 @@ where
     fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
         let mut session_opts = SessionOptions::new();
         session_opts
-            .set_config(&tf_model_config_to_protobuf(&graph.model_config)?)
+            .set_config(&graph.model_config.to_protobuf()?)
             .map_err(status_to_error)?;
 
         Session::new(&session_opts, &graph.graph).map_err(status_to_error)
@@ -308,149 +321,4 @@ where
     fn tag_sentences(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()> {
         self.tag_sentences_(sentences)
     }
-}
-
-fn tf_model_config_to_protobuf(model_config: &ModelConfig) -> Result<Vec<u8>, Error> {
-    let mut config_proto = ConfigProto::new();
-    config_proto.intra_op_parallelism_threads = model_config.intra_op_parallelism_threads as i32;
-    config_proto.inter_op_parallelism_threads = model_config.inter_op_parallelism_threads as i32;
-
-    let mut bytes = Vec::new();
-    config_proto.write_to_vec(&mut bytes)?;
-
-    Ok(bytes)
-}
-
-/// Trainer for a sequence labeling model.
-pub struct TaggerTrainer {
-    graph: TaggerGraph,
-    session: Session,
-}
-
-impl TaggerTrainer {
-    /// Create a new session with randomized weights.
-    pub fn random_weights(graph: TaggerGraph) -> Result<Self, Error> {
-        // Initialize parameters.
-        let mut args = SessionRunArgs::new();
-        args.add_target(&graph.init_op);
-        let session = Self::new_session(&graph)?;
-        session
-            .run(&mut args)
-            .expect("Cannot initialize parameters");
-
-        Ok(TaggerTrainer { graph, session })
-    }
-
-    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
-        let mut session_opts = SessionOptions::new();
-        session_opts
-            .set_config(&tf_model_config_to_protobuf(&graph.model_config)?)
-            .map_err(status_to_error)?;
-
-        Session::new(&session_opts, &graph.graph).map_err(status_to_error)
-    }
-
-    /// Save the model parameters.
-    ///
-    /// The model parameters are stored as the given path.
-    pub fn save<P>(&self, path: P) -> Result<(), Error>
-    where
-        P: AsRef<Path>,
-    {
-        // Add leading directory component if absent.
-        let path_tensor = prepare_path(path)?.into();
-
-        // Call the save op.
-        let mut args = SessionRunArgs::new();
-        args.add_feed(&self.graph.save_path_op, 0, &path_tensor);
-        args.add_target(&self.graph.save_op);
-        self.session.run(&mut args).map_err(status_to_error)
-    }
-
-    /// Train on a batch of inputs and labels.
-    pub fn train(
-        &self,
-        seq_lens: &NdTensor<i32, Ix1>,
-        inputs: &NdTensor<f32, Ix3>,
-        labels: &NdTensor<i32, Ix2>,
-        learning_rate: f32,
-    ) -> ModelPerformance {
-        let mut is_training = Tensor::new(&[]);
-        is_training[0] = true;
-
-        let mut lr = Tensor::new(&[]);
-        lr[0] = learning_rate;
-
-        let mut args = SessionRunArgs::new();
-        args.add_feed(&self.graph.is_training_op, 0, &is_training);
-        args.add_feed(&self.graph.lr_op, 0, &lr);
-        args.add_target(&self.graph.train_op);
-
-        self.validate_(seq_lens, inputs, labels, args)
-    }
-
-    /// Perform validation using a batch of inputs and labels.
-    pub fn validate(
-        &self,
-        seq_lens: &NdTensor<i32, Ix1>,
-        inputs: &NdTensor<f32, Ix3>,
-        labels: &NdTensor<i32, Ix2>,
-    ) -> ModelPerformance {
-        let mut is_training = Tensor::new(&[]);
-        is_training[0] = false;
-
-        let mut args = SessionRunArgs::new();
-        args.add_feed(&self.graph.is_training_op, 0, &is_training);
-
-        self.validate_(seq_lens, inputs, labels, args)
-    }
-
-    fn validate_<'l>(
-        &'l self,
-        seq_lens: &'l NdTensor<i32, Ix1>,
-        inputs: &'l NdTensor<f32, Ix3>,
-        labels: &'l NdTensor<i32, Ix2>,
-        mut args: SessionRunArgs<'l>,
-    ) -> ModelPerformance {
-        // Add inputs.
-        args.add_feed(&self.graph.inputs_op, 0, inputs.inner_ref());
-        args.add_feed(&self.graph.seq_lens_op, 0, seq_lens.inner_ref());
-
-        // Add gold labels.
-        args.add_feed(&self.graph.labels_op, 0, labels.inner_ref());
-
-        let accuracy_token = args.request_fetch(&self.graph.accuracy_op, 0);
-        let loss_token = args.request_fetch(&self.graph.loss_op, 0);
-
-        self.session.run(&mut args).expect("Cannot run graph");
-
-        ModelPerformance {
-            loss: args.fetch(loss_token).expect("Unable to retrieve loss")[0],
-            accuracy: args
-                .fetch(accuracy_token)
-                .expect("Unable to retrieve accuracy")[0],
-        }
-    }
-}
-
-/// Tensorflow requires a path that contains a directory component.
-fn prepare_path<P>(path: P) -> Result<String, Error>
-where
-    P: AsRef<Path>,
-{
-    let path = path.as_ref();
-    let path = if path.components().count() == 1 {
-        Path::new("./").join(path)
-    } else {
-        path.to_owned()
-    };
-
-    path.to_str()
-        .ok_or_else(|| err_msg("Filename contains non-unicode characters"))
-        .map(ToOwned::to_owned)
-}
-
-/// tensorflow::Status is not Sync, which is required by failure.
-fn status_to_error(status: Status) -> Error {
-    format_err!("{}", status)
 }
