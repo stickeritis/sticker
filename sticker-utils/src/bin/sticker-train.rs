@@ -3,7 +3,7 @@ use std::hash::Hash;
 use std::io::BufReader;
 
 use clap::Arg;
-use failure::Error;
+use failure::{Error, Fallible};
 use indicatif::ProgressStyle;
 use ordered_float::NotNan;
 use stdinout::OrExit;
@@ -20,6 +20,7 @@ static CONFIG: &str = "CONFIG";
 static INITIAL_LR: &str = "INITIAL_LR";
 static LR_SCALE: &str = "LR_SCALE";
 static LR_PATIENCE: &str = "LR_PATIENCE";
+static CONTINUE: &str = "CONTINUE";
 static PATIENCE: &str = "PATIENCE";
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static VALIDATION_DATA: &str = "VALIDATION_DATA";
@@ -33,6 +34,7 @@ pub struct LrSchedule {
 pub struct TrainApp {
     config: String,
     lr_schedule: LrSchedule,
+    parameters: Option<String>,
     patience: usize,
     train_data: String,
     validation_data: String,
@@ -51,6 +53,13 @@ impl TrainApp {
 impl TrainApp {
     fn new() -> Self {
         let matches = sticker_app("sticker-train")
+            .arg(
+                Arg::with_name(CONTINUE)
+                    .long("continue")
+                    .takes_value(true)
+                    .value_name("PARAMS")
+                    .help("Continue training from parameter files (e.g.: epoch-50)"),
+            )
             .arg(
                 Arg::with_name(INITIAL_LR)
                     .long("lr")
@@ -109,6 +118,7 @@ impl TrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse learning rate scale", 1);
+        let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
         let patience = matches
             .value_of(PATIENCE)
             .unwrap()
@@ -119,6 +129,7 @@ impl TrainApp {
 
         TrainApp {
             config,
+            parameters,
             patience,
             lr_schedule: LrSchedule {
                 initial_lr,
@@ -153,10 +164,13 @@ fn main() {
     let validation_file =
         File::open(&app.validation_data).or_exit("Cannot open validation file for reading", 1);
 
+    let trainer = create_trainer(&config, &app).or_exit("Cannot construct trainer", 1);
+
     match config.labeler.labeler_type {
         LabelerType::Sequence(ref layer) => train_model_with_encoder::<LayerEncoder>(
             &config,
             &app,
+            trainer,
             LayerEncoder::new(layer.clone()),
             train_file,
             validation_file,
@@ -165,6 +179,7 @@ fn main() {
             train_model_with_encoder::<RelativePOSEncoder>(
                 &config,
                 &app,
+                trainer,
                 RelativePOSEncoder,
                 train_file,
                 validation_file,
@@ -174,6 +189,7 @@ fn main() {
             train_model_with_encoder::<RelativePositionEncoder>(
                 &config,
                 &app,
+                trainer,
                 RelativePositionEncoder,
                 train_file,
                 validation_file,
@@ -183,9 +199,20 @@ fn main() {
     .or_exit("Error while training model", 1);
 }
 
+fn create_trainer(config: &Config, app: &TrainApp) -> Fallible<TaggerTrainer> {
+    let graph_read = BufReader::new(File::open(&config.model.graph)?);
+    let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
+
+    match app.parameters {
+        Some(ref parameters) => TaggerTrainer::load_weights(graph, parameters),
+        None => TaggerTrainer::random_weights(graph),
+    }
+}
+
 fn train_model_with_encoder<E>(
     config: &Config,
     app: &TrainApp,
+    trainer: TaggerTrainer,
     encoder: E,
     mut train_file: File,
     mut validation_file: File,
@@ -210,10 +237,6 @@ where
         .load_embeddings()
         .or_exit("Cannot load embeddings", 1);
     let vectorizer = SentVectorizer::new(embeddings);
-
-    let graph_read = BufReader::new(File::open(&config.model.graph)?);
-    let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
-    let trainer = TaggerTrainer::random_weights(graph).or_exit("Cannot construct trainer", 1);
 
     let mut best_epoch = 0;
     let mut best_acc = 0.0;
