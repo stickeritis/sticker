@@ -1,11 +1,10 @@
 use std::fs::File;
 
 use lazy_static::lazy_static;
-use ordered_float::NotNan;
 use sticker::tensorflow::ModelConfig;
 use sticker::Layer;
 
-use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, LabelerType, TomlRead, Train};
+use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, LabelerType, TomlRead};
 
 lazy_static! {
     static ref BASIC_LABELER_CHECK: Config = Config {
@@ -23,12 +22,6 @@ lazy_static! {
                 filename: "tag-vectors.bin".into(),
                 alloc: EmbeddingAlloc::Read,
             }),
-        },
-        train: Train {
-            initial_lr: NotNan::from(0.05),
-            lr_scale: NotNan::from(0.5),
-            lr_patience: 4,
-            patience: 10,
         },
         model: ModelConfig {
             batch_size: 128,
