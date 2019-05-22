@@ -23,6 +23,7 @@ use crate::encoder::{CategoricalEncoder, SentenceDecoder};
 use crate::{EncodingProb, ModelPerformance, SentVectorizer, Tag};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ModelConfig {
     /// Model batch size, should be kept constant between training and
     /// prediction.

@@ -14,6 +14,7 @@ use sticker::{Layer, LayerEmbeddings, Numberer};
 use crate::CborRead;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     pub labeler: Labeler,
     pub embeddings: Embeddings,
@@ -42,12 +43,14 @@ impl Config {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Embeddings {
     pub word: Embedding,
     pub tag: Option<Embedding>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Embedding {
     pub filename: String,
     pub alloc: EmbeddingAlloc,
@@ -92,6 +95,7 @@ pub enum EncoderType {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct Labeler {
     pub labels: String,
     pub read_ahead: usize,
