@@ -54,6 +54,9 @@ else
   done
 fi
 
+# Add Python graph scripts
+cp sticker-graph/sticker-write-{conv,rnn,transformer}-graph "${staging}/"
+cp -r sticker-graph/sticker_graph "${staging}"
 
 ( cd "${tmpdir}" && tar czf "${out_dir}/${name}.tar.gz" "${name}")
 
