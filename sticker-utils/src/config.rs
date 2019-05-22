@@ -6,10 +6,9 @@ use std::path::Path;
 use failure::{format_err, Error};
 use finalfusion::embeddings::Embeddings as FiFuEmbeddings;
 use finalfusion::prelude::*;
-use ordered_float::NotNan;
 use serde_derive::{Deserialize, Serialize};
 
-use sticker::tensorflow::{ModelConfig, PlateauLearningRate};
+use sticker::tensorflow::ModelConfig;
 use sticker::{Layer, LayerEmbeddings, Numberer};
 
 use crate::CborRead;
@@ -19,7 +18,6 @@ pub struct Config {
     pub labeler: Labeler,
     pub embeddings: Embeddings,
     pub model: ModelConfig,
-    pub train: Train,
 }
 
 impl Config {
@@ -154,22 +152,4 @@ fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> 
             )
         })?
         .to_owned())
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-pub struct Train {
-    pub initial_lr: NotNan<f32>,
-    pub lr_scale: NotNan<f32>,
-    pub lr_patience: usize,
-    pub patience: usize,
-}
-
-impl Train {
-    pub fn lr_schedule(&self) -> PlateauLearningRate {
-        PlateauLearningRate::new(
-            self.initial_lr.into_inner(),
-            self.lr_scale.into_inner(),
-            self.lr_patience,
-        )
-    }
 }

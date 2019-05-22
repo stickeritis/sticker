@@ -5,10 +5,11 @@ use std::io::BufReader;
 use clap::Arg;
 use failure::Error;
 use indicatif::ProgressStyle;
+use ordered_float::NotNan;
 use stdinout::OrExit;
 use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{
-    ConllxDataSet, DataSet, LearningRateSchedule, TaggerGraph, TaggerTrainer,
+    ConllxDataSet, DataSet, LearningRateSchedule, PlateauLearningRate, TaggerGraph, TaggerTrainer,
 };
 use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
 use sticker_utils::{
@@ -16,18 +17,68 @@ use sticker_utils::{
 };
 
 static CONFIG: &str = "CONFIG";
+static INITIAL_LR: &str = "INITIAL_LR";
+static LR_SCALE: &str = "LR_SCALE";
+static LR_PATIENCE: &str = "LR_PATIENCE";
+static PATIENCE: &str = "PATIENCE";
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static VALIDATION_DATA: &str = "VALIDATION_DATA";
 
+pub struct LrSchedule {
+    pub initial_lr: NotNan<f32>,
+    pub lr_scale: NotNan<f32>,
+    pub lr_patience: usize,
+}
+
 pub struct TrainApp {
     config: String,
+    lr_schedule: LrSchedule,
+    patience: usize,
     train_data: String,
     validation_data: String,
 }
 
 impl TrainApp {
+    pub fn lr_schedule(&self) -> PlateauLearningRate {
+        PlateauLearningRate::new(
+            self.lr_schedule.initial_lr.into_inner(),
+            self.lr_schedule.lr_scale.into_inner(),
+            self.lr_schedule.lr_patience,
+        )
+    }
+}
+
+impl TrainApp {
     fn new() -> Self {
         let matches = sticker_app("sticker-train")
+            .arg(
+                Arg::with_name(INITIAL_LR)
+                    .long("lr")
+                    .value_name("LR")
+                    .help("Initial learning rate")
+                    .default_value("0.01"),
+            )
+            .arg(
+                Arg::with_name(LR_PATIENCE)
+                    .long("lr-patience")
+                    .value_name("N")
+                    .help("Scale learning rate after N epochs without improvement")
+                    .default_value("4"),
+            )
+            .arg(
+                Arg::with_name(LR_SCALE)
+                    .long("lr-scale")
+                    .value_name("SCALE")
+                    .help("Value to scale the learning rate by")
+                    .default_value("0.5"),
+            )
+            .arg(
+                Arg::with_name(PATIENCE)
+                    .long("patience")
+                    .value_name("N")
+                    .help("Maximum number of epochs without improvement")
+                    .default_value("15"),
+            )
             .arg(
                 Arg::with_name(TRAIN_DATA)
                     .help("Training data")
@@ -43,11 +94,37 @@ impl TrainApp {
             .get_matches();
 
         let config = matches.value_of(CONFIG).unwrap().into();
+        let initial_lr = matches
+            .value_of(INITIAL_LR)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse initial learning rate", 1);
+        let lr_patience = matches
+            .value_of(LR_PATIENCE)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse learning rate patience", 1);
+        let lr_scale = matches
+            .value_of(LR_SCALE)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse learning rate scale", 1);
+        let patience = matches
+            .value_of(PATIENCE)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse patience", 1);
         let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
         let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
 
         TrainApp {
             config,
+            patience,
+            lr_schedule: LrSchedule {
+                initial_lr,
+                lr_patience,
+                lr_scale,
+            },
             train_data,
             validation_data,
         }
@@ -69,16 +146,17 @@ fn main() {
     );
     let mut config = Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
     config
-        .relativize_paths(app.config)
+        .relativize_paths(&app.config)
         .or_exit("Cannot relativize paths in configuration", 1);
 
-    let train_file = File::open(app.train_data).or_exit("Cannot open train file for reading", 1);
+    let train_file = File::open(&app.train_data).or_exit("Cannot open train file for reading", 1);
     let validation_file =
-        File::open(app.validation_data).or_exit("Cannot open validation file for reading", 1);
+        File::open(&app.validation_data).or_exit("Cannot open validation file for reading", 1);
 
     match config.labeler.labeler_type {
         LabelerType::Sequence(ref layer) => train_model_with_encoder::<LayerEncoder>(
             &config,
+            &app,
             LayerEncoder::new(layer.clone()),
             train_file,
             validation_file,
@@ -86,6 +164,7 @@ fn main() {
         LabelerType::Parser(EncoderType::RelativePOS) => {
             train_model_with_encoder::<RelativePOSEncoder>(
                 &config,
+                &app,
                 RelativePOSEncoder,
                 train_file,
                 validation_file,
@@ -94,6 +173,7 @@ fn main() {
         LabelerType::Parser(EncoderType::RelativePosition) => {
             train_model_with_encoder::<RelativePositionEncoder>(
                 &config,
+                &app,
                 RelativePositionEncoder,
                 train_file,
                 validation_file,
@@ -105,6 +185,7 @@ fn main() {
 
 fn train_model_with_encoder<E>(
     config: &Config,
+    app: &TrainApp,
     encoder: E,
     mut train_file: File,
     mut validation_file: File,
@@ -138,7 +219,7 @@ where
     let mut best_acc = 0.0;
     let mut last_acc = 0.0;
 
-    let mut lr_schedule = config.train.lr_schedule();
+    let mut lr_schedule = app.lr_schedule();
 
     for epoch in 0.. {
         let lr = lr_schedule.learning_rate(epoch, last_acc);
@@ -185,7 +266,7 @@ where
             .save(format!("epoch-{}", epoch))
             .or_exit(format!("Cannot save model for epoch {}", epoch), 1);
 
-        if epoch - best_epoch == config.train.patience {
+        if epoch - best_epoch == app.patience {
             eprintln!(
                 "Lost my patience! Best epoch: {} with accuracy: {:.4}",
                 best_epoch, best_acc
