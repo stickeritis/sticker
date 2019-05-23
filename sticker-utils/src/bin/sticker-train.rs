@@ -22,8 +22,74 @@ static LR_SCALE: &str = "LR_SCALE";
 static LR_PATIENCE: &str = "LR_PATIENCE";
 static CONTINUE: &str = "CONTINUE";
 static PATIENCE: &str = "PATIENCE";
+static SAVE_BATCH: &str = "SAVE_BATCH";
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static VALIDATION_DATA: &str = "VALIDATION_DATA";
+
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub enum CompletedUnit {
+    /// A batch is completed.
+    Batch,
+
+    /// An epoch is completed.
+    Epoch,
+}
+
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub enum SaveSchedule {
+    /// Save after every epoch.
+    Epoch,
+
+    /// Save after every N batches.
+    Batches(usize),
+}
+
+/// Scheduler that saves at points dictated by the schedule.
+pub struct SaveScheduler {
+    epoch_batch: usize,
+    epoch: usize,
+    batch: usize,
+    schedule: SaveSchedule,
+}
+
+impl SaveScheduler {
+    /// Save the model paramters when a save point has been reached.
+    fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit) -> Fallible<()> {
+        match completed {
+            CompletedUnit::Epoch => {
+                if self.schedule == SaveSchedule::Epoch {
+                    trainer.save(format!("epoch-{}", self.epoch))?;
+                }
+
+                self.epoch += 1;
+                self.epoch_batch = 0;
+            }
+            CompletedUnit::Batch => {
+                if let SaveSchedule::Batches(batches) = self.schedule {
+                    if (self.batch + 1) % batches == 0 {
+                        trainer.save(format!("epoch-{}-batch-{}", self.epoch, self.epoch_batch))?
+                    }
+                }
+
+                self.batch += 1;
+                self.epoch_batch += 1;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+impl From<SaveSchedule> for SaveScheduler {
+    fn from(schedule: SaveSchedule) -> Self {
+        SaveScheduler {
+            batch: 0,
+            epoch: 0,
+            epoch_batch: 0,
+            schedule,
+        }
+    }
+}
 
 pub struct LrSchedule {
     pub initial_lr: NotNan<f32>,
@@ -36,6 +102,7 @@ pub struct TrainApp {
     lr_schedule: LrSchedule,
     parameters: Option<String>,
     patience: usize,
+    save_schedule: SaveSchedule,
     train_data: String,
     validation_data: String,
 }
@@ -89,6 +156,13 @@ impl TrainApp {
                     .default_value("15"),
             )
             .arg(
+                Arg::with_name(SAVE_BATCH)
+                    .long("save-batch")
+                    .takes_value(true)
+                    .value_name("N")
+                    .help("Save after N batches, in place of after every epoch"),
+            )
+            .arg(
                 Arg::with_name(TRAIN_DATA)
                     .help("Training data")
                     .index(2)
@@ -124,6 +198,15 @@ impl TrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse patience", 1);
+        let save_schedule = matches
+            .value_of(SAVE_BATCH)
+            .map(|v| {
+                SaveSchedule::Batches(
+                    v.parse()
+                        .or_exit("Cannot parse number of batches after which to save", 1),
+                )
+            })
+            .unwrap_or(SaveSchedule::Epoch);
         let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
         let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
 
@@ -136,6 +219,7 @@ impl TrainApp {
                 lr_patience,
                 lr_scale,
             },
+            save_schedule,
             train_data,
             validation_data,
         }
@@ -243,12 +327,14 @@ where
     let mut last_acc = 0.0;
 
     let mut lr_schedule = app.lr_schedule();
+    let mut save_scheduler = app.save_schedule.into();
 
     for epoch in 0.. {
         let lr = lr_schedule.learning_rate(epoch, last_acc);
 
         let (loss, acc) = run_epoch(
             config,
+            &mut save_scheduler,
             &mut categorical_encoder,
             &vectorizer,
             &trainer,
@@ -262,8 +348,14 @@ where
             epoch, lr, loss, acc
         );
 
+        save_scheduler.save(&trainer, CompletedUnit::Epoch).or_exit(
+            format!("Cannot save model for epoch {}", save_scheduler.epoch),
+            1,
+        );
+
         let (loss, acc) = run_epoch(
             config,
+            &mut save_scheduler,
             &mut categorical_encoder,
             &vectorizer,
             &trainer,
@@ -285,10 +377,6 @@ where
             epoch, loss, acc, best_epoch, best_acc, epoch_status
         );
 
-        trainer
-            .save(format!("epoch-{}", epoch))
-            .or_exit(format!("Cannot save model for epoch {}", epoch), 1);
-
         if epoch - best_epoch == app.patience {
             eprintln!(
                 "Lost my patience! Best epoch: {} with accuracy: {:.4}",
@@ -301,8 +389,10 @@ where
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_epoch<E>(
     config: &Config,
+    save_scheduler: &mut SaveScheduler,
     encoder: &mut CategoricalEncoder<E, E::Encoding>,
     vectorizer: &SentVectorizer,
     trainer: &TaggerTrainer,
@@ -345,6 +435,13 @@ where
         loss += n_tokens as f32 * batch_perf.loss;
         acc += n_tokens as f32 * batch_perf.accuracy;
         instances += n_tokens;
+
+        if is_training {
+            save_scheduler.save(trainer, CompletedUnit::Batch).or_exit(
+                format!("Cannot save model for batch {}", save_scheduler.batch),
+                1,
+            );
+        }
 
         progress_bar.set_message(&format!(
             "batch loss: {:.4}, batch accuracy: {:.4}",
