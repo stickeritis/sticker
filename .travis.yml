@@ -17,11 +17,11 @@ matrix:
       - python setup.py test
   - language: rust
     os: linux
-    rust: stable
+    rust: 1.34.2
     env: TARGET=x86_64-unknown-linux-gnu
   - language: rust
     os: osx
-    rust: stable
+    rust: 1.34.2
     env: TARGET=x86_64-apple-darwin
   - language: rust
     os: linux
@@ -40,6 +40,6 @@ deploy:
   file: deployment/${PROJECT_NAME}-${TRAVIS_TAG}-${TARGET}.tar.gz
   skip_cleanup: true
   on:
-    condition: $TRAVIS_RUST_VERSION = stable
+    condition: $TRAVIS_RUST_VERSION = 1.34.2
     repo: danieldk/sticker
     tags: true
