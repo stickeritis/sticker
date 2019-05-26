@@ -256,7 +256,8 @@ class TransformerModel(Model):
         elif config.activation == 'gelu':
             activation = gelu
         else:
-            raise NotImplementedError('Activation {} is not available.')
+            raise NotImplementedError('Activation %s is not available.'
+                                      % config.activation)
 
         inputs = tf.contrib.layers.dropout(
             self.inputs,
@@ -267,8 +268,8 @@ class TransformerModel(Model):
             inputs = tf.layers.dense(inputs, config.outer_hsize, activation)
         else:
             error_msg = "With '--pass_inputs' the last input dimension has " \
-                        "to match '--outer_hsize'. OUTER_HSIZE: {}, " \
-                        "input[-1]: {}" % config.outer_hsize,inputs.shape[-1]
+                        "to match '--outer_hsize'. OUTER_HSIZE: %d, " \
+                        "input[-1]: %d" % (config.outer_hsize, inputs.shape[-1])
 
             assert inputs.shape[-1] == config.outer_hsize, error_msg
 
