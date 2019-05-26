@@ -210,7 +210,7 @@ def sinusoid(max_time_batch, depth):
     single_wave_dims = depth // 2
     time_range = tf.cast(tf.range(max_time_batch) + 1, tf.float32)
 
-    log_timescale_increment = math.log(float(1e4) / (int(single_wave_dims) - 1))
+    log_timescale_increment = math.log(float(1e4)) / (int(single_wave_dims) - 1)
 
     n_timescales = tf.cast(tf.range(single_wave_dims), tf.float32)
     inv_timescales = tf.exp(n_timescales * -log_timescale_increment)
