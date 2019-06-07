@@ -111,6 +111,44 @@ class Model:
             self.seq_lens, maxlen=tf.shape(
                 self.inputs)[1], dtype=tf.float32)
 
+    def create_summary_ops(self, acc, grad_norm, loss, lr):
+        step = tf.train.get_or_create_global_step()
+
+        train_summaries = [tf.contrib.summary.scalar(name="loss",
+                                                     tensor=loss,
+                                                     step=step,
+                                                     family="train"),
+                           tf.contrib.summary.scalar(name="accuracy",
+                                                     tensor=acc,
+                                                     step=step,
+                                                     family="train"),
+                           tf.contrib.summary.scalar(name="learning rate",
+                                                     tensor=lr,
+                                                     step=step,
+                                                     family="train")]
+
+        if grad_norm is not None:
+            train_summaries.append(tf.contrib.summary.scalar(name="gradient_norm",
+                                      tensor=grad_norm,
+                                      step=step,
+                                      family="train"))
+
+        val_step = tf.Variable(0, trainable=False, dtype=tf.int64, name="val_global_step")
+        with tf.control_dependencies([val_step.assign_add(1)]):
+            val_step = tf.convert_to_tensor(val_step)
+            val_summaries = [
+                tf.contrib.summary.scalar(name="loss",
+                                          tensor=loss,
+                                          step=val_step,
+                                          family="val"),
+                tf.contrib.summary.scalar(name="acc",
+                                          tensor=acc,
+                                          step=val_step,
+                                          family="val")]
+        with tf.variable_scope("summaries"):
+            self.train_summaries = tf.group(train_summaries, name="train")
+            self.val_summaries = tf.group(val_summaries, name="val")
+
     @property
     def config(self):
         return self._config

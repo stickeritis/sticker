@@ -299,13 +299,18 @@ class TransformerModel(Model):
             predictions = self.predictions("tag", logits)
             self.top_k_predictions("tag", logits, config.top_k)
 
-        self.accuracy("tag", predictions, self.tags)
+        acc = self.accuracy("tag", predictions, self.tags)
 
         # Optimization with gradient clipping. Consider making the gradient
         # norm a placeholder as well.
         lr = tf.placeholder(tf.float32, [], "lr")
+
         optimizer = tf.train.AdamOptimizer(lr)
         gradients, variables = zip(*optimizer.compute_gradients(loss))
-        gradients, gn = tf.clip_by_global_norm(gradients, 2.5)
+        gradients, gradient_norm = tf.clip_by_global_norm(gradients, 2.5)
+
+        train_step = tf.train.get_or_create_global_step()
         self._train_op = optimizer.apply_gradients(
-            zip(gradients, variables), name="train")
+            zip(gradients, variables), name="train", global_step=train_step)
+
+        self.create_summary_ops(acc, gradient_norm, loss, lr)

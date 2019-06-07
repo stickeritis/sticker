@@ -13,6 +13,7 @@ use crate::ModelPerformance;
 pub struct TaggerTrainer {
     graph: TaggerGraph,
     session: Session,
+    summaries: bool,
 }
 
 impl TaggerTrainer {
@@ -32,7 +33,11 @@ impl TaggerTrainer {
         let session = Self::new_session(&graph)?;
         session.run(&mut args).map_err(status_to_error)?;
 
-        Ok(TaggerTrainer { graph, session })
+        Ok(TaggerTrainer {
+            graph,
+            session,
+            summaries: false,
+        })
     }
 
     /// Create a new session with randomized weights.
@@ -45,7 +50,11 @@ impl TaggerTrainer {
             .run(&mut args)
             .expect("Cannot initialize parameters");
 
-        Ok(TaggerTrainer { graph, session })
+        Ok(TaggerTrainer {
+            graph,
+            session,
+            summaries: false,
+        })
     }
 
     fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
@@ -74,6 +83,29 @@ impl TaggerTrainer {
         self.session.run(&mut args).map_err(status_to_error)
     }
 
+    /// Initializes the Tensorboard logdir.
+    ///
+    /// This method initializes the logdir and adds the graph summary
+    /// to the event file.
+    pub fn init_logdir<P>(&mut self, path: P) -> Result<(), Error>
+    where
+        P: AsRef<Path>,
+    {
+        let path_tensor = prepare_path(path)?.into();
+        self.summaries = true;
+
+        // First init the summary writer..
+        let mut args = SessionRunArgs::new();
+        args.add_feed(&self.graph.logdir_op, 0, &path_tensor);
+        args.add_target(&self.graph.summary_init_op);
+        self.session.run(&mut args).map_err(status_to_error)?;
+
+        // ..and then write the graph.
+        let mut args = SessionRunArgs::new();
+        args.add_target(&self.graph.graph_write_op);
+        self.session.run(&mut args).map_err(status_to_error)
+    }
+
     /// Train on a batch of inputs and labels.
     pub fn train(
         &self,
@@ -92,7 +124,9 @@ impl TaggerTrainer {
         args.add_feed(&self.graph.is_training_op, 0, &is_training);
         args.add_feed(&self.graph.lr_op, 0, &lr);
         args.add_target(&self.graph.train_op);
-
+        if self.summaries {
+            args.add_target(&self.graph.train_summary_op);
+        }
         self.validate_(seq_lens, inputs, labels, args)
     }
 
@@ -108,7 +142,9 @@ impl TaggerTrainer {
 
         let mut args = SessionRunArgs::new();
         args.add_feed(&self.graph.is_training_op, 0, &is_training);
-
+        if self.summaries {
+            args.add_target(&self.graph.val_summary_op);
+        }
         self.validate_(seq_lens, inputs, labels, args)
     }
 
