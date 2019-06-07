@@ -77,11 +77,23 @@ mod op_names {
     pub const TOP_K_PROBS_OP: &str = "model/tag_top_k_probs";
 
     pub const TRAIN_OP: &str = "model/train";
+    pub const WRITE_GRAPH_OP: &str = "graph_write";
+    pub const LOGDIR_OP: &str = "logdir";
+    pub const SUMMARY_INIT_OP: &str = "summary_init";
+
+    pub const VAL_SUMMARIES_OP: &str = "model/summaries/val";
+    pub const TRAIN_SUMMARIES_OP: &str = "model/summaries/train";
 }
 
 pub struct TaggerGraph {
     pub(crate) graph: Graph,
     pub(crate) model_config: ModelConfig,
+
+    pub(crate) graph_write_op: Operation,
+    pub(crate) logdir_op: Operation,
+    pub(crate) summary_init_op: Operation,
+    pub(crate) train_summary_op: Operation,
+    pub(crate) val_summary_op: Operation,
 
     pub(crate) init_op: Operation,
     pub(crate) restore_op: Operation,
@@ -134,9 +146,23 @@ impl TaggerGraph {
 
         let train_op = Self::add_op(&graph, op_names::TRAIN_OP)?;
 
+        let graph_write_op = Self::add_op(&graph, op_names::WRITE_GRAPH_OP)?;
+        let logdir_op = Self::add_op(&graph, op_names::LOGDIR_OP)?;
+        let summary_init_op = Self::add_op(&graph, op_names::SUMMARY_INIT_OP)?;
+
+        let train_summary_op = Self::add_op(&graph, op_names::TRAIN_SUMMARIES_OP)?;
+        let val_summary_op = Self::add_op(&graph, op_names::VAL_SUMMARIES_OP)?;
+
         Ok(TaggerGraph {
             graph,
             model_config: model_config.clone(),
+
+            graph_write_op,
+            logdir_op,
+            summary_init_op,
+
+            train_summary_op,
+            val_summary_op,
 
             init_op,
             restore_op,

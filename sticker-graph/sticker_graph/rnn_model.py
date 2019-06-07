@@ -102,8 +102,12 @@ class RNNModel(Model):
             predictions = self.predictions("tag", logits)
             self.top_k_predictions("tag", logits, config.top_k)
 
-        self.accuracy("tag", predictions, self.tags)
+        acc = self.accuracy("tag", predictions, self.tags)
 
         lr = tf.placeholder(tf.float32, [], "lr")
+
+        train_step = tf.train.get_or_create_global_step()
         self._train_op = tf.train.AdamOptimizer(
-            lr).minimize(loss, name="train")
+            lr).minimize(loss, name="train",global_step=train_step)
+
+        self.create_summary_ops(acc, None, loss, lr)
