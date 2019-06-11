@@ -43,3 +43,29 @@ $ sticker-train --lr 0.001 postag.conf train.conll validation.conll
 The training procedure will output the best epoch. Update the
 `parameters` setting in the configuration file to use that epoch.
 
+______
+
+#### Tensorboard
+
+The training supports
+[Tensorboard](https://www.tensorflow.org/guide/summaries_and_tensorboard)
+logging. In order to track the training
+in a browser, start the training with the `--logdir` option set to a directory 
+with write access: 
+
+~~~shell
+$ sticker-train postag.conf train.conll validation.conll --logdir pos_logdir
+~~~
+
+This will write the Tensorboard summaries to the directory `pos_logdir` in
+the current folder.
+
+In order to visualize the summaries, open another shell and point 
+Tensorboard to the logdir:
+
+~~~shell
+$ tensorboard --logdir pos_logdir
+~~~
+
+After a brief moment, the address (e.g. localhost:6006) under which the 
+summaries can be viewed in a browser should appear.
