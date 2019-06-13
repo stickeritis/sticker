@@ -13,7 +13,7 @@ use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
 use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
 use sticker_utils::{
-    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead,
+    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TaggerSpeed, TomlRead,
 };
 
 static CONFIG: &str = "CONFIG";
@@ -195,6 +195,8 @@ where
     let reader = Reader::new(BufReader::new(&conllx_stream));
     let writer = Writer::new(BufWriter::new(&conllx_stream));
 
+    let mut speed = TaggerSpeed::new();
+
     let mut sent_proc = SentProcessor::new(
         &*tagger,
         writer,
@@ -214,6 +216,8 @@ where
             let _ = writeln!(stream, "! Error processing sentence: {}", err);
             return;
         }
+
+        speed.count_sentence()
     }
 
     eprintln!("Finished processing for {}", peer_addr);

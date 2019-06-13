@@ -7,7 +7,7 @@ pub use crate::config::{
 };
 
 mod progress;
-pub use crate::progress::ReadProgress;
+pub use crate::progress::{ReadProgress, TaggerSpeed};
 
 mod sent_proc;
 pub use crate::sent_proc::SentProcessor;

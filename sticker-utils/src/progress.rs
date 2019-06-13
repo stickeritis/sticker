@@ -1,6 +1,9 @@
 use std::io::{self, Read, Seek, SeekFrom};
+use std::time::Instant;
 
 use indicatif::{ProgressBar, ProgressStyle};
+
+const NANOS_PER_SEC: u32 = 1_000_000_000;
 
 pub struct ReadProgress<R> {
     inner: R,
@@ -58,5 +61,52 @@ where
 impl<R> Drop for ReadProgress<R> {
     fn drop(&mut self) {
         self.progress_bar.finish();
+    }
+}
+
+/// Measure the number of sentences processed per second.
+///
+/// When an instance of `TaggerSpeed` is constructed, it takes the
+/// current time. `count_sentence` should be called for each sentence
+/// that was processed. A `TaggerSpeed` instance will print the
+/// processing speed to *stderr* when the instance is dropped.
+pub struct TaggerSpeed {
+    start: Instant,
+    n_sentences: usize,
+}
+
+impl TaggerSpeed {
+    /// Construct a new instance.
+    pub fn new() -> Self {
+        TaggerSpeed {
+            start: Instant::now(),
+            n_sentences: 0,
+        }
+    }
+
+    /// Count a processed sentences.
+    pub fn count_sentence(&mut self) {
+        self.n_sentences += 1;
+    }
+}
+
+impl Default for TaggerSpeed {
+    fn default() -> Self {
+        TaggerSpeed::new()
+    }
+}
+
+impl Drop for TaggerSpeed {
+    fn drop(&mut self) {
+        let elapsed = self.start.elapsed();
+        // From nightly-only as_secs_f32.
+        let elapsed_secs =
+            (elapsed.as_secs() as f32) + (elapsed.subsec_nanos() as f32) / (NANOS_PER_SEC as f32);
+        eprintln!(
+            "Processed {} sentences in {:.1}s ({:.1} sents/s)",
+            self.n_sentences,
+            elapsed_secs,
+            self.n_sentences as f32 / elapsed_secs
+        );
     }
 }

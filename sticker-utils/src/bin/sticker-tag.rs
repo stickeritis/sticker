@@ -10,7 +10,7 @@ use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
 use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
 use sticker_utils::{
-    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TomlRead,
+    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TaggerSpeed, TomlRead,
 };
 
 static CONFIG: &str = "CONFIG";
@@ -141,6 +141,8 @@ fn process_with_decoder<D, R, W>(
     )
     .or_exit("Cannot construct tagger", 1);
 
+    let mut speed = TaggerSpeed::new();
+
     let mut sent_proc = SentProcessor::new(
         &tagger,
         write,
@@ -153,5 +155,7 @@ fn process_with_decoder<D, R, W>(
         sent_proc
             .process(sentence)
             .or_exit("Error processing sentence", 1);
+
+        speed.count_sentence()
     }
 }
