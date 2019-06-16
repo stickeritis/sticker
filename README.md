@@ -26,5 +26,6 @@ tracker](https://github.com/danieldk/sticker/issues).
 
 ## License
 
-sticker is licensed under the [Apache License Version 2.0](LICENSE)
-with an additional [NOTICE](NOTICE) file.
+sticker is licensed under the [Blue Oak Model License version
+1.0.0](LICENSE.md). The Tensorflow protocol buffer definitions in `tf-proto`
+are licensed under the Apache License version 2.0.
