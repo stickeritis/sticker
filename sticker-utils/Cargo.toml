@@ -7,7 +7,7 @@ description = "Neural sequence labeler (utilities)"
 documentation = "https://github.com/danieldk/sticker"
 homepage = "https://github.com/danieldk/sticker"
 repository = "https://github.com/danieldk/sticker.git"
-license = "Apache-2.0"
+license = "BlueOak-1.0.0"
 
 [dependencies]
 clap = "2"

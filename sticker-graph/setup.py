@@ -6,7 +6,7 @@ setup(name='sticker-graph',
       url='https://github.com/danieldk/sticker',
       author='Daniël de Kok',
       author_email='me@danieldk.eu',
-      license='Apache2',
+      license='BlueOak-1.0.0',
       tests_require=[
           'numpy',
           'tensorflow == 1.13.1',
