@@ -7,6 +7,11 @@ if __name__ == '__main__':
     parser = get_common_parser()
 
     parser.add_argument(
+        "--hidden_size",
+        type=int,
+        help="neurons in the hidden layer of the rnn",
+        default=200)
+    parser.add_argument(
         "--kernel_size",
         type=int,
         help="convolution model kernel size",
@@ -35,6 +40,7 @@ if __name__ == '__main__':
 
     config = parse_common_config(args)
     config.glu = not args.relu
+    config.hidden_size = args.hidden_size
     config.kernel_size = args.kernel_size
     config.n_levels = args.levels
     config.keep_prob = args.keep_prob
