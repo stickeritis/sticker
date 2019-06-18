@@ -1,7 +1,8 @@
 import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
-from sticker_graph.model import Model
 
+from sticker_graph.model import Model
+import sticker_graph.vendored
 
 def dropout_wrapper(
         cell,
@@ -30,7 +31,8 @@ def bidi_rnn_layers(
         output_keep_prob=1.0,
         state_keep_prob=1.0,
         seq_lens=None,
-        gru=False):
+        gru=False,
+        residual_connections=False):
     if gru:
         cell = tf.nn.rnn_cell.GRUCell
     else:
@@ -49,13 +51,13 @@ def bidi_rnn_layers(
             is_training=is_training,
             state_keep_prob=state_keep_prob,
             output_keep_prob=output_keep_prob) for i in range(num_layers)]
-
-    return tf.contrib.rnn.stack_bidirectional_dynamic_rnn(
+    return sticker_graph.vendored.stack_bidirectional_dynamic_rnn(
         fw_cells,
         bw_cells,
         inputs,
         dtype=tf.float32,
-        sequence_length=seq_lens)
+        sequence_length=seq_lens,
+        residual_connections=residual_connections)
 
 
 class RNNModel(Model):
@@ -79,7 +81,8 @@ class RNNModel(Model):
             output_size=args.hidden_size,
             output_keep_prob=args.keep_prob,
             seq_lens=self._seq_lens,
-            gru=args.gru)
+            gru=args.gru,
+            residual_connections=args.residual)
 
         hidden_states = batch_norm(
             hidden_states,

@@ -30,7 +30,12 @@ if __name__ == '__main__':
         type=float,
         help="input keep probability",
         default=0.80)
-
+    parser.add_argument(
+        "--residual",
+        action='store_true',
+        default=False,
+        help="Use residual skip connections between RNN layers."
+    )
     args = parser.parse_args()
 
     model = RNNModel
