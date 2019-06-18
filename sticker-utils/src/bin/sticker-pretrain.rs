@@ -22,6 +22,7 @@ static CONTINUE: &str = "CONTINUE";
 static SAVE_BATCH: &str = "SAVE_BATCH";
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static VALIDATION_DATA: &str = "VALIDATION_DATA";
+static LOGDIR: &str = "LOGDIR";
 
 pub struct PretrainApp {
     config: String,
@@ -31,6 +32,7 @@ pub struct PretrainApp {
     save_schedule: SaveSchedule,
     train_data: String,
     validation_data: String,
+    logdir: Option<String>,
 }
 
 impl PretrainApp {
@@ -76,6 +78,13 @@ impl PretrainApp {
                     .index(3)
                     .required(true),
             )
+            .arg(
+                Arg::with_name(LOGDIR)
+                    .long("logdir")
+                    .value_name("LOGDIR")
+                    .takes_value(true)
+                    .help("Write Tensorboard summaries to this directory."),
+            )
             .get_matches();
 
         let config = matches.value_of(CONFIG).unwrap().into();
@@ -99,6 +108,7 @@ impl PretrainApp {
                 )
             })
             .unwrap_or(SaveSchedule::Epoch);
+        let logdir = matches.value_of(LOGDIR).map(ToOwned::to_owned);
 
         let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
         let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
@@ -111,6 +121,7 @@ impl PretrainApp {
             save_schedule,
             train_data,
             validation_data,
+            logdir,
         }
     }
 }
@@ -176,10 +187,17 @@ fn create_trainer(config: &Config, app: &PretrainApp) -> Fallible<TaggerTrainer>
     let graph_read = BufReader::new(File::open(&config.model.graph)?);
     let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
 
-    match app.parameters {
+    let mut trainer = match app.parameters {
         Some(ref parameters) => TaggerTrainer::load_weights(graph, parameters),
         None => TaggerTrainer::random_weights(graph),
-    }
+    }?;
+    match &app.logdir {
+        Some(logdir) => {
+            trainer.init_logdir(logdir)?;
+        }
+        None => {}
+    };
+    Ok(trainer)
 }
 
 fn train_model_with_encoder<E>(
