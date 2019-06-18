@@ -156,25 +156,25 @@ def residual_unit(
 class ConvModel(Model):
     def __init__(
             self,
-            config,
+            args,
             shapes):
-        super(ConvModel, self).__init__(config, shapes)
+        super(ConvModel, self).__init__(args, shapes)
 
         self.setup_placeholders()
 
         inputs = tf.contrib.layers.dropout(
             self.inputs,
-            keep_prob=config.keep_prob_input,
+            keep_prob=args.keep_prob_input,
             is_training=self.is_training)
 
         hidden_states = dilated_convolution(
             inputs,
-            config.hidden_size,
-            kernel_size=config.kernel_size,
-            n_levels=config.n_levels,
+            args.hidden_size,
+            kernel_size=args.kernel_size,
+            n_levels=args.levels,
             is_training=self.is_training,
-            glu=config.glu,
-            keep_prob=config.keep_prob,
+            glu=not args.relu,
+            keep_prob=args.keep_prob,
             mask=self.mask)
 
         # Normalize hidden layers, seems to speed up convergence.
@@ -183,7 +183,7 @@ class ConvModel(Model):
 
         logits = self.affine_transform(
             "tag", hidden_states, shapes['n_labels'])
-        if config.crf:
+        if args.crf:
             loss, transitions = self.crf_loss(
                 "tag", logits, self.tags)
             predictions, top_k_predictions = self.crf_predictions(
@@ -192,7 +192,7 @@ class ConvModel(Model):
             loss = self.masked_softmax_loss(
                 "tag", logits, self.tags, self.mask)
             predictions = self.predictions("tag", logits)
-            self.top_k_predictions("tag", logits, config.top_k)
+            self.top_k_predictions("tag", logits, args.top_k)
 
         acc = self.accuracy("tag", predictions, self.tags)
 

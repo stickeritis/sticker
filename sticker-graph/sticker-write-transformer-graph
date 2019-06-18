@@ -3,7 +3,7 @@
 import toml
 
 from sticker_graph.transformer_model import TransformerModel
-from sticker_graph.write_helper  import get_common_parser, parse_common_config, create_graph
+from sticker_graph.write_helper  import get_common_parser, create_graph
 
 
 if __name__ == '__main__':
@@ -92,25 +92,10 @@ if __name__ == '__main__':
                      "outer_hsize: {} NUM_HEADS: {}"
                      .format(args.outer_hsize, args.num_heads))
     
-    config = parse_common_config(args)
-    config.pass_inputs = args.pass_inputs
-    config.num_layers = args.num_layers
-    config.num_heads = args.num_heads
-    config.inner_hsize = args.inner_hsize
-    config.outer_hsize = args.outer_hsize
-    config.activation = args.activation
-    config.embed_time = args.embed_time
-    if args.embed_time:
-        config.max_position = args.max_time
-    config.keep_prob_input = args.keep_prob_input
-    config.keep_prob_inner = args.keep_prob_inner
-    config.keep_prob_outer = args.keep_prob_outer
-    config.keep_prob_attention = args.keep_prob_attention
-
     model = TransformerModel
 
     print("Model = Transformer",
           toml.dumps(args.__dict__),
           sep="\n")
 
-    create_graph(config, model, args)
+    create_graph(model, args)

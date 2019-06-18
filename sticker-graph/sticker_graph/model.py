@@ -2,8 +2,8 @@ import tensorflow as tf
 
 
 class Model:
-    def __init__(self, config, shapes):
-        self._config = config
+    def __init__(self, args, shapes):
+        self._args = args
         self._shapes = shapes
 
     def accuracy(self, prefix, predictions, labels):
@@ -150,8 +150,8 @@ class Model:
             self.val_summaries = tf.group(val_summaries, name="val")
 
     @property
-    def config(self):
-        return self._config
+    def args(self):
+        return self._args
 
     @property
     def is_training(self):

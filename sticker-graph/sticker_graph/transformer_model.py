@@ -143,7 +143,7 @@ def gelu(t):
 def build_encoder(inputs,
                   seq_lens,
                   activation,
-                  config,
+                  args,
                   is_training):
     """
     Builds the transformer encoder. The encoder consists of multiple layers.
@@ -156,17 +156,17 @@ def build_encoder(inputs,
     :param inputs: Inputs
     :param seq_lens: Sequence length used to mask the self attention.
     :param activation: activation function of the inner feed-forward layer
-    :param config: config object holding hyperparameters
+    :param args: arguments object holding hyperparameters
     :param is_training: bool indicator whether dropout should be applied
     :return: tuple(list(encoder_states), list(attention_scores))
     """
-    inner_hsize = config.inner_hsize
-    outer_hsize = config.outer_hsize
-    keep_prob_inner = config.keep_prob_inner
-    keep_prob_outer = config.keep_prob_outer
-    keep_prob_attention = config.keep_prob_attention
-    num_layers = config.num_layers
-    num_heads = config.num_heads
+    inner_hsize = args.inner_hsize
+    outer_hsize = args.outer_hsize
+    keep_prob_inner = args.keep_prob_inner
+    keep_prob_outer = args.keep_prob_outer
+    keep_prob_attention = args.keep_prob_attention
+    num_layers = args.num_layers
+    num_heads = args.num_heads
 
     states = inputs
     encoder = []
@@ -222,73 +222,73 @@ def sinusoid(max_time_batch, depth):
     return signal
 
 
-def learned_positionals(config, max_time_batch, depth):
+def learned_positionals(args, max_time_batch, depth):
     """
     Embedding lookup to retrieve positional embeddings. Relies on
-    `config.max_position` to determine the largest learnable position,
+    `args.max_position` to determine the largest learnable position,
     everything beyond that is clipped and gets the same representation.
 
     This may be unproblematic for some use cases, in others it will
     influence performance.
 
-    :param config: config object holding hyperparameters
+    :param args: arguments object holding hyperparameters
     :param max_time_batch: maximum number of timesteps in the batch
     :param depth: depth of the feature dimension
     :return: the embedding lookup of the time signal
     """
     position_embs = tf.get_variable('positional_embeddings',
                                     dtype=tf.float32,
-                                    shape=[config.max_position, depth])
+                                    shape=[args.max_position, depth])
     positions = tf.range(0, max_time_batch)
-    clipped_positions = tf.clip_by_value(positions, 0, config.max_position)
+    clipped_positions = tf.clip_by_value(positions, 0, args.max_position)
     positions = tf.nn.embedding_lookup(position_embs, clipped_positions)
     return positions
 
 
 class TransformerModel(Model):
-    def __init__(self, config, shapes):
-        super(TransformerModel, self).__init__(config, shapes)
+    def __init__(self, args, shapes):
+        super(TransformerModel, self).__init__(args, shapes)
 
         self.setup_placeholders()
 
-        if config.activation == 'relu':
+        if args.activation == 'relu':
             activation = tf.nn.relu
-        elif config.activation == 'gelu':
+        elif args.activation == 'gelu':
             activation = gelu
         else:
             raise NotImplementedError('Activation %s is not available.'
-                                      % config.activation)
+                                      % args.activation)
 
         inputs = tf.contrib.layers.dropout(
             self.inputs,
-            keep_prob=config.keep_prob_input,
+            keep_prob=args.keep_prob_input,
             is_training=self.is_training)
 
-        if not config.pass_inputs:
-            inputs = tf.layers.dense(inputs, config.outer_hsize, activation)
+        if not args.pass_inputs:
+            inputs = tf.layers.dense(inputs, args.outer_hsize, activation)
         else:
             error_msg = "With '--pass_inputs' the last input dimension has " \
                         "to match '--outer_hsize'. OUTER_HSIZE: %d, " \
-                        "input[-1]: %d" % (config.outer_hsize, inputs.shape[-1])
+                        "input[-1]: %d" % (args.outer_hsize, inputs.shape[-1])
 
-            assert inputs.shape[-1] == config.outer_hsize, error_msg
+            assert inputs.shape[-1] == args.outer_hsize, error_msg
 
         # add time signal
         max_time_batch, depth = tf.shape(self.inputs)[1], inputs.shape[-1]
-        if config.embed_time:
-            inputs += learned_positionals(config, max_time_batch, depth)
+        if args.embed_time:
+            inputs += learned_positionals(args, max_time_batch, depth)
         else:
             inputs += sinusoid(max_time_batch, depth)
 
         hidden_states, alignments = build_encoder(inputs=inputs,
                                                   seq_lens=self.seq_lens,
                                                   activation=activation,
-                                                  config=config,
+                                                  args=args,
                                                   is_training=self.is_training, )
 
         logits = self.affine_transform(
             "tag", hidden_states[-1], shapes['n_labels'])
-        if config.crf:
+        if args.crf:
             loss, transitions = self.crf_loss(
                 "tag", logits, self.tags)
             predictions, top_k_predictions = self.crf_predictions(
@@ -297,7 +297,7 @@ class TransformerModel(Model):
             loss = self.masked_softmax_loss(
                 "tag", logits, self.tags, self.mask)
             predictions = self.predictions("tag", logits)
-            self.top_k_predictions("tag", logits, config.top_k)
+            self.top_k_predictions("tag", logits, args.top_k)
 
         acc = self.accuracy("tag", predictions, self.tags)
 
