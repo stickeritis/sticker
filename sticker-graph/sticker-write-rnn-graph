@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from sticker_graph.rnn_model import RNNModel
-from sticker_graph.write_helper import get_common_parser, parse_common_config, create_graph
+from sticker_graph.write_helper import get_common_parser, create_graph
 
 if __name__ == '__main__':
     parser = get_common_parser()
@@ -33,17 +33,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    config = parse_common_config(args)
-    config.gru = args.gru
-    config.hidden_size = args.hidden_size
-    config.rnn_layers = args.rnn_layers
-    config.keep_prob = args.keep_prob
-    config.keep_prob_input = args.keep_prob_input
     model = RNNModel
 
     print("Model: rnn, gru: %r, crf: %r, layers: %d\n"
           "Dropout input: %.2f, hidden: %.2f" %
-          (config.gru, config.crf, config.rnn_layers,
-           config.keep_prob_input, config.keep_prob))
+          (args.gru, args.crf, args.rnn_layers,
+           args.keep_prob_input, args.keep_prob))
 
-    create_graph(config, model, args)
+    create_graph(model, args)

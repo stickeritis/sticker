@@ -61,25 +61,25 @@ def bidi_rnn_layers(
 class RNNModel(Model):
     def __init__(
             self,
-            config,
+            args,
             shapes):
-        super(RNNModel, self).__init__(config, shapes)
+        super(RNNModel, self).__init__(args, shapes)
 
         self.setup_placeholders()
 
         inputs = tf.contrib.layers.dropout(
             self.inputs,
-            keep_prob=config.keep_prob_input,
+            keep_prob=args.keep_prob_input,
             is_training=self.is_training)
 
         hidden_states, _, _ = bidi_rnn_layers(
             self.is_training,
             inputs,
-            num_layers=config.rnn_layers,
-            output_size=config.hidden_size,
-            output_keep_prob=config.keep_prob,
+            num_layers=args.rnn_layers,
+            output_size=args.hidden_size,
+            output_keep_prob=args.keep_prob,
             seq_lens=self._seq_lens,
-            gru=config.gru)
+            gru=args.gru)
 
         hidden_states = batch_norm(
             hidden_states,
@@ -91,7 +91,7 @@ class RNNModel(Model):
 
         logits = self.affine_transform(
             "tag", hidden_states, shapes['n_labels'])
-        if config.crf:
+        if args.crf:
             loss, transitions = self.crf_loss(
                 "tag", logits, self.tags)
             predictions, top_k_predictions = self.crf_predictions(
@@ -100,7 +100,7 @@ class RNNModel(Model):
             loss = self.masked_softmax_loss(
                 "tag", logits, self.tags, self.mask)
             predictions = self.predictions("tag", logits)
-            self.top_k_predictions("tag", logits, config.top_k)
+            self.top_k_predictions("tag", logits, args.top_k)
 
         acc = self.accuracy("tag", predictions, self.tags)
 

@@ -2,8 +2,6 @@ import argparse
 import tensorflow as tf
 import toml
 
-from sticker_graph.config import DefaultConfig
-
 
 def read_shapes(args):
     with open(args.shape_file) as shapesfile:
@@ -40,7 +38,7 @@ def _create_file_writer_generic_type(logdir,
             filename_suffix=filename_suffix)
 
 
-def create_graph(config, model, args):
+def create_graph(model, args):
     shapes = read_shapes(args)
     graph_filename = args.output_graph_file
 
@@ -53,7 +51,7 @@ def create_graph(config, model, args):
 
         with summary_writer.as_default(), tf.contrib.summary.always_record_summaries():
             with tf.variable_scope("model", reuse=None):
-                model(config=config, shapes=shapes)
+                model(args=args, shapes=shapes)
 
             tf.group(tf.contrib.summary.summary_writer_initializer_op(),
                      name="summary_init")
@@ -95,10 +93,3 @@ def get_common_parser():
         help="number of predictions to return",
         default=3)
     return parser
-
-
-def parse_common_config(args):
-    config = DefaultConfig()
-    config.crf = args.crf
-    config.top_k = args.top_k
-    return config
