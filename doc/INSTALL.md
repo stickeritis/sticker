@@ -8,19 +8,19 @@ are distributed with a precompiled CPU version of Tensorflow.
 
 ## Docker images with models
 
-The following prebuilt-docker images with models are available for
-academic use.
+The following prebuilt-docker images with models are available **for
+academic use**.
 
 | Image                               | Language | Task                      |
 |:------------------------------------|:---------|:--------------------------|
-| `danieldk/sticker:de-pos-20190426`  | German   | POS tagging               |
-| `danieldk/sticker:de-topo-20190426` | German   | Topological field tagging |
-| `danieldk/sticker:de-topo-20190426` | German   | Dependency parsing        |
+| `danieldk/sticker:de-pos-20190615`  | German   | POS tagging               |
+| `danieldk/sticker:de-topo-20190615` | German   | Topological field tagging |
+| `danieldk/sticker:de-deps-20190617` | German   | Dependency parsing        |
 
 The images can be used to tag local CoNLL-X files:
 
 ~~~bash
-$ docker run -i --rm danieldk/sticker:de-pos-20190426 \
+$ docker run -i --rm danieldk/sticker:de-pos-20190615 \
   /bin/sticker-tag-de-pos < corpus.conll > tagged.conll
 ~~~
 
@@ -28,7 +28,7 @@ Or you can run the sticker server and expose it on a
 local port:
 
 ~~~bash
-$ docker run -it --rm -p 4000:4000 danieldk/sticker:de-pos-20190426 \
+$ docker run -it --rm -p 4000:4000 danieldk/sticker:de-pos-20190615 \
   /bin/sticker-server-de-pos 0.0.0.0:4000
 ~~~
 
@@ -64,7 +64,7 @@ $ sticker-server-de-pos corpus.conll tagged.conll
 You can remove a model again using the `-e` flag of `nix-env`:
 
 ~~~
-$ nix-env -e de-pos
+$ nix-env -e sticker-de-pos
 ~~~
 
 We recommend advanced users to add the [package
