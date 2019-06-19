@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--hidden_size",
         type=int,
-        help="neurons in the hidden layer of the rnn",
+        help="neurons in the hidden layer of the RNN",
         default=200)
     parser.add_argument(
         "--rnn_layers",
