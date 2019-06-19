@@ -2,40 +2,12 @@ import argparse
 import tensorflow as tf
 import toml
 
+import sticker_graph.vendored
 
 def read_shapes(args):
     with open(args.shape_file) as shapesfile:
         shapes = toml.loads(shapesfile.read())
     return shapes
-
-
-def _create_file_writer_generic_type(logdir,
-                                    name="logdir",
-                                    max_queue=None,
-                                    flush_millis=None,
-                                    filename_suffix=None):
-    """
-    This method mirrors `tensorflow.contrib.summary.create_file_writer`. Unlike
-    `summary.create_file_writer`, this method accepts a placeholder as `logdir`.
-    """
-    from tensorflow.python.ops.summary_ops_v2 import _make_summary_writer
-    from tensorflow.python.ops.gen_summary_ops import create_summary_file_writer
-
-    logdir = tf.convert_to_tensor(logdir)
-    with tf.device("cpu:0"):
-        if max_queue is None:
-            max_queue = tf.constant(10)
-        if flush_millis is None:
-            flush_millis = tf.constant(2 * 60 * 1000)
-        if filename_suffix is None:
-            filename_suffix = tf.constant(".v2")
-        return _make_summary_writer(
-            name,
-            create_summary_file_writer,
-            logdir=logdir,
-            max_queue=max_queue,
-            flush_millis=flush_millis,
-            filename_suffix=filename_suffix)
 
 
 def create_graph(model, args):
@@ -47,7 +19,7 @@ def create_graph(model, args):
 
     with tf.Graph().as_default(), tf.Session(config=tfconfig) as session:
         logdir = tf.placeholder(shape=[], name="logdir", dtype=tf.string)
-        summary_writer = _create_file_writer_generic_type(logdir)
+        summary_writer = sticker_graph.vendored._create_file_writer_generic_type(logdir)
 
         with summary_writer.as_default(), tf.contrib.summary.always_record_summaries():
             with tf.variable_scope("model", reuse=None):
