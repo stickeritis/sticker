@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+import functools
+
 import tensorflow as tf
 
 
@@ -103,7 +105,6 @@ def _create_file_writer_generic_type(logdir,
     This method mirrors `tensorflow.contrib.summary.create_file_writer`. Unlike
     `summary.create_file_writer`, this method accepts a placeholder as `logdir`.
     """
-    from tensorflow.python.ops.summary_ops_v2 import _make_summary_writer
     from tensorflow.python.ops.gen_summary_ops import create_summary_file_writer
 
     logdir = tf.convert_to_tensor(logdir)
@@ -114,6 +115,19 @@ def _create_file_writer_generic_type(logdir,
             flush_millis = tf.constant(2 * 60 * 1000)
         if filename_suffix is None:
             filename_suffix = tf.constant(".v2")
+
+    from pkg_resources import parse_version
+    if parse_version(tf.VERSION) >= parse_version("1.14"):
+        from tensorflow.python.ops.summary_ops_v2 import ResourceSummaryWriter
+        return ResourceSummaryWriter(
+            shared_name=name,
+            init_op_fn=functools.partial(create_summary_file_writer,
+                                         logdir=logdir,
+                                         max_queue=max_queue,
+                                         flush_millis=flush_millis,
+                                         filename_suffix=filename_suffix))
+    else:
+        from tensorflow.python.ops.summary_ops_v2 import _make_summary_writer
         return _make_summary_writer(
             name,
             create_summary_file_writer,
