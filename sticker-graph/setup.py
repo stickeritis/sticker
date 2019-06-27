@@ -19,5 +19,6 @@ setup(name='sticker-graph',
       packages=['sticker_graph'],
       scripts=[
           'sticker-write-conv-graph',
-          'sticker-write-rnn-graph'
+          'sticker-write-rnn-graph',
+          'sticker-write-transformer-graph'
       ])
