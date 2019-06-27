@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::hash::Hash;
 use std::io::BufReader;
+use std::usize;
 
 use clap::Arg;
 use failure::{Error, Fallible};
@@ -21,6 +22,7 @@ static CONFIG: &str = "CONFIG";
 static INITIAL_LR: &str = "INITIAL_LR";
 static LR_SCALE: &str = "LR_SCALE";
 static LR_PATIENCE: &str = "LR_PATIENCE";
+static MAX_LEN: &str = "MAX_LEN";
 static CONTINUE: &str = "CONTINUE";
 static PATIENCE: &str = "PATIENCE";
 static TRAIN_DATA: &str = "TRAIN_DATA";
@@ -36,6 +38,7 @@ pub struct LrSchedule {
 pub struct TrainApp {
     config: String,
     lr_schedule: LrSchedule,
+    max_len: usize,
     parameters: Option<String>,
     patience: usize,
     save_schedule: SaveSchedule,
@@ -86,6 +89,12 @@ impl TrainApp {
                     .default_value("0.5"),
             )
             .arg(
+                Arg::with_name(MAX_LEN)
+                    .long("maxlen")
+                    .value_name("N")
+                    .help("Ignore sentences longer than N tokens"),
+            )
+            .arg(
                 Arg::with_name(PATIENCE)
                     .long("patience")
                     .value_name("N")
@@ -129,6 +138,10 @@ impl TrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse learning rate scale", 1);
+        let max_len = matches
+            .value_of(MAX_LEN)
+            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1))
+            .unwrap_or(usize::MAX);
         let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
         let patience = matches
             .value_of(PATIENCE)
@@ -149,6 +162,7 @@ impl TrainApp {
                 lr_patience,
                 lr_scale,
             },
+            max_len,
             save_schedule,
             train_data,
             validation_data,
@@ -272,6 +286,7 @@ where
 
         let (loss, acc) = run_epoch(
             config,
+            app,
             &mut save_scheduler,
             &mut categorical_encoder,
             &vectorizer,
@@ -293,6 +308,7 @@ where
 
         let (loss, acc) = run_epoch(
             config,
+            app,
             &mut save_scheduler,
             &mut categorical_encoder,
             &vectorizer,
@@ -330,6 +346,7 @@ where
 #[allow(clippy::too_many_arguments)]
 fn run_epoch<E>(
     config: &Config,
+    app: &TrainApp,
     save_scheduler: &mut SaveScheduler,
     encoder: &mut CategoricalEncoder<E, E::Encoding>,
     vectorizer: &SentVectorizer,
@@ -358,7 +375,7 @@ where
     let mut loss = 0f32;
 
     for batch in dataset
-        .batches(encoder, vectorizer, config.model.batch_size)
+        .batches(encoder, vectorizer, config.model.batch_size, app.max_len)
         .or_exit("Cannot read batches", 1)
     {
         let (inputs, seq_lens, labels) = batch.or_exit("Cannot read batch", 1).into_parts();
