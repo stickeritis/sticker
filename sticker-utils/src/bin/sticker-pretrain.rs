@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::hash::Hash;
 use std::io::{BufReader, Seek, SeekFrom};
+use std::usize;
 
 use clap::Arg;
 use failure::{Error, Fallible};
@@ -18,6 +19,7 @@ use sticker_utils::{
 static CONFIG: &str = "CONFIG";
 static EPOCHS: &str = "EPOCHS";
 static INITIAL_LR: &str = "INITIAL_LR";
+static MAX_LEN: &str = "MAX_LEN";
 static CONTINUE: &str = "CONTINUE";
 static SAVE_BATCH: &str = "SAVE_BATCH";
 static TRAIN_DATA: &str = "TRAIN_DATA";
@@ -28,6 +30,7 @@ pub struct PretrainApp {
     config: String,
     epochs: usize,
     initial_lr: NotNan<f32>,
+    max_len: usize,
     parameters: Option<String>,
     save_schedule: SaveSchedule,
     train_data: String,
@@ -58,6 +61,12 @@ impl PretrainApp {
                     .value_name("N")
                     .help("Number of epochs to pretrain")
                     .default_value("1"),
+            )
+            .arg(
+                Arg::with_name(MAX_LEN)
+                    .long("maxlen")
+                    .value_name("N")
+                    .help("Ignore sentences longer than N tokens"),
             )
             .arg(
                 Arg::with_name(SAVE_BATCH)
@@ -98,6 +107,10 @@ impl PretrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse initial learning rate", 1);
+        let max_len = matches
+            .value_of(MAX_LEN)
+            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1))
+            .unwrap_or(usize::MAX);
         let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
         let save_schedule = matches
             .value_of(SAVE_BATCH)
@@ -117,6 +130,7 @@ impl PretrainApp {
             config,
             epochs,
             initial_lr,
+            max_len,
             parameters,
             save_schedule,
             train_data,
@@ -320,7 +334,7 @@ where
     let mut loss = 0f32;
 
     for batch in dataset
-        .batches(encoder, vectorizer, config.model.batch_size)
+        .batches(encoder, vectorizer, config.model.batch_size, app.max_len)
         .or_exit("Cannot read batches", 1)
     {
         let (inputs, seq_lens, labels) = batch.or_exit("Cannot read batch", 1).into_parts();
