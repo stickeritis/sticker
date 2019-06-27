@@ -60,20 +60,6 @@ pub trait CborWrite {
         W: Write;
 }
 
-// impl<T> CborWrite for Numberer<T>
-// where
-//     T: Eq + Hash + Serialize + Deserialize,
-// {
-//     fn to_cbor_write<W>(&self, write: &mut W) -> Result<()>
-//     where
-//         W: Write,
-//     {
-//         let data = serde_cbor::to_vec(self)?;
-//         write.write(&data)?;
-//         Ok(())
-//     }
-// }
-
 macro_rules! cbor_write {
     ($type: ty) => {
         impl CborWrite for $type {
