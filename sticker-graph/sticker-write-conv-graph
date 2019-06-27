@@ -38,11 +38,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    model = ConvModel
-
-    print("Model: convolution, kernel: %d, levels: %d, glu: %r, crf: %r\n"
-          "Dropout input: %.2f, hidden: %.2f" %
-          (args.kernel_size, args.levels, not args.relu,
-           args.crf, args.keep_prob_input, args.keep_prob))
-
-    create_graph(model, args)
+    create_graph(ConvModel, args)

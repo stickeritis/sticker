@@ -92,10 +92,4 @@ if __name__ == '__main__':
                      "outer_hsize: {} NUM_HEADS: {}"
                      .format(args.outer_hsize, args.num_heads))
     
-    model = TransformerModel
-
-    print("Model = Transformer",
-          toml.dumps(args.__dict__),
-          sep="\n")
-
-    create_graph(model, args)
+    create_graph(TransformerModel, args)

@@ -11,6 +11,10 @@ def read_shapes(args):
 
 
 def create_graph(model, args):
+    print('Model = "{}"'.format(model.__name__),
+          toml.dumps(args.__dict__),
+          sep="\n")
+
     shapes = read_shapes(args)
     graph_filename = args.output_graph_file
 
