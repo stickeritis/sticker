@@ -12,7 +12,7 @@ from tensorflow.python.keras import initializers
 from tensorflow.python.keras.engine.base_layer import Layer
 from tensorflow.python.keras.engine.base_layer import InputSpec
 from tensorflow.python.keras.layers import Wrapper
-
+from tensorflow import VERSION
 
 class WeightNorm(Wrapper):
     """ This wrapper reparameterizes a layer by decoupling the weight's
@@ -48,8 +48,12 @@ class WeightNorm(Wrapper):
             self.initialized = False
 
         super(WeightNorm, self).__init__(layer, **kwargs)
-        self._track_checkpointable(layer, name='layer')
-
+        from pkg_resources import parse_version
+        if parse_version(VERSION) >= parse_version("1.14"):
+            self._track_trackable(layer, name='layer')
+        else:
+            self._track_checkpointable(layer, name='layer')
+            
     def _compute_weights(self):
         """Generate weights by combining the direction of weight vector
          with it's norm """
