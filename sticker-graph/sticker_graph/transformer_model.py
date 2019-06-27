@@ -238,9 +238,9 @@ def learned_positionals(args, max_time_batch, depth):
     """
     position_embs = tf.get_variable('positional_embeddings',
                                     dtype=tf.float32,
-                                    shape=[args.max_position, depth])
+                                    shape=[args.max_time, depth])
     positions = tf.range(0, max_time_batch)
-    clipped_positions = tf.clip_by_value(positions, 0, args.max_position)
+    clipped_positions = tf.clip_by_value(positions, 0, args.max_time)
     positions = tf.nn.embedding_lookup(position_embs, clipped_positions)
     return positions
 
