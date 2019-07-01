@@ -6,11 +6,13 @@ The following models are available **for academic use**.
 
 We provide Docker images with sticker and models.
 
-| Image                               | Language | Task                      |
-|:------------------------------------|:---------|:--------------------------|
-| `danieldk/sticker:de-pos-20190615`  | German   | POS tagging               |
-| `danieldk/sticker:de-topo-20190615` | German   | Topological field tagging |
-| `danieldk/sticker:de-deps-20190617` | German   | Dependency parsing        |
+| Image                                  | Language | Task                           |
+|:---------------------------------------|:---------|:-------------------------------|
+| `danieldk/sticker:de-pos-20190615`     | German   | POS tagging                    |
+| `danieldk/sticker:de-topo-20190615`    | German   | Topological field tagging      |
+| `danieldk/sticker:de-deps-20190617`    | German   | Dependency parsing             |
+| `danieldk/sticker:nl-pos-ud-20190623`  | Dutch    | POS tagging (universal tagset) |
+| `danieldk/sticker:nl-deps-ud-20190628` | Dutch    | Dependency parsing (UD)        |
 
 The images can be used to tag local CoNLL-X files:
 
@@ -33,11 +35,13 @@ sticker models can be installed with Nix through [danieldk's Nix
 repository](https://git.sr.ht/~danieldk/nix-packages). The following
 packages are available.
 
-| Attribute               | Language | Task                      |
-|:------------------------|:---------|:--------------------------|
-| `stickerModels.de-pos`  | German   | POS tagging               |
-| `stickerModels.de-topo` | German   | Topological field tagging |
-| `stickerModels.de-deps` | German   | Dependency parsing        |
+| Attribute                  | Language | Task                           |
+|:---------------------------|:---------|:-------------------------------|
+| `stickerModels.de-pos`     | German   | POS tagging                    |
+| `stickerModels.de-topo`    | German   | Topological field tagging      |
+| `stickerModels.de-deps`    | German   | Dependency parsing             |
+| `stickerModels.nl-pos-ud`  | Dutch    | POS tagging (universal tagset) |
+| `stickerModels.nl-deps-ud` | Dutch    | Dependency parsing (UD)        |
 
 If you are not very familiar with Nix, the easiest way to install a
 model is to install it into your local user environment. For example:
