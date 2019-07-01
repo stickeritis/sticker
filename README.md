@@ -16,6 +16,7 @@ has been on:
 ## Where to go from here
 
 * [Installing sticker](doc/INSTALL.md)
+* [Pretrained models](doc/PRETRAINED.md)
 * [Using sticker](doc/USAGE.md)
 * [Training a sticker model](doc/TRAIN.md)
 
