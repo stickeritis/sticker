@@ -1,20 +1,48 @@
 # Pretrained models
 
-The following models are available **for academic use**.
+The following models are available **for academic use**. The following
+pretrained models are available.
+
+## Models
+
+### German (Hamburg-style Dependencies)
+
+The German models with Hamburg-style dependencies use
+[STTS](https://www.ims.uni-stuttgart.de/forschung/ressourcen/lexika/TagSets/stts-table.html)
+tags and use the [dependency annotation
+guidelines](http://edoc.sub.uni-hamburg.de/informatik/volltexte/2014/204/pdf/foth_eine_umfassende_.pdf)
+of the Hamburg Dependency Treebank.
+
+### German (Universal Dependencies)
+
+The German models with Hamburg-style dependencies use a combination of
+[Universal](https://universaldependencies.org/u/pos/) and
+[STTS](https://www.ims.uni-stuttgart.de/forschung/ressourcen/lexika/TagSets/stts-table.html)
+part-of-speech tags. You can obtain pure Universal Tags or STTS tags
+by splitting the part-of-speech tag on the dash (`-`). For instance, a
+token with the tag `VERB-VVPP` has the Universal POS tag `VERB` and
+the STTS tag `VVPP`.
+
+The dependency relations follow the [Universal
+Dependency](https://universaldependencies.org/u/dep/index.html)
+guidelines.
+
+### Dutch (Universal Dependencies)
+
+The part-of-speech tagger produces tags of the format
+`UniversalTag(-DutchFeature)*`. You can obtain pure Universal Tags by
+splitting retreiving the initial part of the tag before the dash (`-`)
+character. For instance, a token with the tag `VERB-inf` has the
+Universal POS tag `VERB`.
+
+The dependency relations follow the [Universal
+Dependency](https://universaldependencies.org/u/dep/index.html)
+guidelines.
 
 ## Docker images with models
 
-We provide Docker images with sticker and models.
-
-| Image                                  | Language | Task                           |
-|:---------------------------------------|:---------|:-------------------------------|
-| `danieldk/sticker:de-pos-20190615`     | German   | POS tagging                    |
-| `danieldk/sticker:de-topo-20190615`    | German   | Topological field tagging      |
-| `danieldk/sticker:de-deps-20190617`    | German   | Dependency parsing             |
-| `danieldk/sticker:nl-pos-ud-20190623`  | Dutch    | POS tagging (universal tagset) |
-| `danieldk/sticker:nl-deps-ud-20190628` | Dutch    | Dependency parsing (UD)        |
-
-The images can be used to tag local CoNLL-X files:
+We provide Docker images with sticker and models. The images can be
+used to tag local CoNLL-X files:
 
 ~~~bash
 $ docker run -i --rm danieldk/sticker:de-pos-20190615 \
@@ -29,19 +57,57 @@ $ docker run -it --rm -p 4000:4000 danieldk/sticker:de-pos-20190615 \
   /bin/sticker-server-de-pos 0.0.0.0:4000
 ~~~
 
+### German (Hamburg-style Dependencies)
+
+| Image                                  | Language | Task                           |
+|:---------------------------------------|:---------|:-------------------------------|
+| `danieldk/sticker:de-pos-20190615`     | German   | POS tagging                    |
+| `danieldk/sticker:de-topo-20190615`    | German   | Topological field tagging      |
+| `danieldk/sticker:de-deps-20190617`    | German   | Dependency parsing             |
+
+### German (Universal Dependencies)
+
+| Image                                  | Language | Task                           |
+|:---------------------------------------|:---------|:-------------------------------|
+| `danieldk/sticker:de-pos-ud-20190705`  | German   | POS tagging (universal tagset) |
+| `danieldk/sticker:de-deps-ud-20190705` | German   | Dependency Parsing (UD)        |
+
+### Dutch (Universal Dependencies)
+
+| Image                                  | Language | Task                           |
+|:---------------------------------------|:---------|:-------------------------------|
+| `danieldk/sticker:nl-pos-ud-20190623`  | Dutch    | POS tagging (universal tagset) |
+| `danieldk/sticker:nl-deps-ud-20190628` | Dutch    | Dependency parsing (UD)        |
+
 ## Nix packages with models
 
 sticker models can be installed with Nix through [danieldk's Nix
 repository](https://git.sr.ht/~danieldk/nix-packages). The following
 packages are available.
 
+### German (Hamburg-style Dependencies)
+
 | Attribute                  | Language | Task                           |
 |:---------------------------|:---------|:-------------------------------|
 | `stickerModels.de-pos`     | German   | POS tagging                    |
 | `stickerModels.de-topo`    | German   | Topological field tagging      |
 | `stickerModels.de-deps`    | German   | Dependency parsing             |
+
+### German (Universal Dependencies)
+
+| Attribute                  | Language | Task                           |
+|:---------------------------|:---------|:-------------------------------|
+| `stickerModels.de-pos-ud`  | German   | POS tagging (universal tagset) |
+| `stickerModels.de-deps-ud` | German   | Dependency parsing (UD)        |
+
+### Dutch (Universal Dependencies)
+
+| Attribute                  | Language | Task                           |
+|:---------------------------|:---------|:-------------------------------|
 | `stickerModels.nl-pos-ud`  | Dutch    | POS tagging (universal tagset) |
 | `stickerModels.nl-deps-ud` | Dutch    | Dependency parsing (UD)        |
+
+### Usage
 
 If you are not very familiar with Nix, the easiest way to install a
 model is to install it into your local user environment. For example:
