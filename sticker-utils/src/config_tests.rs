@@ -25,6 +25,7 @@ lazy_static! {
         },
         model: ModelConfig {
             batch_size: 128,
+            gpu_allow_growth: true,
             graph: "sticker.graph".to_owned(),
             parameters: "sticker.model".to_owned(),
             intra_op_parallelism_threads: 4,
