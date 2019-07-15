@@ -89,11 +89,11 @@ pub struct TaggerGraph {
     pub(crate) graph: Graph,
     pub(crate) model_config: ModelConfig,
 
-    pub(crate) graph_write_op: Operation,
-    pub(crate) logdir_op: Operation,
-    pub(crate) summary_init_op: Operation,
-    pub(crate) train_summary_op: Operation,
-    pub(crate) val_summary_op: Operation,
+    pub(crate) graph_write_op: Option<Operation>,
+    pub(crate) logdir_op: Option<Operation>,
+    pub(crate) summary_init_op: Option<Operation>,
+    pub(crate) train_summary_op: Option<Operation>,
+    pub(crate) val_summary_op: Option<Operation>,
 
     pub(crate) init_op: Operation,
     pub(crate) restore_op: Operation,
@@ -146,12 +146,12 @@ impl TaggerGraph {
 
         let train_op = Self::add_op(&graph, op_names::TRAIN_OP)?;
 
-        let graph_write_op = Self::add_op(&graph, op_names::WRITE_GRAPH_OP)?;
-        let logdir_op = Self::add_op(&graph, op_names::LOGDIR_OP)?;
-        let summary_init_op = Self::add_op(&graph, op_names::SUMMARY_INIT_OP)?;
+        let graph_write_op = Self::add_op(&graph, op_names::WRITE_GRAPH_OP).ok();
+        let logdir_op = Self::add_op(&graph, op_names::LOGDIR_OP).ok();
+        let summary_init_op = Self::add_op(&graph, op_names::SUMMARY_INIT_OP).ok();
 
-        let train_summary_op = Self::add_op(&graph, op_names::TRAIN_SUMMARIES_OP)?;
-        let val_summary_op = Self::add_op(&graph, op_names::VAL_SUMMARIES_OP)?;
+        let train_summary_op = Self::add_op(&graph, op_names::TRAIN_SUMMARIES_OP).ok();
+        let val_summary_op = Self::add_op(&graph, op_names::VAL_SUMMARIES_OP).ok();
 
         Ok(TaggerGraph {
             graph,
@@ -346,5 +346,50 @@ where
     /// Tag sentences, returning the top-k results for every token.
     fn tag_sentences(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()> {
         self.tag_sentences_(sentences)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+    use std::io::{BufReader, Cursor, Read};
+    use std::path::Path;
+
+    use flate2::read::GzDecoder;
+
+    use super::{ModelConfig, TaggerGraph};
+
+    fn load_graph(path: impl AsRef<Path>) {
+        let f = File::open(path).expect("Cannot open test graph.");
+        let mut decoder = GzDecoder::new(BufReader::new(f));
+        let mut data = Vec::new();
+        decoder
+            .read_to_end(&mut data)
+            .expect("Cannot decompress test graph.");
+
+        let model_config = ModelConfig {
+            batch_size: 128,
+            graph: String::new(),
+            inter_op_parallelism_threads: 1,
+            intra_op_parallelism_threads: 1,
+            parameters: String::new(),
+        };
+
+        TaggerGraph::load_graph(Cursor::new(data), &model_config).expect("Cannot load graph");
+    }
+
+    #[test]
+    fn load_sticker_0_4_conv_graph() {
+        load_graph("testdata/sticker-0.4-conv.graph.gz");
+    }
+
+    #[test]
+    fn load_sticker_0_4_rnn_graph() {
+        load_graph("testdata/sticker-0.4-rnn.graph.gz");
+    }
+
+    #[test]
+    fn load_sticker_0_4_transformer_graph() {
+        load_graph("testdata/sticker-0.4-transformer.graph.gz");
     }
 }
