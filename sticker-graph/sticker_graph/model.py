@@ -57,6 +57,11 @@ class Model:
         predictions, _ = tf.contrib.crf.crf_decode(
             logits, transitions, self.seq_lens)
         top_k_predictions = tf.expand_dims(predictions, 2)
+
+        # We don't get per-item probabilities, so just return ones.
+        top_k_probs = tf.ones(tf.shape(top_k_predictions), tf.float32,
+            name="%s_top_k_probs" % prefix)
+
         return predictions, tf.identity(
             top_k_predictions, name="%s_top_k_predictions" %
             prefix)
