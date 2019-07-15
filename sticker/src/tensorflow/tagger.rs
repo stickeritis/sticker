@@ -29,6 +29,10 @@ pub struct ModelConfig {
     /// prediction.
     pub batch_size: usize,
 
+    /// Only allocate as much GPU memory as needed.
+    #[serde(default)]
+    pub gpu_allow_growth: bool,
+
     /// The filename of the Tensorflow graph.
     pub graph: String,
 
@@ -49,6 +53,10 @@ impl ModelConfig {
         let mut config_proto = ConfigProto::new();
         config_proto.intra_op_parallelism_threads = self.intra_op_parallelism_threads as i32;
         config_proto.inter_op_parallelism_threads = self.inter_op_parallelism_threads as i32;
+        config_proto
+            .gpu_options
+            .set_default()
+            .set_allow_growth(self.gpu_allow_growth);
 
         let mut bytes = Vec::new();
         config_proto.write_to_vec(&mut bytes)?;
@@ -369,6 +377,7 @@ mod tests {
 
         let model_config = ModelConfig {
             batch_size: 128,
+            gpu_allow_growth: true,
             graph: String::new(),
             inter_op_parallelism_threads: 1,
             intra_op_parallelism_threads: 1,
