@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use failure::{Error, Fallible};
+use failure::{err_msg, Error, Fallible};
 use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
 use tensorflow::{Session, SessionOptions, SessionRunArgs, Tensor};
@@ -96,13 +96,30 @@ impl TaggerTrainer {
 
         // First init the summary writer..
         let mut args = SessionRunArgs::new();
-        args.add_feed(&self.graph.logdir_op, 0, &path_tensor);
-        args.add_target(&self.graph.summary_init_op);
+        args.add_feed(
+            self.graph
+                .logdir_op
+                .as_ref()
+                .ok_or_else(|| err_msg("Graph does not support writing of summaries"))?,
+            0,
+            &path_tensor,
+        );
+        args.add_target(
+            self.graph
+                .summary_init_op
+                .as_ref()
+                .ok_or_else(|| err_msg("Graph does not support writing of summaries"))?,
+        );
         self.session.run(&mut args).map_err(status_to_error)?;
 
         // ..and then write the graph.
         let mut args = SessionRunArgs::new();
-        args.add_target(&self.graph.graph_write_op);
+        args.add_target(
+            self.graph
+                .graph_write_op
+                .as_ref()
+                .ok_or_else(|| err_msg("Graph does not support writing of summaries"))?,
+        );
         self.session.run(&mut args).map_err(status_to_error)
     }
 
@@ -125,7 +142,13 @@ impl TaggerTrainer {
         args.add_feed(&self.graph.lr_op, 0, &lr);
         args.add_target(&self.graph.train_op);
         if self.summaries {
-            args.add_target(&self.graph.train_summary_op);
+            args.add_target(
+                &self
+                    .graph
+                    .train_summary_op
+                    .as_ref()
+                    .expect("Summaries requested from a graph that does not support summaries."),
+            );
         }
         self.validate_(seq_lens, inputs, labels, args)
     }
@@ -143,7 +166,12 @@ impl TaggerTrainer {
         let mut args = SessionRunArgs::new();
         args.add_feed(&self.graph.is_training_op, 0, &is_training);
         if self.summaries {
-            args.add_target(&self.graph.val_summary_op);
+            args.add_target(
+                self.graph
+                    .val_summary_op
+                    .as_ref()
+                    .expect("Summaries requested from a graph that does not support summaries."),
+            );
         }
         self.validate_(seq_lens, inputs, labels, args)
     }
