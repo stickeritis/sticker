@@ -1,8 +1,10 @@
 import argparse
+import sys
 import tensorflow as tf
 import toml
 
 import sticker_graph.vendored
+
 
 def read_shapes(args):
     with open(args.shape_file) as shapesfile:
@@ -11,9 +13,7 @@ def read_shapes(args):
 
 
 def create_graph(model, args):
-    print('Model = "{}"'.format(model.__name__),
-          toml.dumps(args.__dict__),
-          sep="\n")
+    write_args(model, args)
 
     shapes = read_shapes(args)
     graph_filename = args.output_graph_file
@@ -45,6 +45,16 @@ def create_graph(model, args):
                 as_text=False)
 
 
+def write_args(model, args):
+    f = open(args.write_args, 'w') if args.write_args else sys.stdout
+    try:
+        f.write('Model = "{}"\n{}'.format(model.__name__,
+                                          toml.dumps(args.__dict__)))
+    finally:
+        if f != sys.stdout:
+            f.close()
+
+
 def get_common_parser():
     parser = argparse.ArgumentParser()
 
@@ -68,4 +78,9 @@ def get_common_parser():
         type=int,
         help="number of predictions to return",
         default=3)
+    parser.add_argument(
+        "--write_args",
+        type=str,
+        help="write the arguments to a file",
+        default=None)
     return parser
