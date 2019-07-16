@@ -200,7 +200,7 @@ impl TaggerGraph {
 
 pub struct Tagger<D>
 where
-    D: SentenceDecoder,
+    D: Send + SentenceDecoder + Sync,
     D::Encoding: Eq + Hash,
 {
     graph: TaggerGraph,
@@ -211,7 +211,7 @@ where
 
 impl<D> Tagger<D>
 where
-    D: SentenceDecoder,
+    D: Send + SentenceDecoder + Sync,
     D::Encoding: Clone + Eq + Hash,
 {
     /// Load a tagger with weights.
@@ -275,7 +275,10 @@ where
         Ok(builder)
     }
 
-    fn tag_sentences_(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()> {
+    fn tag_sentences_<S>(&self, sentences: &mut [S]) -> Fallible<()>
+    where
+        S: BorrowMut<Sentence>,
+    {
         let builder = self.prepare_batch(sentences)?;
 
         // Tag the batch
@@ -348,7 +351,7 @@ where
 
 impl<D> Tag for Tagger<D>
 where
-    D: SentenceDecoder,
+    D: Send + SentenceDecoder + Sync,
     D::Encoding: Clone + Eq + Hash,
 {
     /// Tag sentences, returning the top-k results for every token.

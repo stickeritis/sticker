@@ -1,5 +1,4 @@
 use std::fs::File;
-use std::hash::Hash;
 use std::io::{BufReader, BufWriter, Write};
 use std::net::{TcpListener, TcpStream};
 use std::sync::Arc;
@@ -9,12 +8,7 @@ use conllx::io::{ReadSentence, Reader, Writer};
 use stdinout::OrExit;
 use threadpool::ThreadPool;
 
-use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
-use sticker_utils::{
-    sticker_app, CborRead, Config, EncoderType, LabelerType, SentProcessor, TaggerSpeed, TomlRead,
-};
+use sticker_utils::{sticker_app, Config, SentProcessor, TaggerSpeed, TaggerWrapper, TomlRead};
 
 static CONFIG: &str = "CONFIG";
 static ADDR: &str = "ADDR";
@@ -82,102 +76,30 @@ fn main() {
     config.model.inter_op_parallelism_threads = app.n_threads;
     config.model.intra_op_parallelism_threads = app.n_threads;
 
-    let embeddings = config
-        .embeddings
-        .load_embeddings()
-        .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings);
-
-    let graph_reader = File::open(&config.model.graph).or_exit(
-        format!(
-            "Cannot open computation graph '{}' for reading",
-            &config.model.graph
-        ),
-        1,
-    );
-
-    let graph = TaggerGraph::load_graph(graph_reader, &config.model)
-        .or_exit("Cannot load computation graph", 1);
+    let tagger = TaggerWrapper::new(&config).or_exit("Cannot construct tagger", 1);
 
     let pool = ThreadPool::new(app.n_threads);
 
     let listener =
         TcpListener::bind(&app.addr).or_exit(format!("Cannot listen on '{}'", app.addr), 1);
 
-    match config.labeler.labeler_type {
-        LabelerType::Sequence(ref layer) => serve_with_decoder(
-            &config,
-            pool,
-            vectorizer,
-            graph,
-            LayerEncoder::new(layer.clone()),
-            listener,
-        ),
-        LabelerType::Parser(EncoderType::RelativePOS) => serve_with_decoder(
-            &config,
-            pool,
-            vectorizer,
-            graph,
-            RelativePOSEncoder,
-            listener,
-        ),
-        LabelerType::Parser(EncoderType::RelativePosition) => serve_with_decoder(
-            &config,
-            pool,
-            vectorizer,
-            graph,
-            RelativePositionEncoder,
-            listener,
-        ),
-    }
+    serve(&config, Arc::new(tagger), pool, listener);
 }
 
-fn serve_with_decoder<D>(
-    config: &Config,
-    pool: ThreadPool,
-    vectorizer: SentVectorizer,
-    graph: TaggerGraph,
-    decoder: D,
-    listener: TcpListener,
-) where
-    D: 'static + Clone + Send + SentenceDecoder + Sync,
-    D::Encoding: Clone + Eq + Hash + Send + Sync,
-    Numberer<D::Encoding>: CborRead,
-{
-    let labels = config.labeler.load_labels().or_exit(
-        format!("Cannot load label file '{}'", config.labeler.labels),
-        1,
-    );
-
-    let categorical_decoder = CategoricalEncoder::new(decoder, labels);
-
-    let tagger = Arc::new(
-        Tagger::load_weights(
-            graph,
-            categorical_decoder,
-            vectorizer,
-            config.model.parameters.clone(),
-        )
-        .or_exit("Cannot construct tagger", 1),
-    );
-
+fn serve(config: &Config, tagger: Arc<TaggerWrapper>, pool: ThreadPool, listener: TcpListener) {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
                 let config = config.clone();
                 let tagger = tagger.clone();
-                pool.execute(move || handle_client_with_decoder(config, tagger, stream))
+                pool.execute(move || handle_client(config, tagger, stream))
             }
             Err(err) => eprintln!("Error processing stream: {}", err),
         }
     }
 }
 
-fn handle_client_with_decoder<D>(config: Config, tagger: Arc<Tagger<D>>, mut stream: TcpStream)
-where
-    D: SentenceDecoder,
-    D::Encoding: Clone + Eq + Hash,
-{
+fn handle_client(config: Config, tagger: Arc<TaggerWrapper>, mut stream: TcpStream) {
     let peer_addr = stream
         .peer_addr()
         .map(|addr| addr.to_string())

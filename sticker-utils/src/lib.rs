@@ -15,6 +15,9 @@ pub use crate::sent_proc::SentProcessor;
 mod serialization;
 pub use crate::serialization::{CborRead, CborWrite, TomlRead};
 
+mod tagger_wrapper;
+pub use crate::tagger_wrapper::TaggerWrapper;
+
 #[cfg(test)]
 mod config_tests;
 
