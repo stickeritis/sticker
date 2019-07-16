@@ -65,9 +65,23 @@ impl ModelConfig {
     }
 }
 
-mod op_names {
-    pub const INIT_OP: &str = "init";
+impl Default for ModelConfig {
+    fn default() -> Self {
+        ModelConfig {
+            batch_size: 128,
+            gpu_allow_growth: true,
+            graph: String::new(),
+            inter_op_parallelism_threads: 1,
+            intra_op_parallelism_threads: 1,
+            parameters: String::new(),
+        }
+    }
+}
 
+mod op_names {
+    pub const GRAPH_METADATA_OP: &str = "graph_metadata";
+
+    pub const INIT_OP: &str = "init";
     pub const RESTORE_OP: &str = "save/restore_all";
     pub const SAVE_OP: &str = "save/control_dependency";
     pub const SAVE_PATH_OP: &str = "save/Const";
@@ -96,6 +110,8 @@ mod op_names {
 pub struct TaggerGraph {
     pub(crate) graph: Graph,
     pub(crate) model_config: ModelConfig,
+
+    pub(crate) graph_metadata_op: Option<Operation>,
 
     pub(crate) graph_write_op: Option<Operation>,
     pub(crate) logdir_op: Option<Operation>,
@@ -135,6 +151,8 @@ impl TaggerGraph {
             .import_graph_def(&data, &opts)
             .map_err(status_to_error)?;
 
+        let graph_metadata_op = Self::add_op(&graph, op_names::GRAPH_METADATA_OP).ok();
+
         let restore_op = Self::add_op(&graph, op_names::RESTORE_OP)?;
         let save_op = Self::add_op(&graph, op_names::SAVE_OP)?;
         let save_path_op = Self::add_op(&graph, op_names::SAVE_PATH_OP)?;
@@ -164,6 +182,8 @@ impl TaggerGraph {
         Ok(TaggerGraph {
             graph,
             model_config: model_config.clone(),
+
+            graph_metadata_op,
 
             graph_write_op,
             logdir_op,
@@ -195,6 +215,23 @@ impl TaggerGraph {
         graph
             .operation_by_name_required(name)
             .map_err(status_to_error)
+    }
+
+    pub fn metadata(&self) -> Fallible<Option<String>> {
+        let metadata = match self.graph_metadata_op {
+            Some(ref graph_metadata_op) => {
+                let mut args = SessionRunArgs::new();
+                let metadata_token = args.request_fetch(graph_metadata_op, 0);
+                let session = new_session(self)?;
+                session.run(&mut args).map_err(status_to_error)?;
+                let metadata: Tensor<String> =
+                    args.fetch(metadata_token).map_err(status_to_error)?;
+                Some(metadata[0].clone())
+            }
+            None => None,
+        };
+
+        Ok(metadata)
     }
 }
 
@@ -232,7 +269,7 @@ where
         let mut args = SessionRunArgs::new();
         args.add_feed(&graph.save_path_op, 0, &path_tensor);
         args.add_target(&graph.restore_op);
-        let session = Self::new_session(&graph)?;
+        let session = new_session(&graph)?;
         session.run(&mut args).map_err(status_to_error)?;
 
         Ok(Tagger {
@@ -241,15 +278,6 @@ where
             session,
             vectorizer,
         })
-    }
-
-    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
-        let mut session_opts = SessionOptions::new();
-        session_opts
-            .set_config(&graph.model_config.to_protobuf()?)
-            .map_err(status_to_error)?;
-
-        Session::new(&session_opts, &graph.graph).map_err(status_to_error)
     }
 
     fn prepare_batch(
@@ -360,6 +388,15 @@ where
     }
 }
 
+fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
+    let mut session_opts = SessionOptions::new();
+    session_opts
+        .set_config(&graph.model_config.to_protobuf()?)
+        .map_err(status_to_error)?;
+
+    Session::new(&session_opts, &graph.graph).map_err(status_to_error)
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs::File;
@@ -368,7 +405,7 @@ mod tests {
 
     use flate2::read::GzDecoder;
 
-    use super::{ModelConfig, TaggerGraph};
+    use super::TaggerGraph;
 
     fn load_graph(path: impl AsRef<Path>) {
         let f = File::open(path).expect("Cannot open test graph.");
@@ -378,15 +415,7 @@ mod tests {
             .read_to_end(&mut data)
             .expect("Cannot decompress test graph.");
 
-        let model_config = ModelConfig {
-            batch_size: 128,
-            gpu_allow_growth: true,
-            graph: String::new(),
-            inter_op_parallelism_threads: 1,
-            intra_op_parallelism_threads: 1,
-            parameters: String::new(),
-        };
-
+        let model_config = Default::default();
         TaggerGraph::load_graph(Cursor::new(data), &model_config).expect("Cannot load graph");
     }
 
