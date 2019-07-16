@@ -13,7 +13,6 @@ def read_shapes(args):
 
 
 def create_graph(model, args):
-    write_args(model, args)
 
     shapes = read_shapes(args)
     graph_filename = args.output_graph_file
@@ -22,6 +21,8 @@ def create_graph(model, args):
     tfconfig = tf.ConfigProto(gpu_options=gpuopts)
 
     with tf.Graph().as_default(), tf.Session(config=tfconfig) as session:
+        write_args(model, args)
+
         logdir = tf.placeholder(shape=[], name="logdir", dtype=tf.string)
         summary_writer = sticker_graph.vendored._create_file_writer_generic_type(logdir)
 
@@ -46,10 +47,14 @@ def create_graph(model, args):
 
 
 def write_args(model, args):
+    graph_metadata = 'Model = "{}"\n{}'.format(model.__name__,
+                                             toml.dumps(args.__dict__))
+
+    tf.constant(graph_metadata, name="graph_metadata")
+
     f = open(args.write_args, 'w') if args.write_args else sys.stdout
     try:
-        f.write('Model = "{}"\n{}'.format(model.__name__,
-                                          toml.dumps(args.__dict__)))
+        f.write(graph_metadata)
     finally:
         if f != sys.stdout:
             f.close()
