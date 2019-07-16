@@ -1,28 +1,27 @@
 use conllx::graph::Sentence;
 use conllx::io::WriteSentence;
 use failure::Error;
-use sticker::Tag;
+
+use crate::TaggerWrapper;
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.
-pub struct SentProcessor<'a, T, W>
+pub struct SentProcessor<'a, W>
 where
-    T: Tag,
     W: WriteSentence,
 {
-    tagger: &'a T,
+    tagger: &'a TaggerWrapper,
     writer: W,
     batch_size: usize,
     read_ahead: usize,
     buffer: Vec<Sentence>,
 }
 
-impl<'a, T, W> SentProcessor<'a, T, W>
+impl<'a, W> SentProcessor<'a, W>
 where
-    T: Tag,
     W: WriteSentence,
 {
-    pub fn new(tagger: &'a T, writer: W, batch_size: usize, read_ahead: usize) -> Self {
+    pub fn new(tagger: &'a TaggerWrapper, writer: W, batch_size: usize, read_ahead: usize) -> Self {
         assert!(batch_size > 0, "Batch size should at least be 1.");
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
@@ -66,9 +65,8 @@ where
     }
 }
 
-impl<'a, T, W> Drop for SentProcessor<'a, T, W>
+impl<'a, W> Drop for SentProcessor<'a, W>
 where
-    T: Tag,
     W: WriteSentence,
 {
     fn drop(&mut self) {
