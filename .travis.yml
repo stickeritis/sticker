@@ -13,7 +13,7 @@ matrix:
     python: 3.6
     before_script:
       - cd sticker-graph
-      - pip install tensorflow==1.13.1 toml
+      - pip install tensorflow==1.14.0 toml
     script:
       - python setup.py test
       - ./sticker-write-rnn-graph --rnn_layers 2 --hidden_size 100 testdata/sticker.shapes rnn.graph
