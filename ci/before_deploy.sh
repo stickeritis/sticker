@@ -35,7 +35,7 @@ else
   exit 1
 fi
 
-tf_archive="libtensorflow-cpu-${tf_build}-1.13.1.tar.gz"
+tf_archive="libtensorflow-cpu-${tf_build}-1.14.0.tar.gz"
 
 # Add Tensorflow library
 curl -O https://storage.googleapis.com/tensorflow/libtensorflow/${tf_archive}
