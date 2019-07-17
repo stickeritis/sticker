@@ -23,7 +23,8 @@ for binary in ${binaries}; do
   strip "${staging}/${binary}"
 done
 
-cp {README.md,LICENSE,NOTICE} "${staging}/"
+cp {README,LICENSE}.md "${staging}/"
+cp -r doc "${staging}/"
 
 if [ "${TARGET}" = "x86_64-unknown-linux-gnu" ]; then
   tf_build="linux-x86_64"
