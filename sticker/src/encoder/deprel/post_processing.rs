@@ -3,7 +3,7 @@ use ordered_float::OrderedFloat;
 use petgraph::algo::tarjan_scc;
 
 use super::DependencyEncoding;
-use crate::EncodingProb;
+use crate::encoder::EncodingProb;
 
 static ROOT_RELATION: &'static str = "ROOT";
 
@@ -158,10 +158,10 @@ mod tests {
     use conllx::token::TokenBuilder;
 
     use super::{attach_orphans, break_cycles, find_or_create_root, first_root, ROOT_RELATION};
-    use crate::depparse::{
+    use crate::encoder::deprel::{
         pos_position_table, DependencyEncoding, RelativePOS, RelativePOSEncoder,
     };
-    use crate::{EncodingProb, SentenceEncoder};
+    use crate::encoder::{EncodingProb, SentenceEncoder};
 
     fn test_graph() -> Sentence {
         let mut sent = Sentence::new();

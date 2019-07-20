@@ -6,7 +6,8 @@ use conllx::io::{ReadSentence, Reader, Sentences};
 use failure::Fallible;
 
 use super::tensor::{LabelTensor, TensorBuilder};
-use crate::{CategoricalEncoder, SentVectorizer, SentenceEncoder};
+use crate::encoder::{CategoricalEncoder, SentenceEncoder};
+use crate::SentVectorizer;
 
 /// A set of training/validation data.
 ///

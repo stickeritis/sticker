@@ -6,10 +6,12 @@ use failure::{Fallible, ResultExt};
 
 use crate::config::{Config, EncoderType, LabelerType};
 use crate::serialization::CborRead;
-use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::encoder::layer::LayerEncoder;
+use sticker::encoder::{CategoricalEncoder, SentenceDecoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
 use sticker::Tag;
-use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceDecoder};
+use sticker::{Numberer, SentVectorizer};
 
 /// The `Tag` trait is not object-safe, since the `tag_sentences`
 /// method has a type parameter to accept a slice of mutably

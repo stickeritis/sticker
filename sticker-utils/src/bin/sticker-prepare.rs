@@ -9,10 +9,10 @@ use failure::Error;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
 
-use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::{
-    Collector, Embeddings, LayerEncoder, NoopCollector, Numberer, SentVectorizer, SentenceEncoder,
-};
+use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::encoder::layer::LayerEncoder;
+use sticker::encoder::SentenceEncoder;
+use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
 use sticker_utils::{sticker_app, CborWrite, Config, EncoderType, LabelerType, TomlRead};
 
 static CONFIG: &str = "CONFIG";

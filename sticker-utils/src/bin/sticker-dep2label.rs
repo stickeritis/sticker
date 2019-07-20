@@ -7,8 +7,8 @@ use conllx::io::{ReadSentence, WriteSentence};
 use conllx::token::Features;
 use stdinout::{Input, OrExit, Output};
 
-use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::SentenceEncoder;
+use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::encoder::SentenceEncoder;
 
 static ENCODER: &str = "ENCODER";
 static INPUT: &str = "INPUT";

@@ -3,7 +3,8 @@ use std::hash::Hash;
 use conllx::graph::Sentence;
 use failure::Error;
 
-use crate::{Numberer, SentVectorizer, SentenceEncoder};
+use crate::encoder::SentenceEncoder;
+use crate::{Numberer, SentVectorizer};
 
 /// Data types collects (and typically stores) vectorized sentences.
 pub trait Collector {
