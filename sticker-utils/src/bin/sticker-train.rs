@@ -8,11 +8,13 @@ use failure::{Error, Fallible};
 use indicatif::ProgressStyle;
 use ordered_float::NotNan;
 use stdinout::OrExit;
-use sticker::depparse::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker::encoder::layer::LayerEncoder;
+use sticker::encoder::{CategoricalEncoder, SentenceEncoder};
 use sticker::tensorflow::{
     ConllxDataSet, DataSet, LearningRateSchedule, PlateauLearningRate, TaggerGraph, TaggerTrainer,
 };
-use sticker::{CategoricalEncoder, LayerEncoder, Numberer, SentVectorizer, SentenceEncoder};
+use sticker::{Numberer, SentVectorizer};
 use sticker_utils::{
     sticker_app, CborRead, CompletedUnit, Config, EncoderType, LabelerType, ReadProgress,
     SaveSchedule, SaveScheduler, TomlRead,

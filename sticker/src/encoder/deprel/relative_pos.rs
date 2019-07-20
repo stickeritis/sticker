@@ -7,7 +7,7 @@ use serde_derive::{Deserialize, Serialize};
 use super::{
     attach_orphans, break_cycles, find_or_create_root, DecodeError, DependencyEncoding, EncodeError,
 };
-use crate::{EncodingProb, SentenceDecoder, SentenceEncoder};
+use crate::encoder::{EncodingProb, SentenceDecoder, SentenceEncoder};
 
 /// Relative head position by part-of-speech.
 ///
@@ -241,8 +241,8 @@ mod tests {
     use conllx::token::TokenBuilder;
 
     use super::{RelativePOS, RelativePOSEncoder};
-    use crate::depparse::{DecodeError, DependencyEncoding};
-    use crate::{EncodingProb, SentenceDecoder};
+    use crate::encoder::deprel::{DecodeError, DependencyEncoding};
+    use crate::encoder::{EncodingProb, SentenceDecoder};
 
     // Small tests for relative part-of-speech encoder. Automatic
     // testing is performed in the module tests.

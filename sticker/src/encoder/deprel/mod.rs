@@ -1,16 +1,18 @@
+//! Dependency relation encoders.
+
 use serde_derive::{Deserialize, Serialize};
 
 mod errors;
-pub use crate::depparse::errors::*;
+pub use self::errors::*;
 
 mod post_processing;
-pub(crate) use crate::depparse::post_processing::*;
+pub(crate) use self::post_processing::*;
 
 mod relative_position;
-pub use crate::depparse::relative_position::*;
+pub use self::relative_position::*;
 
 mod relative_pos;
-pub use crate::depparse::relative_pos::*;
+pub use self::relative_pos::*;
 
 /// Encoding of a dependency relation as a token label.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
@@ -41,7 +43,7 @@ mod tests {
     use conllx::io::Reader;
 
     use super::{RelativePOSEncoder, RelativePositionEncoder};
-    use crate::{EncodingProb, SentenceDecoder, SentenceEncoder};
+    use crate::encoder::{EncodingProb, SentenceDecoder, SentenceEncoder};
 
     static NON_PROJECTIVE_DATA: &'static str = "testdata/nonprojective.conll";
 

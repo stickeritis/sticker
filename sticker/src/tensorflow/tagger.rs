@@ -19,8 +19,8 @@ use tf_proto::ConfigProto;
 
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error};
-use crate::encoder::{CategoricalEncoder, SentenceDecoder};
-use crate::{EncodingProb, SentVectorizer, Tag};
+use crate::encoder::{CategoricalEncoder, EncodingProb, SentenceDecoder};
+use crate::{SentVectorizer, Tag};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]

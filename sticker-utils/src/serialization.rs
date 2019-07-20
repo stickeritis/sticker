@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
 
 use failure::Error;
-use sticker::depparse::{DependencyEncoding, RelativePOS, RelativePosition};
+use sticker::encoder::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
 use sticker::Numberer;
 
 use serde_cbor;
