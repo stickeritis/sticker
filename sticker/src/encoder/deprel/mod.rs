@@ -2,8 +2,8 @@
 
 use serde_derive::{Deserialize, Serialize};
 
-mod errors;
-pub use self::errors::*;
+mod error;
+pub use self::error::*;
 
 mod post_processing;
 pub(crate) use self::post_processing::*;

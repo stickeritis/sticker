@@ -1,10 +1,13 @@
 //! CoNLL-X layer encoder.
 
 use conllx::graph::{Node, Sentence};
-use failure::{format_err, Error};
+use failure::Error;
 
 use super::{EncodingProb, SentenceDecoder, SentenceEncoder};
 use crate::{Layer, LayerValue};
+
+mod error;
+use self::error::*;
 
 /// Encode sentences using a CoNLL-X layer.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -55,7 +58,9 @@ impl SentenceEncoder for LayerEncoder {
         for token in sentence.iter().filter_map(Node::token) {
             let label = token
                 .value(&self.layer)
-                .ok_or_else(|| format_err!("Token without a label: {}", token.form()))?;
+                .ok_or_else(|| EncodeError::MissingLabel {
+                    form: token.form().to_owned(),
+                })?;
             encoding.push(label.to_owned());
         }
 

@@ -142,20 +142,26 @@ impl SentenceEncoder for RelativePOSEncoder {
 
         let mut encoded = Vec::with_capacity(sentence.len());
         for idx in 0..sentence.len() {
-            let token = &sentence[idx];
-            if token.is_root() {
-                continue;
-            }
+            let form = match &sentence[idx] {
+                Node::Root => continue,
+                Node::Token(token) => token.form(),
+            };
 
             let triple = sentence
                 .dep_graph()
                 .head(idx)
-                .ok_or(EncodeError::MissingHead)?;
-            let relation = triple.relation().ok_or(EncodeError::MissingRelation)?;
+                .ok_or(EncodeError::MissingHead {
+                    form: form.to_owned(),
+                })?;
+            let relation = triple.relation().ok_or(EncodeError::MissingRelation {
+                form: form.to_owned(),
+            })?;
 
             let head_pos = match &sentence[triple.head()] {
                 Node::Root => "ROOT",
-                Node::Token(head_token) => head_token.pos().ok_or(EncodeError::MissingPOS)?,
+                Node::Token(head_token) => head_token.pos().ok_or(EncodeError::MissingPOS {
+                    form: form.to_owned(),
+                })?,
             };
 
             let position = Self::relative_dependent_position(
