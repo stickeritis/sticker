@@ -1,19 +1,19 @@
 use failure::Fail;
 
 /// Encoder errors.
-#[derive(Clone, Copy, Debug, Eq, Fail, PartialEq)]
+#[derive(Clone, Debug, Eq, Fail, PartialEq)]
 pub enum EncodeError {
     /// The token does not have a head.
-    #[fail(display = "missing head")]
-    MissingHead,
+    #[fail(display = "missing head: '{}'", form)]
+    MissingHead { form: String },
 
     /// The token does not have a part-of-speech.
-    #[fail(display = "missing part-of-speech tag")]
-    MissingPOS,
+    #[fail(display = "missing part-of-speech tag: '{}'", form)]
+    MissingPOS { form: String },
 
     /// The token does not have a dependency relation.
-    #[fail(display = "missing dependency relation")]
-    MissingRelation,
+    #[fail(display = "missing dependency relation: '{}'", form)]
+    MissingRelation { form: String },
 }
 
 /// Decoder errors.
