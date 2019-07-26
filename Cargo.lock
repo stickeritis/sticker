@@ -1016,8 +1016,16 @@ dependencies = [
  "protobuf 2.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.94 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.94 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sticker-tf-proto 0.1.0",
  "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tf-proto 0.1.0",
+]
+
+[[package]]
+name = "sticker-tf-proto"
+version = "0.1.0"
+dependencies = [
+ "protobuf 2.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "protoc-rust 2.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1131,14 +1139,6 @@ version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "unicode-width 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "tf-proto"
-version = "0.1.0"
-dependencies = [
- "protobuf 2.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "protoc-rust 2.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

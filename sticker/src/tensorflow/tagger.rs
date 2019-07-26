@@ -12,10 +12,10 @@ use ndarray::{Ix1, Ix3};
 use ndarray_tensorflow::NdTensor;
 use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
+use sticker_tf_proto::ConfigProto;
 use tensorflow::{
     Graph, ImportGraphDefOptions, Operation, Session, SessionOptions, SessionRunArgs, Tensor,
 };
-use tf_proto::ConfigProto;
 
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error};

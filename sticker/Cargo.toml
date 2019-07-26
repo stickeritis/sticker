@@ -21,7 +21,7 @@ petgraph = "0.4"
 protobuf = "2"
 serde = "1"
 serde_derive = "1"
-tf-proto = { path = "../tf-proto" }
+sticker-tf-proto = { path = "../sticker-tf-proto", version = "0.1.0" }
 tensorflow = "0.13"
 
 [dev-dependencies]
