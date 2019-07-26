@@ -1,13 +1,15 @@
 [package]
 name = "sticker"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2018"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 description = "Neural sequence labeler"
 documentation = "https://github.com/danieldk/sticker"
 homepage = "https://github.com/danieldk/sticker"
 repository = "https://github.com/danieldk/sticker.git"
-license = "BlueOak-1.0.0"
+# Use after SPDX list is updated
+# license = "BlueOak-1.0.0"
+license-file = "../LICENSE.md"
 
 [dependencies]
 conllx = "0.11"
