@@ -1,8 +1,12 @@
 [package]
 name = "sticker-tf-proto"
 version = "0.1.0"
-authors = ["Daniël de Kok <me@danieldk.eu>"]
 edition = "2018"
+authors = ["Daniël de Kok <me@danieldk.eu>"]
+description = "Tensorflow protocol buffer definitions used by sticker"
+documentation = "https://github.com/danieldk/sticker"
+homepage = "https://github.com/danieldk/sticker"
+repository = "https://github.com/danieldk/sticker.git"
 license = "Apache-2.0"
 
 [dependencies]
