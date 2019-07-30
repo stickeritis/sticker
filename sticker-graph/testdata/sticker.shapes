@@ -1,3 +1,4 @@
 n_labels = 13
+subwords = true
 token_embed_dims = 300
 tag_embed_dims = 50

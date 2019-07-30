@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from sticker_graph.rnn import bidi_rnn_layers
+
 
 class Model:
     def __init__(self, args, shapes):
@@ -33,6 +35,7 @@ class Model:
             tf.nn.xw_plus_b(
                 x, w, b), [
                 batch_size, -1, n_outputs])
+
 
     def masked_softmax_loss(self, prefix, logits, labels, mask):
         # Compute losses
@@ -92,14 +95,9 @@ class Model:
 
         return probs, labels
 
-    def setup_placeholders(self):
-        self._is_training = tf.placeholder(tf.bool, [], "is_training")
-
-        self._tags = tf.placeholder(
-            tf.int32, name="tags", shape=[
-                None, None])
-
-        self._inputs = tf.placeholder(
+    def setup_inputs(self):
+        # Word/tag embeddings
+        inputs = tf.placeholder(
             tf.float32,
             shape=[
                 None,
@@ -107,6 +105,31 @@ class Model:
                 self.shapes['token_embed_dims'] +
                 self.shapes['tag_embed_dims']],
             name="inputs")
+        inputs = tf.contrib.layers.dropout(
+            inputs,
+            keep_prob=self.args.keep_prob_input,
+            is_training=self.is_training)
+
+        if self.shapes['subwords']:
+            # Forms for subwords
+            self._subwords = tf.placeholder(
+                tf.string,
+                shape=[
+                    None,
+                    None],
+                name="subwords")
+            inputs = tf.concat([inputs, self.subword_reprs()], axis=-1)
+
+        self._inputs = inputs
+
+    def setup_placeholders(self):
+        self._is_training = tf.placeholder(tf.bool, [], "is_training")
+
+        self._tags = tf.placeholder(
+            tf.int32, name="tags", shape=[
+                None, None])
+
+        self.setup_inputs()
 
         self._seq_lens = tf.placeholder(
             tf.int32, [None], name="seq_lens")
@@ -115,6 +138,55 @@ class Model:
         self._mask = tf.sequence_mask(
             self.seq_lens, maxlen=tf.shape(
                 self.inputs)[1], dtype=tf.float32)
+
+    def subword_reprs(self):
+        # Convert strings to a byte tensor.
+        #
+        # Shape: [batch_size, seq_len, subword_len]
+        subword_bytes = tf.strings.unicode_decode(
+            self.subwords, input_encoding='UTF-8')
+        subword_bytes_padded = subword_bytes.to_tensor(
+            0)[:, :, :self.args.subword_len]
+
+        # Get the lengths of the subwords. Only the last dimension should
+        # be ragged, so no actual padding should happen.
+        #
+        # Shape: [batch_size, seq_len]
+        subword_lens = tf.math.minimum(
+            subword_bytes.row_lengths(
+                axis=-1).to_tensor(0),
+            self.args.subword_len)
+
+        # Lookup byte embeddings, this results in a tensor of shape.
+        #
+        # Shape: [batch_size, seq_len, max_bytes_len, byte_embed_size]
+        byte_embeds = tf.get_variable(
+            "byte_embeds", [
+                256, self.args.byte_embed_size])
+        byte_reprs = tf.nn.embedding_lookup(byte_embeds, subword_bytes_padded)
+
+        byte_reprs = tf.contrib.layers.dropout(
+            byte_reprs,
+            keep_prob=self.args.keep_prob_input,
+            is_training=self.is_training)
+
+        # Prepare shape for applying the RNN:
+        #
+        # Shape: [batch_size * seq_len, max_bytes_len, byte_embed_size]
+        bytes_shape = tf.shape(subword_bytes_padded)
+        byte_reprs = tf.reshape(
+            byte_reprs, [-1, bytes_shape[2], self.args.byte_embed_size])
+        byte_lens = tf.reshape(subword_lens, [-1])
+
+        with tf.variable_scope("byte_rnn"):
+            _, fw, bw = bidi_rnn_layers(self.is_training, byte_reprs, num_layers=self.args.subword_layers, output_size=self.args.subword_hidden_size,
+                                        output_keep_prob=self.args.subword_keep_prob, seq_lens=byte_lens, gru=self.args.subword_gru, residual_connections=self.args.subword_residual)
+
+        # Concat forward/backward states.
+        subword_reprs = tf.concat([fw[-1].h, bw[-1].h], axis=-1)
+
+        return tf.reshape(subword_reprs, [bytes_shape[0], bytes_shape[1],
+                                          subword_reprs.shape[-1]])
 
     def create_summary_ops(self, acc, grad_norm, loss, lr):
         step = tf.train.get_or_create_global_step()
@@ -169,6 +241,10 @@ class Model:
     @property
     def seq_lens(self):
         return self._seq_lens
+
+    @property
+    def subwords(self):
+        return self._subwords
 
     @property
     def tags(self):

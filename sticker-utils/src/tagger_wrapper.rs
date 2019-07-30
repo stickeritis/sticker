@@ -45,10 +45,11 @@ impl TaggerWrapper {
     /// Create a tagger from the given configuration.
     pub fn new(config: &Config) -> Fallible<Self> {
         let embeddings = config
+            .input
             .embeddings
             .load_embeddings()
             .with_context(|e| format!("Cannot load embeddings: {}", e))?;
-        let vectorizer = SentVectorizer::new(embeddings);
+        let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
 
         let graph_reader = File::open(&config.model.graph).with_context(|e| {
             format!(

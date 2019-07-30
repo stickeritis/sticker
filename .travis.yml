@@ -19,8 +19,8 @@ matrix:
       - ./sticker-write-rnn-graph --rnn_layers 2 --hidden_size 100 testdata/sticker.shapes rnn.graph
       - ./sticker-write-conv-graph --levels 6 --hidden_size 100 testdata/sticker.shapes conv.graph
       - ./sticker-write-transformer-graph testdata/sticker.shapes trans.graph
-      - ./sticker-write-transformer-graph --outer_hsize 350 --pass_inputs --num_heads 7 testdata/sticker.shapes trans-pass-input.graph
-      - ./sticker-write-transformer-graph --outer_hsize 350 --pass_inputs --num_heads 7 --embed_time --max_time 150 testdata/sticker.shapes trans-time.graph
+      - ./sticker-write-transformer-graph --outer_hsize 400 --pass_inputs --num_heads 8 testdata/sticker.shapes trans-pass-input.graph
+      - ./sticker-write-transformer-graph --outer_hsize 400 --pass_inputs --num_heads 8 --embed_time --max_time 150 testdata/sticker.shapes trans-time.graph
   - language: rust
     os: linux
     rust: 1.34.2

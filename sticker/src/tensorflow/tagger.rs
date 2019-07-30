@@ -6,9 +6,9 @@ use std::iter::FromIterator;
 use std::path::Path;
 
 use conllx::graph::Sentence;
-use failure::{Error, Fallible};
+use failure::{err_msg, Error, Fallible};
 use itertools::Itertools;
-use ndarray::{Ix1, Ix3};
+use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
 use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
@@ -90,6 +90,7 @@ mod op_names {
     pub const LR_OP: &str = "model/lr";
 
     pub const INPUTS_OP: &str = "model/inputs";
+    pub const SUBWORDS_OP: &str = "model/subwords";
     pub const SEQ_LENS_OP: &str = "model/seq_lens";
 
     pub const LOSS_OP: &str = "model/tag_loss";
@@ -126,6 +127,7 @@ pub struct TaggerGraph {
     pub(crate) lr_op: Operation,
     pub(crate) is_training_op: Operation,
     pub(crate) inputs_op: Operation,
+    pub(crate) subwords_op: Option<Operation>,
     pub(crate) seq_lens_op: Operation,
 
     pub(crate) loss_op: Operation,
@@ -162,6 +164,7 @@ impl TaggerGraph {
         let lr_op = Self::add_op(&graph, op_names::LR_OP)?;
 
         let inputs_op = Self::add_op(&graph, op_names::INPUTS_OP)?;
+        let subwords_op = Self::add_op(&graph, op_names::SUBWORDS_OP).ok();
         let seq_lens_op = Self::add_op(&graph, op_names::SEQ_LENS_OP)?;
 
         let loss_op = Self::add_op(&graph, op_names::LOSS_OP)?;
@@ -199,6 +202,7 @@ impl TaggerGraph {
             is_training_op,
             lr_op,
             inputs_op,
+            subwords_op,
             seq_lens_op,
 
             loss_op,
@@ -291,13 +295,17 @@ where
             .max()
             .unwrap_or(0);
 
-        let mut builder =
-            TensorBuilder::new(sentences.len(), max_seq_len, self.vectorizer.input_len());
+        let mut builder = TensorBuilder::new(
+            sentences.len(),
+            max_seq_len,
+            self.vectorizer.input_len(),
+            self.vectorizer.has_subwords(),
+        );
 
         // Fill the batch.
         for sentence in sentences {
             let input = self.vectorizer.realize(sentence.borrow())?;
-            builder.add_without_labels(&input);
+            builder.add_without_labels(input);
         }
 
         Ok(builder)
@@ -313,6 +321,7 @@ where
         let (tag_tensor, probs_tensor) = self.tag_sequences(
             builder.seq_lens(),
             builder.inputs(),
+            builder.subwords(),
             &self.graph.top_k_predicted_op,
             &self.graph.top_k_probs_op,
         )?;
@@ -351,6 +360,7 @@ where
         &self,
         seq_lens: &NdTensor<i32, Ix1>,
         inputs: &NdTensor<f32, Ix3>,
+        subwords: Option<&NdTensor<String, Ix2>>,
         predicted_op: &Operation,
         probs_op: &Operation,
     ) -> Result<(Tensor<i32>, Tensor<f32>), Error> {
@@ -364,6 +374,16 @@ where
         // Sequence inputs
         args.add_feed(&self.graph.seq_lens_op, 0, seq_lens.inner_ref());
         args.add_feed(&self.graph.inputs_op, 0, inputs.inner_ref());
+
+        if let Some(subwords) = subwords {
+            args.add_feed(
+                self.graph.subwords_op.as_ref().ok_or_else(|| {
+                    err_msg("Subwords used in a graph without support for subwords")
+                })?,
+                0,
+                subwords.inner_ref(),
+            );
+        }
 
         let probs_token = args.request_fetch(probs_op, 0);
         let predictions_token = args.request_fetch(predicted_op, 0);

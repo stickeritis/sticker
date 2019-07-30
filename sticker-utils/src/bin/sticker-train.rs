@@ -271,10 +271,11 @@ where
     let mut categorical_encoder = CategoricalEncoder::new(encoder, labels);
 
     let embeddings = config
+        .input
         .embeddings
         .load_embeddings()
         .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings);
+    let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
 
     let mut best_epoch = 0;
     let mut best_acc = 0.0;
@@ -380,15 +381,26 @@ where
         .batches(encoder, vectorizer, config.model.batch_size, app.max_len)
         .or_exit("Cannot read batches", 1)
     {
-        let (inputs, seq_lens, labels) = batch.or_exit("Cannot read batch", 1).into_parts();
+        let tensors = batch.or_exit("Cannot read batch", 1).into_parts();
 
         let batch_perf = if is_training {
-            trainer.train(&seq_lens, &inputs, &labels, lr)
+            trainer.train(
+                &tensors.seq_lens,
+                &tensors.inputs,
+                tensors.subwords.as_ref(),
+                &tensors.labels,
+                lr,
+            )
         } else {
-            trainer.validate(&seq_lens, &inputs, &labels)
+            trainer.validate(
+                &tensors.seq_lens,
+                &tensors.inputs,
+                tensors.subwords.as_ref(),
+                &tensors.labels,
+            )
         };
 
-        let n_tokens = seq_lens.view().iter().sum::<i32>();
+        let n_tokens = tensors.seq_lens.view().iter().sum::<i32>();
         loss += n_tokens as f32 * batch_perf.loss;
         acc += n_tokens as f32 * batch_perf.accuracy;
         instances += n_tokens;

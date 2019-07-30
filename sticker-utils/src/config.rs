@@ -17,7 +17,7 @@ use crate::CborRead;
 #[serde(deny_unknown_fields)]
 pub struct Config {
     pub labeler: Labeler,
-    pub embeddings: Embeddings,
+    pub input: Input,
     pub model: ModelConfig,
 }
 
@@ -30,9 +30,9 @@ impl Config {
         let config_path = config_path.as_ref();
 
         self.labeler.labels = relativize_path(config_path, &self.labeler.labels)?;
-        self.embeddings.word.filename =
-            relativize_path(config_path, &self.embeddings.word.filename)?;
-        if let Some(ref mut embeddings) = self.embeddings.tag {
+        self.input.embeddings.word.filename =
+            relativize_path(config_path, &self.input.embeddings.word.filename)?;
+        if let Some(ref mut embeddings) = self.input.embeddings.tag {
             embeddings.filename = relativize_path(config_path, &embeddings.filename)?;
         }
         self.model.graph = relativize_path(config_path, &self.model.graph)?;
@@ -92,6 +92,14 @@ pub enum EmbeddingAlloc {
 pub enum EncoderType {
     RelativePosition,
     RelativePOS,
+}
+
+/// Input configuration
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct Input {
+    pub embeddings: Embeddings,
+    pub subwords: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

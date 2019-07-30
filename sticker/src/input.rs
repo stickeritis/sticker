@@ -74,11 +74,17 @@ impl LayerEmbeddings {
     }
 }
 
+pub struct InputVector {
+    pub sequence: Vec<f32>,
+    pub subwords: Option<Vec<String>>,
+}
+
 /// Vectorizer for sentences.
 ///
 /// An `SentVectorizer` vectorizes sentences.
 pub struct SentVectorizer {
     layer_embeddings: LayerEmbeddings,
+    subwords: bool,
 }
 
 impl SentVectorizer {
@@ -87,8 +93,16 @@ impl SentVectorizer {
     /// The vectorizer is constructed from the embedding matrices. The layer
     /// embeddings are used to find the indices into the embedding matrix for
     /// layer values.
-    pub fn new(layer_embeddings: LayerEmbeddings) -> Self {
-        SentVectorizer { layer_embeddings }
+    pub fn new(layer_embeddings: LayerEmbeddings, subwords: bool) -> Self {
+        SentVectorizer {
+            layer_embeddings,
+            subwords,
+        }
+    }
+
+    /// Does the vectorizer produce representations for subwords?
+    pub fn has_subwords(&self) -> bool {
+        self.subwords
     }
 
     /// Get the length of the input representation.
@@ -108,7 +122,7 @@ impl SentVectorizer {
     }
 
     /// Vectorize a sentence.
-    pub fn realize(&self, sentence: &Sentence) -> Result<Vec<f32>, Error> {
+    pub fn realize(&self, sentence: &Sentence) -> Result<InputVector, Error> {
         let input_size = self.layer_embeddings.token_embeddings.dims()
             + self
                 .layer_embeddings
@@ -118,8 +132,18 @@ impl SentVectorizer {
                 .unwrap_or_default();
         let mut input = Vec::with_capacity(sentence.len() * input_size);
 
+        let mut subwords = if self.subwords {
+            Some(Vec::with_capacity(sentence.len()))
+        } else {
+            None
+        };
+
         for token in sentence.iter().filter_map(Node::token) {
             let form = token.form();
+
+            if let Some(ref mut subwords) = subwords {
+                subwords.push(form.to_owned());
+            }
 
             input.extend_from_slice(
                 &self
@@ -146,6 +170,9 @@ impl SentVectorizer {
             }
         }
 
-        Ok(input)
+        Ok(InputVector {
+            sequence: input,
+            subwords,
+        })
     }
 }

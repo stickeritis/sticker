@@ -24,6 +24,7 @@ static SHAPES: &str = "SHAPES";
 #[derive(Serialize)]
 struct Shapes {
     n_labels: usize,
+    subwords: bool,
     token_embed_dims: usize,
     tag_embed_dims: usize,
 }
@@ -81,10 +82,11 @@ fn main() {
     let shapes_write = output.write().or_exit("Cannot create shapes file", 1);
 
     let embeddings = config
+        .input
         .embeddings
         .load_embeddings()
         .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings);
+    let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
 
     match config.labeler.labeler_type {
         LabelerType::Sequence(ref layer) => prepare_with_encoder(
@@ -128,7 +130,7 @@ fn prepare_with_encoder<E, R, W>(
     let mut collector = NoopCollector::new(encoder, labels, vectorizer);
     collect_sentences(&mut collector, read);
     write_labels(&config, collector.labels()).or_exit("Cannot write labels", 1);
-    write_shapes(shapes_write, &collector);
+    write_shapes(&config, shapes_write, &collector);
 }
 
 fn collect_sentences<E, R>(collector: &mut NoopCollector<E>, reader: R)
@@ -155,7 +157,7 @@ where
     labels.to_cbor_write(&mut f)
 }
 
-fn write_shapes<W, E>(mut shapes_write: W, collector: &NoopCollector<E>)
+fn write_shapes<W, E>(config: &Config, mut shapes_write: W, collector: &NoopCollector<E>)
 where
     W: Write,
     E: SentenceEncoder,
@@ -163,6 +165,7 @@ where
 {
     let shapes = Shapes {
         n_labels: collector.labels().len(),
+        subwords: config.input.subwords,
         token_embed_dims: collector
             .vectorizer()
             .layer_embeddings()

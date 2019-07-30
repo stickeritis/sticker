@@ -3,7 +3,7 @@ pub use crate::app::sticker_app;
 
 mod config;
 pub use crate::config::{
-    Config, Embedding, EmbeddingAlloc, Embeddings, EncoderType, Labeler, LabelerType,
+    Config, Embedding, EmbeddingAlloc, Embeddings, EncoderType, Input, Labeler, LabelerType,
 };
 
 mod progress;

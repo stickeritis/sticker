@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 use sticker::tensorflow::ModelConfig;
 use sticker::Layer;
 
-use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Labeler, LabelerType, TomlRead};
+use super::{Config, Embedding, EmbeddingAlloc, Embeddings, Input, Labeler, LabelerType, TomlRead};
 
 lazy_static! {
     static ref BASIC_LABELER_CHECK: Config = Config {
@@ -13,15 +13,18 @@ lazy_static! {
             labels: "sticker.labels".to_owned(),
             read_ahead: 10,
         },
-        embeddings: Embeddings {
-            word: Embedding {
-                filename: "word-vectors.bin".into(),
-                alloc: EmbeddingAlloc::Mmap,
+        input: Input {
+            embeddings: Embeddings {
+                word: Embedding {
+                    filename: "word-vectors.bin".into(),
+                    alloc: EmbeddingAlloc::Mmap,
+                },
+                tag: Some(Embedding {
+                    filename: "tag-vectors.bin".into(),
+                    alloc: EmbeddingAlloc::Read,
+                }),
             },
-            tag: Some(Embedding {
-                filename: "tag-vectors.bin".into(),
-                alloc: EmbeddingAlloc::Read,
-            }),
+            subwords: true,
         },
         model: ModelConfig {
             batch_size: 128,

@@ -2,62 +2,7 @@ import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
 
 from sticker_graph.model import Model
-import sticker_graph.vendored
-
-def dropout_wrapper(
-        cell,
-        is_training,
-        output_keep_prob=1.0,
-        state_keep_prob=1.0):
-    output_keep_prob = tf.cond(
-        is_training,
-        lambda: tf.constant(output_keep_prob),
-        lambda: tf.constant(1.0))
-    state_keep_prob = tf.cond(
-        is_training,
-        lambda: tf.constant(state_keep_prob),
-        lambda: tf.constant(1.0))
-    return tf.contrib.rnn.DropoutWrapper(
-        cell,
-        output_keep_prob=output_keep_prob,
-        state_keep_prob=state_keep_prob)
-
-
-def bidi_rnn_layers(
-        is_training,
-        inputs,
-        num_layers=1,
-        output_size=50,
-        output_keep_prob=1.0,
-        state_keep_prob=1.0,
-        seq_lens=None,
-        gru=False,
-        residual_connections=False):
-    if gru:
-        cell = tf.nn.rnn_cell.GRUCell
-    else:
-        cell = tf.contrib.rnn.LSTMCell
-
-    fw_cells = [
-        dropout_wrapper(
-            cell=cell(output_size),
-            is_training=is_training,
-            state_keep_prob=state_keep_prob,
-            output_keep_prob=output_keep_prob) for i in range(num_layers)]
-
-    bw_cells = [
-        dropout_wrapper(
-            cell=cell(output_size),
-            is_training=is_training,
-            state_keep_prob=state_keep_prob,
-            output_keep_prob=output_keep_prob) for i in range(num_layers)]
-    return sticker_graph.vendored.stack_bidirectional_dynamic_rnn(
-        fw_cells,
-        bw_cells,
-        inputs,
-        dtype=tf.float32,
-        sequence_length=seq_lens,
-        residual_connections=residual_connections)
+from sticker_graph.rnn import bidi_rnn_layers
 
 
 class RNNModel(Model):
@@ -69,14 +14,9 @@ class RNNModel(Model):
 
         self.setup_placeholders()
 
-        inputs = tf.contrib.layers.dropout(
-            self.inputs,
-            keep_prob=args.keep_prob_input,
-            is_training=self.is_training)
-
         hidden_states, _, _ = bidi_rnn_layers(
             self.is_training,
-            inputs,
+            self.inputs,
             num_layers=args.rnn_layers,
             output_size=args.hidden_size,
             output_keep_prob=args.keep_prob,
