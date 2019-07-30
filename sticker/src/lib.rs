@@ -4,7 +4,7 @@ pub use crate::collector::{Collector, NoopCollector};
 pub mod encoder;
 
 mod input;
-pub use crate::input::{Embeddings, LayerEmbeddings, SentVectorizer};
+pub use crate::input::{Embeddings, InputVector, LayerEmbeddings, SentVectorizer};
 
 mod numberer;
 pub use crate::numberer::Numberer;

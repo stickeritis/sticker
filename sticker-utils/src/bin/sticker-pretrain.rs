@@ -240,10 +240,11 @@ where
     let mut categorical_encoder = CategoricalEncoder::new(encoder, labels);
 
     let embeddings = config
+        .input
         .embeddings
         .load_embeddings()
         .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings);
+    let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
 
     let mut best_epoch = 0;
     let mut best_acc = 0.0;
@@ -339,20 +340,31 @@ where
         .batches(encoder, vectorizer, config.model.batch_size, app.max_len)
         .or_exit("Cannot read batches", 1)
     {
-        let (inputs, seq_lens, labels) = batch.or_exit("Cannot read batch", 1).into_parts();
+        let tensors = batch.or_exit("Cannot read batch", 1).into_parts();
 
         let batch_perf = if is_training {
             let bytes_done = (epoch * train_size) + file.seek(SeekFrom::Current(0))? as usize;
             let lr_scale = 1f32 - (bytes_done as f32 / (app.epochs * train_size) as f32);
             let lr = lr_scale * app.initial_lr.into_inner();
-            let batch_perf = trainer.train(&seq_lens, &inputs, &labels, lr);
+            let batch_perf = trainer.train(
+                &tensors.seq_lens,
+                &tensors.inputs,
+                tensors.subwords.as_ref(),
+                &tensors.labels,
+                lr,
+            );
             progress_bar.set_message(&format!(
                 "lr: {:.6}, loss: {:.4}, accuracy: {:.4}",
                 lr, batch_perf.loss, batch_perf.accuracy
             ));
             batch_perf
         } else {
-            let batch_perf = trainer.validate(&seq_lens, &inputs, &labels);
+            let batch_perf = trainer.validate(
+                &tensors.seq_lens,
+                &tensors.inputs,
+                tensors.subwords.as_ref(),
+                &tensors.labels,
+            );
             progress_bar.set_message(&format!(
                 "batch loss: {:.4}, batch accuracy: {:.4}",
                 batch_perf.loss, batch_perf.accuracy
@@ -360,7 +372,7 @@ where
             batch_perf
         };
 
-        let n_tokens = seq_lens.view().iter().sum::<i32>();
+        let n_tokens = tensors.seq_lens.view().iter().sum::<i32>();
         loss += n_tokens as f32 * batch_perf.loss;
         acc += n_tokens as f32 * batch_perf.accuracy;
         instances += n_tokens;

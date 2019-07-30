@@ -75,9 +75,43 @@ def get_common_parser():
         type=str,
         help='output graph file')
     parser.add_argument(
+        "--byte_embed_size",
+        type=int,
+        help="size of character embeddings",
+        default=25)
+    parser.add_argument(
         "--crf",
         help="use CRF layer for classification",
         action="store_true")
+    parser.add_argument(
+        "--subword_gru",
+        help="use GRU RNN cells in the character RNN",
+        action="store_true")
+    parser.add_argument(
+        "--subword_hidden_size",
+        type=int,
+        help="character RNN hidden size per direction",
+        default=25)
+    parser.add_argument(
+        "--subword_keep_prob",
+        type=float,
+        help="character RNN dropout keep probability",
+        default=0.6)
+    parser.add_argument(
+        "--subword_layers",
+        type=int,
+        help="character RNN hidden layers",
+        default=1)
+    parser.add_argument(
+        "--subword_len",
+        type=int,
+        help="number of characters in character-based representations",
+        default=20)
+    parser.add_argument(
+        "--subword_residual",
+        action='store_true',
+        help="use character RNN residual skip connections"
+    )
     parser.add_argument(
         "--top_k",
         type=int,

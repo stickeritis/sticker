@@ -259,11 +259,7 @@ class TransformerModel(Model):
             raise NotImplementedError('Activation %s is not available.'
                                       % args.activation)
 
-        inputs = tf.contrib.layers.dropout(
-            self.inputs,
-            keep_prob=args.keep_prob_input,
-            is_training=self.is_training)
-
+        inputs = self.inputs
         if not args.pass_inputs:
             inputs = tf.layers.dense(inputs, args.outer_hsize, activation)
         else:

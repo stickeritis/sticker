@@ -128,6 +128,7 @@ impl TaggerTrainer {
         &self,
         seq_lens: &NdTensor<i32, Ix1>,
         inputs: &NdTensor<f32, Ix3>,
+        subwords: Option<&NdTensor<String, Ix2>>,
         labels: &NdTensor<i32, Ix2>,
         learning_rate: f32,
     ) -> ModelPerformance {
@@ -150,7 +151,7 @@ impl TaggerTrainer {
                     .expect("Summaries requested from a graph that does not support summaries."),
             );
         }
-        self.validate_(seq_lens, inputs, labels, args)
+        self.validate_(seq_lens, inputs, subwords, labels, args)
     }
 
     /// Perform validation using a batch of inputs and labels.
@@ -158,6 +159,7 @@ impl TaggerTrainer {
         &self,
         seq_lens: &NdTensor<i32, Ix1>,
         inputs: &NdTensor<f32, Ix3>,
+        subwords: Option<&NdTensor<String, Ix2>>,
         labels: &NdTensor<i32, Ix2>,
     ) -> ModelPerformance {
         let mut is_training = Tensor::new(&[]);
@@ -173,19 +175,31 @@ impl TaggerTrainer {
                     .expect("Summaries requested from a graph that does not support summaries."),
             );
         }
-        self.validate_(seq_lens, inputs, labels, args)
+        self.validate_(seq_lens, inputs, subwords, labels, args)
     }
 
     fn validate_<'l>(
         &'l self,
         seq_lens: &'l NdTensor<i32, Ix1>,
         inputs: &'l NdTensor<f32, Ix3>,
+        subwords: Option<&'l NdTensor<String, Ix2>>,
         labels: &'l NdTensor<i32, Ix2>,
         mut args: SessionRunArgs<'l>,
     ) -> ModelPerformance {
         // Add inputs.
         args.add_feed(&self.graph.inputs_op, 0, inputs.inner_ref());
         args.add_feed(&self.graph.seq_lens_op, 0, seq_lens.inner_ref());
+
+        if let Some(subwords) = subwords {
+            args.add_feed(
+                self.graph
+                    .subwords_op
+                    .as_ref()
+                    .expect("Subwords used in a graph without support for subwords"),
+                0,
+                subwords.inner_ref(),
+            );
+        }
 
         // Add gold labels.
         args.add_feed(&self.graph.labels_op, 0, labels.inner_ref());

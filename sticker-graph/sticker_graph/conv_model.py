@@ -162,13 +162,8 @@ class ConvModel(Model):
 
         self.setup_placeholders()
 
-        inputs = tf.contrib.layers.dropout(
-            self.inputs,
-            keep_prob=args.keep_prob_input,
-            is_training=self.is_training)
-
         hidden_states = dilated_convolution(
-            inputs,
+            self.inputs,
             args.hidden_size,
             kernel_size=args.kernel_size,
             n_levels=args.levels,

@@ -129,6 +129,7 @@ where
             batch_sentences.len(),
             max_seq_len,
             self.vectorizer.input_len(),
+            self.vectorizer.has_subwords(),
         );
 
         for sentence in batch_sentences {
@@ -144,7 +145,7 @@ where
                     .collect::<Vec<_>>(),
                 Err(err) => return Some(Err(err)),
             };
-            builder.add_with_labels(&inputs, &labels);
+            builder.add_with_labels(inputs, &labels);
         }
 
         Some(Ok(builder))
