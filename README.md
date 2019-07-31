@@ -20,6 +20,26 @@ has been on:
 * [Using sticker](doc/USAGE.md)
 * [Training a sticker model](doc/TRAIN.md)
 
+## References
+
+sticker uses techniques from or was inspired by the following papers:
+
+* [Finding Function in Form: Compositional Character Models for Open
+  Vocabulary Word
+  Representation](https://aclweb.org/anthology/papers/D/D15/D15-1176/). Wang
+  Ling, Chris Dyer, Alan W Black, Isabel Trancoso, Ramón Fermandez,
+  Silvio Amir, Luís Marujo, Tiago Luís, 2015, Proceedings of the 2015
+  Conference on Empirical Methods in Natural Language Processing
+* [Transition-based dependency parsing with topological
+  fields](https://aclweb.org/anthology/papers/P/P16/P16-2001/). Daniël
+  de Kok, Erhard Hinrichs, 2016, Proceedings of the 54th Annual
+  Meeting of the Association for Computational Linguistics
+* [Viable Dependency Parsing as Sequence
+  Labeling](https://www.aclweb.org/anthology/papers/N/N19/N19-1077/). Michalina
+  Strzyz, David Vilares, Carlos Gómez-Rodríguez, 2019, Proceedings of
+  the 2019 Conference of the North American Chapter of the Association
+  for Computational Linguistics: Human Language Technologies
+
 ## Issues
 
 You can report bugs and feature requests in the [sticker issue
