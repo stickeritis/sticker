@@ -101,12 +101,12 @@ def get_common_parser():
         "--subword_layers",
         type=int,
         help="character RNN hidden layers",
-        default=1)
+        default=2)
     parser.add_argument(
         "--subword_len",
         type=int,
         help="number of characters in character-based representations",
-        default=20)
+        default=40)
     parser.add_argument(
         "--subword_residual",
         action='store_true',
