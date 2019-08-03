@@ -36,6 +36,22 @@ class Model:
                 x, w, b), [
                 batch_size, -1, n_outputs])
 
+    def decode_word(self, word, max_subword_len):
+        bytes = tf.decode_raw(word, tf.uint8)[:max_subword_len]
+        return tf.pad(bytes, [[0, max_subword_len - tf.shape(bytes)[0]]])
+
+    def decode_words(self, words, max_subword_len):
+        shape = tf.shape(words)
+
+        # Flatten, because map_fn only works on axis 0
+        flat = tf.reshape(words, [-1])
+
+        # Decode words.
+        decoded = tf.map_fn(lambda x: self.decode_word(x, max_subword_len), flat, dtype=tf.uint8)
+
+        # Restore shape
+        return tf.reshape(decoded, [shape[0], shape[1], max_subword_len])
+
 
     def masked_softmax_loss(self, prefix, logits, labels, mask):
         # Compute losses
@@ -143,19 +159,13 @@ class Model:
         # Convert strings to a byte tensor.
         #
         # Shape: [batch_size, seq_len, subword_len]
-        subword_bytes = tf.strings.unicode_decode(
-            self.subwords, input_encoding='UTF-8')
-        subword_bytes_padded = subword_bytes.to_tensor(
-            0)[:, :, :self.args.subword_len]
+        with tf.device("/cpu:0"):
+            subword_bytes = tf.cast(self.decode_words(self.subwords, self.args.subword_len), tf.int32)
 
-        # Get the lengths of the subwords. Only the last dimension should
-        # be ragged, so no actual padding should happen.
-        #
+        # Get the lengths of the subwords.
         # Shape: [batch_size, seq_len]
-        subword_lens = tf.math.minimum(
-            subword_bytes.row_lengths(
-                axis=-1).to_tensor(0),
-            self.args.subword_len)
+        with tf.device("/cpu:0"):
+            subword_lens = tf.count_nonzero(subword_bytes, axis=-1, dtype=tf.int32)
 
         # Lookup byte embeddings, this results in a tensor of shape.
         #
@@ -163,7 +173,7 @@ class Model:
         byte_embeds = tf.get_variable(
             "byte_embeds", [
                 256, self.args.byte_embed_size])
-        byte_reprs = tf.nn.embedding_lookup(byte_embeds, subword_bytes_padded)
+        byte_reprs = tf.nn.embedding_lookup(byte_embeds, subword_bytes)
 
         byte_reprs = tf.contrib.layers.dropout(
             byte_reprs,
@@ -173,7 +183,7 @@ class Model:
         # Prepare shape for applying the RNN:
         #
         # Shape: [batch_size * seq_len, max_bytes_len, byte_embed_size]
-        bytes_shape = tf.shape(subword_bytes_padded)
+        bytes_shape = tf.shape(subword_bytes)
         byte_reprs = tf.reshape(
             byte_reprs, [-1, bytes_shape[2], self.args.byte_embed_size])
         byte_lens = tf.reshape(subword_lens, [-1])
