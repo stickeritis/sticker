@@ -2,8 +2,8 @@ with import <nixpkgs> {};
 
 let
   danieldk = pkgs.callPackage (builtins.fetchTarball {
-    url = "https://git.sr.ht/~danieldk/nix-packages/archive/709c93a84504d558613bfc2538297ef2c532b890.tar.gz";
-    sha256 = "0jspqxz8yzghn4j3awiqz3f76my8slk3s5ckk3gfzvhq1p0wzp5m";
+    url = "https://git.sr.ht/~danieldk/nix-packages/archive/c4a277bc5afaecbf982c3fa19cd7bac68de1826f.tar.gz";
+    sha256 = "1n070qjp31fc94z5s1lglihlk7pnq14xdrvizjah9mfrwgaaa0p0";
   }) {};
   libtensorflow-cpu = danieldk.libtensorflow_1_14_0;
   libtensorflow-gpu = with pkgs; danieldk.libtensorflow_1_14_0.overrideAttrs (oldAttrs: rec {
