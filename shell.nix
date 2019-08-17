@@ -2,15 +2,15 @@ with import <nixpkgs> {};
 
 let
   danieldk = pkgs.callPackage (builtins.fetchTarball {
-    url = "https://git.sr.ht/~danieldk/nix-packages/archive/c4a277bc5afaecbf982c3fa19cd7bac68de1826f.tar.gz";
-    sha256 = "1n070qjp31fc94z5s1lglihlk7pnq14xdrvizjah9mfrwgaaa0p0";
+    url = "https://git.sr.ht/~danieldk/nix-packages/archive/f02c88bdd5e959d2d3a7a71c5c1208431f7107b9.tar.gz";
+    sha256 = "05ax116wy35jcnvy82jv38ig0ssivg4lwv2gi2rlqdsbl4bg3gbf";
   }) {};
   libtensorflow-cpu = danieldk.libtensorflow_1_14_0;
-  libtensorflow-gpu = with pkgs; danieldk.libtensorflow_1_14_0.overrideAttrs (oldAttrs: rec {
+  libtensorflow-gpu = with pkgs; danieldk.libtensorflow_1_14_0.override {
     inherit (linuxPackages) nvidia_x11;
     cudatoolkit = cudatoolkit_10_0;
     cudnn = cudnn_cudatoolkit_10_0;
-  });
+  };
 in stdenv.mkDerivation rec {
   name = "sticker-env";
   env = buildEnv { name = name; paths = buildInputs; };
