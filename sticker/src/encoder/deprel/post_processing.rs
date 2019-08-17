@@ -5,7 +5,7 @@ use petgraph::algo::tarjan_scc;
 use super::DependencyEncoding;
 use crate::encoder::EncodingProb;
 
-static ROOT_RELATION: &'static str = "ROOT";
+static ROOT_RELATION: &str = "ROOT";
 
 /// Attach orphan tokens to `head_idx`.
 ///
