@@ -28,8 +28,10 @@ cp -r doc "${staging}/"
 
 if [ "${TARGET}" = "x86_64-unknown-linux-gnu" ]; then
   tf_build="linux-x86_64"
+  dylib_ext=".so"
 elif [ "${TARGET}" = "x86_64-apple-darwin" ]; then
   tf_build="darwin-x86_64"
+  dylib_ext=".dylib"
 else
   >&2 echo "Cannot build release tarbal for target ${TARGET}"
   exit 1
@@ -41,7 +43,7 @@ tf_archive="libtensorflow-cpu-${tf_build}-1.14.0.tar.gz"
 curl -O https://storage.googleapis.com/tensorflow/libtensorflow/${tf_archive}
 mkdir tensorflow
 tar -zxf "${tf_archive}" -C tensorflow
-cp tensorflow/lib/*.so "${staging}"
+cp tensorflow/lib/*${dylib_ext} "${staging}"
 
 # Add binary directory to the search path.
 if [ "$TARGET" = "x86_64-unknown-linux-gnu" ]; then
