@@ -38,7 +38,7 @@ where
 /// This wrapper loads embeddings, initializes the vectorizer,
 /// initializes the graph, and loads labels given a `Config` struct.
 pub struct TaggerWrapper {
-    inner: Box<TagRef + Send + Sync>,
+    inner: Box<dyn TagRef + Send + Sync>,
 }
 
 impl TaggerWrapper {
