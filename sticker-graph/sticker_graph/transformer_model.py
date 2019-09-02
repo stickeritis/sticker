@@ -35,9 +35,9 @@ def split_heads(t, num_heads):
 
 
 def self_attention(inputs, seq_lens, num_heads):
-    queries = tf.layers.dense(inputs, inputs.shape[-1], use_bias=False)
-    keys = tf.layers.dense(inputs, inputs.shape[-1], use_bias=False)
-    values = tf.layers.dense(inputs, inputs.shape[-1], use_bias=False)
+    queries = tf.compat.v1.layers.dense(inputs, inputs.shape[-1], use_bias=False)
+    keys = tf.compat.v1.layers.dense(inputs, inputs.shape[-1], use_bias=False)
+    values = tf.compat.v1.layers.dense(inputs, inputs.shape[-1], use_bias=False)
 
     queries = split_heads(queries, num_heads=num_heads)
     keys = split_heads(keys, num_heads=num_heads)
@@ -52,7 +52,8 @@ def self_attention(inputs, seq_lens, num_heads):
     # inactive timesteps that draw information from active ones don't influence
     # results
     mask_s = tf.logical_not(tf.sequence_mask(seq_lens, tf.shape(inputs)[1]))
-    mask_s = tf.to_float(mask_s[:, tf.newaxis, tf.newaxis]) * -1e38
+    mask_s = tf.cast(mask_s[:, tf.newaxis, tf.newaxis],
+                     dtype=tf.float32) * -1e38
     scores += mask_s
 
     scores = tf.nn.softmax(scores)
@@ -60,10 +61,11 @@ def self_attention(inputs, seq_lens, num_heads):
     # apply scores to values
     heads = tf.matmul(scores, values)
 
-    # restore [batch, length, num_heads, head] order and rejoin num_heads and head
+    # restore [batch, length, num_heads, head] order and rejoin num_heads and
+    # head
     heads = tf.reshape(tf.transpose(heads, [0, 2, 1, 3]), tf.shape(inputs))
 
-    outputs = tf.layers.dense(heads, inputs.shape[-1], use_bias=False)
+    outputs = tf.compat.v1.layers.dense(heads, inputs.shape[-1], use_bias=False)
 
     return outputs, scores
 
@@ -90,11 +92,11 @@ def residual_feedforward_block(inputs,
     :return: dense(activation(dense(inputs))) + inputs
     """
     inputs = layer_norm(inputs, begin_norm_axis=-1)
-    up = tf.layers.dense(inputs, inner_hsize, activation)
+    up = tf.compat.v1.layers.dense(inputs, inner_hsize, activation)
     up = tf.contrib.layers.dropout(up,
                                    keep_prob=keep_prob_inner,
                                    is_training=is_training)
-    down = tf.layers.dense(up, units=outer_hsize, use_bias=False)
+    down = tf.compat.v1.layers.dense(up, units=outer_hsize, use_bias=False)
     down = tf.contrib.layers.dropout(down,
                                      keep_prob=keep_prob_outer,
                                      is_training=is_training)
@@ -111,10 +113,10 @@ def self_attention_block(inputs,
     before applying multi-headed self-attention. The output a tuple. The first
     is the sum of the output of the self-attention layer and the inputs. The
     second are the alignment scores of the attention heads.
-    
+
     :param inputs: input
     :param seq_lens: sequence lengths, used to mask inactive timesteps
-    :param keep_prob_attention: keep probability of the attention output 
+    :param keep_prob_attention: keep probability of the attention output
     :param num_heads: number of heads of the multi-headed attention
     :param is_training: boolean indicator whether dropout will be applied
     :return: self_attention(layer_norm(inputs)) + inputs, alignments
@@ -172,22 +174,23 @@ def build_encoder(inputs,
     encoder = []
     alignments = []
     for n in range(num_layers):
-        with tf.variable_scope("layer_{}".format(n)):
-            with tf.variable_scope("self_attention"):
+        with tf.compat.v1.variable_scope("layer_{}".format(n)):
+            with tf.compat.v1.variable_scope("self_attention"):
                 states, scores = self_attention_block(states,
                                                       seq_lens=seq_lens,
                                                       keep_prob_attention=keep_prob_attention,
                                                       num_heads=num_heads,
                                                       is_training=is_training)
 
-            with tf.variable_scope("feed_forward"):
-                states = residual_feedforward_block(states,
-                                                    inner_hsize=inner_hsize,
-                                                    outer_hsize=outer_hsize,
-                                                    activation=activation,
-                                                    keep_prob_inner=keep_prob_inner,
-                                                    keep_prob_outer=keep_prob_outer,
-                                                    is_training=is_training)
+            with tf.compat.v1.variable_scope("feed_forward"):
+                states = residual_feedforward_block(
+                    states,
+                    inner_hsize=inner_hsize,
+                    outer_hsize=outer_hsize,
+                    activation=activation,
+                    keep_prob_inner=keep_prob_inner,
+                    keep_prob_outer=keep_prob_outer,
+                    is_training=is_training)
 
         alignments.append(scores)
         encoder.append(states)
@@ -210,14 +213,15 @@ def sinusoid(max_time_batch, depth):
     single_wave_dims = depth // 2
     time_range = tf.cast(tf.range(max_time_batch) + 1, tf.float32)
 
-    log_timescale_increment = math.log(float(1e4)) / (int(single_wave_dims) - 1)
+    log_timescale_increment = math.log(
+        float(1e4)) / (int(single_wave_dims) - 1)
 
     n_timescales = tf.cast(tf.range(single_wave_dims), tf.float32)
     inv_timescales = tf.exp(n_timescales * -log_timescale_increment)
-    scaled_time = time_range[:, tf.newaxis] * inv_timescales[tf.newaxis,]
+    scaled_time = time_range[:, tf.newaxis] * inv_timescales[tf.newaxis, ]
 
     signal = tf.concat([tf.sin(scaled_time), tf.cos(scaled_time)], axis=1)
-    signal = tf.pad(signal, [[0, 0], [0, tf.mod(depth, 2)]])[tf.newaxis,]
+    signal = tf.pad(signal, [[0, 0], [0, tf.math.mod(depth, 2)]])[tf.newaxis, ]
 
     return signal
 
@@ -236,7 +240,7 @@ def learned_positionals(args, max_time_batch, depth):
     :param depth: depth of the feature dimension
     :return: the embedding lookup of the time signal
     """
-    position_embs = tf.get_variable('positional_embeddings',
+    position_embs = tf.compat.v1.get_variable('positional_embeddings',
                                     dtype=tf.float32,
                                     shape=[args.max_time, depth])
     positions = tf.range(0, max_time_batch)
@@ -261,7 +265,7 @@ class TransformerModel(Model):
 
         inputs = self.inputs
         if not args.pass_inputs:
-            inputs = tf.layers.dense(inputs, args.outer_hsize, activation)
+            inputs = tf.compat.v1.layers.dense(inputs, args.outer_hsize, activation)
         else:
             error_msg = "With '--pass_inputs' the last input dimension has " \
                         "to match '--outer_hsize'. OUTER_HSIZE: %d, " \
@@ -299,13 +303,13 @@ class TransformerModel(Model):
 
         # Optimization with gradient clipping. Consider making the gradient
         # norm a placeholder as well.
-        lr = tf.placeholder(tf.float32, [], "lr")
+        lr = tf.compat.v1.placeholder(tf.float32, [], "lr")
 
-        optimizer = tf.train.AdamOptimizer(lr)
+        optimizer = tf.compat.v1.train.AdamOptimizer(lr)
         gradients, variables = zip(*optimizer.compute_gradients(loss))
         gradients, gradient_norm = tf.clip_by_global_norm(gradients, 2.5)
 
-        train_step = tf.train.get_or_create_global_step()
+        train_step = tf.compat.v1.train.get_or_create_global_step()
         self._train_op = optimizer.apply_gradients(
             zip(gradients, variables), name="train", global_step=train_step)
 

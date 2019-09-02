@@ -14,6 +14,7 @@ from tensorflow.python.keras.engine.base_layer import InputSpec
 from tensorflow.python.keras.layers import Wrapper
 from tensorflow import VERSION
 
+
 class WeightNorm(Wrapper):
     """ This wrapper reparameterizes a layer by decoupling the weight's
     magnitude and direction. This speeds up convergence by improving the
@@ -53,7 +54,7 @@ class WeightNorm(Wrapper):
             self._track_trackable(layer, name='layer')
         else:
             self._track_checkpointable(layer, name='layer')
-            
+
     def _compute_weights(self):
         """Generate weights by combining the direction of weight vector
          with it's norm """
