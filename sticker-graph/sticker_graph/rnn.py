@@ -9,14 +9,14 @@ def dropout_wrapper(
         output_keep_prob=1.0,
         state_keep_prob=1.0):
     output_keep_prob = tf.cond(
-        is_training,
-        lambda: tf.constant(output_keep_prob),
-        lambda: tf.constant(1.0))
+        pred=is_training,
+        true_fn=lambda: tf.constant(output_keep_prob),
+        false_fn=lambda: tf.constant(1.0))
     state_keep_prob = tf.cond(
-        is_training,
-        lambda: tf.constant(state_keep_prob),
-        lambda: tf.constant(1.0))
-    return tf.contrib.rnn.DropoutWrapper(
+        pred=is_training,
+        true_fn=lambda: tf.constant(state_keep_prob),
+        false_fn=lambda: tf.constant(1.0))
+    return tf.compat.v1.nn.rnn_cell.DropoutWrapper(
         cell,
         output_keep_prob=output_keep_prob,
         state_keep_prob=state_keep_prob)
@@ -33,9 +33,9 @@ def bidi_rnn_layers(
         gru=False,
         residual_connections=False):
     if gru:
-        cell = tf.nn.rnn_cell.GRUCell
+        cell = tf.compat.v1.nn.rnn_cell.GRUCell
     else:
-        cell = tf.contrib.rnn.LSTMCell
+        cell = tf.compat.v1.nn.rnn_cell.LSTMCell
 
     fw_cells = [
         dropout_wrapper(

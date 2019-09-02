@@ -17,29 +17,33 @@ def create_graph(model, args):
     shapes = read_shapes(args)
     graph_filename = args.output_graph_file
 
-    gpuopts = tf.GPUOptions(per_process_gpu_memory_fraction=0.3)
-    tfconfig = tf.ConfigProto(gpu_options=gpuopts)
+    gpuopts = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.3)
+    tfconfig = tf.compat.v1.ConfigProto(gpu_options=gpuopts)
 
-    with tf.Graph().as_default(), tf.Session(config=tfconfig) as session:
+    with tf.Graph().as_default(), tf.compat.v1.Session(config=tfconfig) as session:
         write_args(model, args)
 
-        logdir = tf.placeholder(shape=[], name="logdir", dtype=tf.string)
-        summary_writer = sticker_graph.vendored._create_file_writer_generic_type(logdir)
+        logdir = tf.compat.v1.placeholder(
+            shape=[], name="logdir", dtype=tf.string)
+        summary_writer = sticker_graph.vendored._create_file_writer_generic_type(
+            logdir)
 
         with summary_writer.as_default(), tf.contrib.summary.always_record_summaries():
-            with tf.variable_scope("model", reuse=None):
+            with tf.compat.v1.variable_scope("model", reuse=None):
                 model(args=args, shapes=shapes)
 
             tf.group(tf.contrib.summary.summary_writer_initializer_op(),
                      name="summary_init")
-            tf.variables_initializer(tf.global_variables(), name='init')
+            tf.compat.v1.variables_initializer(
+                tf.compat.v1.global_variables(), name='init')
 
-            tf.train.Saver(tf.global_variables())
+            tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
 
             serialized_graph = session.graph_def.SerializeToString()
             serialized_graph_tensor = tf.convert_to_tensor(serialized_graph)
-            tf.contrib.summary.graph(serialized_graph_tensor, 0, name='graph_write')
-            tf.train.write_graph(
+            tf.contrib.summary.graph(
+                serialized_graph_tensor, 0, name='graph_write')
+            tf.io.write_graph(
                 session.graph_def,
                 './',
                 graph_filename,
@@ -48,7 +52,7 @@ def create_graph(model, args):
 
 def write_args(model, args):
     graph_metadata = 'Model = "{}"\n{}'.format(model.__name__,
-                                             toml.dumps(args.__dict__))
+                                               toml.dumps(args.__dict__))
 
     tf.constant(graph_metadata, name="graph_metadata")
 

@@ -111,7 +111,8 @@ class TransformerTest(unittest.TestCase):
         with tf.device("cpu:0"):
             # identity initializer to make results tractable
             with tf.variable_scope("", initializer=tf.initializers.identity):
-                outputs, scores = self_attention(self.inputs, [2, 3], self.num_heads)
+                outputs, scores = self_attention(
+                    self.inputs, [2, 3], self.num_heads)
 
             outputs, scores, target_scores, values = self.run_in_session(
                 [outputs, scores, tf.nn.softmax(scaled_scores), values])
@@ -144,7 +145,8 @@ class TransformerTest(unittest.TestCase):
         with tf.device("cpu:0"):
             # identity initializer to make results tractable
             with tf.variable_scope("", initializer=tf.initializers.identity):
-                outputs, scores = self_attention(self.inputs, [2, 2], self.num_heads)
+                outputs, scores = self_attention(
+                    self.inputs, [2, 2], self.num_heads)
 
             outputs, scores, target_scores, values = self.run_in_session(
                 [outputs, scores, tf.nn.softmax(scaled_scores), values])

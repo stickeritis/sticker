@@ -78,7 +78,7 @@ def residual_block(
     else:
         suffix = "unshared"
 
-    with tf.variable_scope("conv1-%s" % suffix, reuse=sharing == Sharing.succeeding):
+    with tf.compat.v1.variable_scope("conv1-%s" % suffix, reuse=sharing == Sharing.succeeding):
         conv1 = residual_unit(
             x,
             n_outputs,
@@ -88,7 +88,7 @@ def residual_block(
             mask=mask,
             glu=glu,
             keep_prob=keep_prob)
-    with tf.variable_scope("conv2-%s" % suffix, reuse=sharing == Sharing.succeeding):
+    with tf.compat.v1.variable_scope("conv2-%s" % suffix, reuse=sharing == Sharing.succeeding):
         conv2 = residual_unit(
             conv1,
             n_outputs,
@@ -102,7 +102,7 @@ def residual_block(
     if x.get_shape()[2] != n_outputs:
         # Note: biases could change padding timesteps, but the next layer will mask
         #       the resulting sequence.
-        x = tf.layers.Conv1D(n_outputs, 1)(x)
+        x = tf.compat.v1.layers.Conv1D(n_outputs, 1)(x)
 
     return x + conv2
 
@@ -127,7 +127,7 @@ def residual_unit(
     # padding.
     x = mask_layer(x, mask)
     conv = WeightNorm(
-        tf.layers.Conv1D(
+        tf.compat.v1.layers.Conv1D(
             n_outputs,
             kernel_size,
             dilation_rate=dilation,
@@ -193,12 +193,12 @@ class ConvModel(Model):
 
         # Optimization with gradient clipping. Consider making the gradient
         # norm a placeholder as well.
-        lr = tf.placeholder(tf.float32, [], "lr")
-        optimizer = tf.train.AdamOptimizer(lr)
+        lr = tf.compat.v1.placeholder(tf.float32, [], "lr")
+        optimizer = tf.compat.v1.train.AdamOptimizer(lr)
         gradients, variables = zip(*optimizer.compute_gradients(loss))
         gradients, gradient_norm = tf.clip_by_global_norm(gradients, 1.0)
 
-        train_step = tf.train.get_or_create_global_step()
+        train_step = tf.compat.v1.train.get_or_create_global_step()
         self._train_op = optimizer.apply_gradients(
             zip(gradients, variables), name="train", global_step=train_step)
 

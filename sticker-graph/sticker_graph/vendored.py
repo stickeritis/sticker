@@ -40,15 +40,20 @@ def stack_bidirectional_dynamic_rnn(cells_fw,
     not summed to its output.
     """
     if not cells_fw:
-        raise ValueError("Must specify at least one fw cell for BidirectionalRNN.")
+        raise ValueError(
+            "Must specify at least one fw cell for BidirectionalRNN.")
     if not cells_bw:
-        raise ValueError("Must specify at least one bw cell for BidirectionalRNN.")
+        raise ValueError(
+            "Must specify at least one bw cell for BidirectionalRNN.")
     if not isinstance(cells_fw, list):
-        raise ValueError("cells_fw must be a list of RNNCells (one per layer).")
+        raise ValueError(
+            "cells_fw must be a list of RNNCells (one per layer).")
     if not isinstance(cells_bw, list):
-        raise ValueError("cells_bw must be a list of RNNCells (one per layer).")
+        raise ValueError(
+            "cells_bw must be a list of RNNCells (one per layer).")
     if len(cells_fw) != len(cells_bw):
-        raise ValueError("Forward and Backward cells must have the same depth.")
+        raise ValueError(
+            "Forward and Backward cells must have the same depth.")
     if (initial_states_fw is not None and
             (not isinstance(initial_states_fw, list) or
              len(initial_states_fw) != len(cells_fw))):
@@ -64,7 +69,7 @@ def stack_bidirectional_dynamic_rnn(cells_fw,
     states_bw = []
     prev_layer = inputs
 
-    with tf.variable_scope(scope or "stack_bidirectional_rnn"):
+    with tf.compat.v1.variable_scope(scope or "stack_bidirectional_rnn"):
         for i, (cell_fw, cell_bw) in enumerate(zip(cells_fw, cells_bw)):
             initial_state_fw = None
             initial_state_bw = None
@@ -73,9 +78,9 @@ def stack_bidirectional_dynamic_rnn(cells_fw,
             if initial_states_bw:
                 initial_state_bw = initial_states_bw[i]
 
-            with tf.variable_scope("cell_%d" % i):
+            with tf.compat.v1.variable_scope("cell_%d" % i):
                 shortcut = prev_layer
-                outputs, (state_fw, state_bw) = tf.nn.bidirectional_dynamic_rnn(
+                outputs, (state_fw, state_bw) = tf.compat.v1.nn.bidirectional_dynamic_rnn(
                     cell_fw,
                     cell_bw,
                     prev_layer,
@@ -97,17 +102,17 @@ def stack_bidirectional_dynamic_rnn(cells_fw,
 
 
 def _create_file_writer_generic_type(logdir,
-                                    name="logdir",
-                                    max_queue=None,
-                                    flush_millis=None,
-                                    filename_suffix=None):
+                                     name="logdir",
+                                     max_queue=None,
+                                     flush_millis=None,
+                                     filename_suffix=None):
     """
     This method mirrors `tensorflow.contrib.summary.create_file_writer`. Unlike
     `summary.create_file_writer`, this method accepts a placeholder as `logdir`.
     """
     from tensorflow.python.ops.gen_summary_ops import create_summary_file_writer
 
-    logdir = tf.convert_to_tensor(logdir)
+    logdir = tf.convert_to_tensor(value=logdir)
     with tf.device("cpu:0"):
         if max_queue is None:
             max_queue = tf.constant(10)
@@ -117,7 +122,7 @@ def _create_file_writer_generic_type(logdir,
             filename_suffix = tf.constant(".v2")
 
     from pkg_resources import parse_version
-    if parse_version(tf.VERSION) >= parse_version("1.14"):
+    if parse_version(tf.version.VERSION) >= parse_version("1.14"):
         from tensorflow.python.ops.summary_ops_v2 import ResourceSummaryWriter
         return ResourceSummaryWriter(
             shared_name=name,
