@@ -1,10 +1,9 @@
 use conllx::graph::{Node, Sentence};
 use failure::{format_err, Error};
 use finalfusion::{
+    chunks::storage::{CowArray, CowArray1, StorageWrap},
+    chunks::vocab::VocabWrap,
     embeddings::Embeddings as FiFuEmbeddings,
-    storage::StorageWrap,
-    storage::{CowArray, CowArray1},
-    vocab::VocabWrap,
 };
 use ndarray::Array1;
 
