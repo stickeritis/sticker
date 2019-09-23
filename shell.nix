@@ -28,7 +28,7 @@ in stdenv.mkDerivation rec {
   ] ++ lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
 
   propagatedBuildInputs = [
-    python3Packages.tensorflow
+    python3Packages.tensorflow-bin
     python3Packages.toml
   ];
 }
