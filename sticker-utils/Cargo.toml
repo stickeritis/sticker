@@ -1,6 +1,6 @@
 [package]
 name = "sticker-utils"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2018"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 description = "Neural sequence labeler (utilities)"
@@ -13,7 +13,7 @@ license-file = "../LICENSE.md"
 
 [dependencies]
 clap = "2"
-conllx = "0.12"
+conllx = "0.12.1"
 failure = "0.1"
 finalfusion = "0.10"
 indicatif = "0.11"
@@ -24,7 +24,7 @@ serde_derive = "1"
 stdinout = "0.4"
 threadpool = "1"
 toml = "0.5"
-sticker = { path = "../sticker", version = "0.7.0" }
+sticker = { path = "../sticker", version = "0.8.0" }
 tensorflow = "0.13"
 
 [dev-dependencies]
