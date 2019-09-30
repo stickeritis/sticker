@@ -29,19 +29,20 @@ impl LayerValue for Token {
         let value = value.into();
 
         match layer {
-            Layer::CPos => self.set_cpos(Some(value)),
-            Layer::Pos => self.set_pos(Some(value)),
+            Layer::CPos => {
+                self.set_cpos(Some(value));
+            }
+            Layer::Pos => {
+                self.set_pos(Some(value));
+            }
             Layer::Feature(ref feature) => {
-                let mut features = self
-                    .features()
-                    .map(Features::as_map)
-                    .cloned()
-                    .unwrap_or_default();
+                if self.features().is_none() {
+                    self.set_features(Some(Features::default()));
+                }
 
-                features.insert(feature.clone(), Some(value));
-
-                self.set_features(Some(Features::from_iter(features)))
-                    .map(Features::into_inner_string)
+                self.features_mut()
+                    .unwrap()
+                    .insert(feature.clone(), Some(value));
             }
         };
     }
@@ -51,12 +52,9 @@ impl LayerValue for Token {
         match layer {
             Layer::CPos => self.cpos(),
             Layer::Pos => self.pos(),
-            Layer::Feature(ref feature) => self
-                .features()?
-                .as_map()
-                .get(feature)?
-                .as_ref()
-                .map(String::as_str),
+            Layer::Feature(ref feature) => {
+                self.features()?.get(feature)?.as_ref().map(String::as_str)
+            }
         }
     }
 }
@@ -89,7 +87,7 @@ mod tests {
         let token: Token = TokenBuilder::new("test")
             .cpos("CP")
             .pos("P")
-            .features(Features::from_string("a:b|c:d"))
+            .features(Features::from("a:b|c:d"))
             .into();
 
         assert_eq!(token.value(&Layer::CPos), Some("CP"));

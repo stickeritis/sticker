@@ -1,4 +1,5 @@
 use std::io::BufWriter;
+use std::iter::FromIterator;
 use std::process;
 
 use clap::{App, AppSettings, Arg};
@@ -96,13 +97,9 @@ where
             .or_exit("Cannot dependency-encode sentence", 1);
 
         for (token, encoding) in sentence.iter_mut().filter_map(Node::token_mut).zip(encoded) {
-            let mut features = token
-                .features()
-                .map(Features::as_map)
-                .cloned()
-                .unwrap_or_default();
+            let mut features = token.features().cloned().unwrap_or_default();
             features.insert("deplabel".to_owned(), Some(encoding.to_string()));
-            token.set_features(Some(Features::from_iter(features)));
+            token.set_features(Some(Features::from_iter(features.into_inner())));
         }
 
         write
