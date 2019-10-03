@@ -5,13 +5,31 @@
 ## Introduction
 
 sticker is a sequence labeler that uses either recurrent neural
-networks or dilated convolution networks. In principle, it can be
-used to perform any sequence labeling task, but so far the focus
-has been on:
+networks, transformers, or dilated convolution networks. In principle,
+it can be used to perform any sequence labeling task, but so far the
+focus has been on:
 
 * Part-of-speech tagging
 * Topological field tagging
 * Dependency parsing
+* Named entity recognition
+
+## Features
+
+* Input representations:
+  * [finalfusion](https://finalfusion.github.io/) embeddings with subword units
+  * Bidirectional byte LSTMs.
+* Hidden representations:
+  * Bidirectional recurrent neural networks (LSTM or GRU)
+  * Transformers
+  * Dillated convolutions
+* Classification layers:
+  * Softmax (best-N)
+  * CRF
+* Deployment:
+  * Standalone binary that links against `libtensorflow`
+  * Very liberal [license](LICENSE.md)
+  * Docker containers with models
 
 ## Where to go from here
 
@@ -43,10 +61,11 @@ sticker uses techniques from or was inspired by the following papers:
 ## Issues
 
 You can report bugs and feature requests in the [sticker issue
-tracker](https://github.com/danieldk/sticker/issues).
+tracker](https://github.com/stickeritis/sticker/issues).
 
 ## License
 
 sticker is licensed under the [Blue Oak Model License version
-1.0.0](LICENSE.md). The Tensorflow protocol buffer definitions in `tf-proto`
-are licensed under the Apache License version 2.0.
+1.0.0](LICENSE.md). The Tensorflow protocol buffer definitions in
+`tf-proto` are licensed under the Apache License version 2.0. The
+[list of contributors](CONTRIBUTORS) is also available.
