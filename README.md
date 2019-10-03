@@ -18,7 +18,7 @@ focus has been on:
 
 * Input representations:
   * [finalfusion](https://finalfusion.github.io/) embeddings with subword units
-  * Bidirectional byte LSTMs.
+  * Bidirectional byte LSTMs
 * Hidden representations:
   * Bidirectional recurrent neural networks (LSTM or GRU)
   * Transformers
