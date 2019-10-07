@@ -6,6 +6,9 @@ pub use crate::config::{
     Config, Embedding, EmbeddingAlloc, Embeddings, EncoderType, Input, Labeler, LabelerType,
 };
 
+mod pipeline;
+pub use crate::pipeline::Pipeline;
+
 mod progress;
 pub use crate::progress::{ReadProgress, TaggerSpeed};
 
