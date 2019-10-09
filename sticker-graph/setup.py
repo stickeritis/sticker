@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='sticker-graph',
-      version='0.7.0',
+      version='0.9.0',
       description='Graph construction utilities for sticker',
       url='https://github.com/danieldk/sticker',
       author='Daniël de Kok',
