@@ -11,7 +11,7 @@ lazy_static! {
         labeler: Labeler {
             labeler_type: LabelerType::Sequence(Layer::Feature("tf".to_string())),
             labels: "sticker.labels".to_owned(),
-            read_ahead: 10,
+            read_ahead: Some(10),
         },
         input: Input {
             embeddings: Embeddings {

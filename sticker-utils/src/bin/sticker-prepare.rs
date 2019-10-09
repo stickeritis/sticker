@@ -13,9 +13,8 @@ use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
-use sticker_utils::{sticker_app, CborWrite, Config, EncoderType, LabelerType, TomlRead};
+use sticker_utils::{app, CborWrite, Config, EncoderType, LabelerType, TomlRead};
 
-static CONFIG: &str = "CONFIG";
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static SHAPES: &str = "SHAPES";
 
@@ -37,12 +36,12 @@ pub struct PrepareApp {
 
 impl PrepareApp {
     fn new() -> Self {
-        let matches = sticker_app("sticker-prepare")
+        let matches = app::sticker_app("sticker-prepare")
             .arg(Arg::with_name(TRAIN_DATA).help("Training data").index(2))
             .arg(Arg::with_name(SHAPES).help("Shape output file").index(3))
             .get_matches();
 
-        let config = matches.value_of(CONFIG).unwrap().into();
+        let config = matches.value_of(app::CONFIG).unwrap().into();
         let train_data = matches.value_of(TRAIN_DATA).map(ToOwned::to_owned);
         let shapes = matches.value_of(SHAPES).map(ToOwned::to_owned);
 

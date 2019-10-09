@@ -16,11 +16,10 @@ use sticker::tensorflow::{
 };
 use sticker::{Numberer, SentVectorizer};
 use sticker_utils::{
-    sticker_app, CborRead, CompletedUnit, Config, EncoderType, LabelerType, ReadProgress,
-    SaveSchedule, SaveScheduler, TomlRead,
+    app, CborRead, CompletedUnit, Config, EncoderType, LabelerType, ReadProgress, SaveSchedule,
+    SaveScheduler, TomlRead,
 };
 
-static CONFIG: &str = "CONFIG";
 static INITIAL_LR: &str = "INITIAL_LR";
 static LR_SCALE: &str = "LR_SCALE";
 static LR_PATIENCE: &str = "LR_PATIENCE";
@@ -61,7 +60,7 @@ impl TrainApp {
 
 impl TrainApp {
     fn new() -> Self {
-        let matches = sticker_app("sticker-train")
+        let matches = app::sticker_app("sticker-train")
             .arg(
                 Arg::with_name(CONTINUE)
                     .long("continue")
@@ -124,7 +123,7 @@ impl TrainApp {
             )
             .get_matches();
 
-        let config = matches.value_of(CONFIG).unwrap().into();
+        let config = matches.value_of(app::CONFIG).unwrap().into();
         let initial_lr = matches
             .value_of(INITIAL_LR)
             .unwrap()
