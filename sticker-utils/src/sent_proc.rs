@@ -2,7 +2,7 @@ use conllx::graph::Sentence;
 use conllx::io::WriteSentence;
 use failure::Error;
 
-use crate::TaggerWrapper;
+use crate::Pipeline;
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.
@@ -10,7 +10,7 @@ pub struct SentProcessor<'a, W>
 where
     W: WriteSentence,
 {
-    tagger: &'a TaggerWrapper,
+    pipeline: &'a Pipeline,
     writer: W,
     batch_size: usize,
     read_ahead: usize,
@@ -21,12 +21,12 @@ impl<'a, W> SentProcessor<'a, W>
 where
     W: WriteSentence,
 {
-    pub fn new(tagger: &'a TaggerWrapper, writer: W, batch_size: usize, read_ahead: usize) -> Self {
+    pub fn new(pipeline: &'a Pipeline, writer: W, batch_size: usize, read_ahead: usize) -> Self {
         assert!(batch_size > 0, "Batch size should at least be 1.");
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
         SentProcessor {
-            tagger,
+            pipeline,
             writer,
             batch_size,
             read_ahead,
@@ -51,7 +51,7 @@ where
 
         // Split in batches, tag, and merge results.
         for batch in sent_refs.chunks_mut(self.batch_size) {
-            self.tagger.tag_sentences(batch)?;
+            self.pipeline.tag_sentences(batch)?;
         }
 
         // Write out sentences.

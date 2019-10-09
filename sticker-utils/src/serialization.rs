@@ -23,6 +23,11 @@ impl TomlRead for Config {
         let mut data = String::new();
         read.read_to_string(&mut data)?;
         let config: Config = toml::from_str(&data)?;
+
+        if config.labeler.read_ahead.is_some() {
+            eprintln!("The labeler.read_ahead option is deprecated and not used anymore");
+        }
+
         Ok(config)
     }
 }

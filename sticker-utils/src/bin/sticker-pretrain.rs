@@ -14,11 +14,10 @@ use sticker::encoder::{CategoricalEncoder, SentenceEncoder};
 use sticker::tensorflow::{ConllxDataSet, DataSet, TaggerGraph, TaggerTrainer};
 use sticker::{Numberer, SentVectorizer};
 use sticker_utils::{
-    sticker_app, CborRead, CompletedUnit, Config, EncoderType, LabelerType, ReadProgress,
-    SaveSchedule, SaveScheduler, TomlRead,
+    app, CborRead, CompletedUnit, Config, EncoderType, LabelerType, ReadProgress, SaveSchedule,
+    SaveScheduler, TomlRead,
 };
 
-static CONFIG: &str = "CONFIG";
 static EPOCHS: &str = "EPOCHS";
 static INITIAL_LR: &str = "INITIAL_LR";
 static MAX_LEN: &str = "MAX_LEN";
@@ -42,7 +41,7 @@ pub struct PretrainApp {
 
 impl PretrainApp {
     fn new() -> Self {
-        let matches = sticker_app("sticker-pretrain")
+        let matches = app::sticker_app("sticker-pretrain")
             .arg(
                 Arg::with_name(CONTINUE)
                     .long("continue")
@@ -98,7 +97,7 @@ impl PretrainApp {
             )
             .get_matches();
 
-        let config = matches.value_of(CONFIG).unwrap().into();
+        let config = matches.value_of(app::CONFIG).unwrap().into();
         let epochs = matches
             .value_of(EPOCHS)
             .unwrap()

@@ -106,7 +106,11 @@ pub struct Input {
 #[serde(deny_unknown_fields)]
 pub struct Labeler {
     pub labels: String,
-    pub read_ahead: usize,
+
+    // Not used anymore, changed from usize to Option<usize> in order
+    // to read older configuration files.
+    pub read_ahead: Option<usize>,
+
     pub labeler_type: LabelerType,
 }
 

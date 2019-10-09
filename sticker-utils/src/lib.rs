@@ -1,5 +1,4 @@
-mod app;
-pub use crate::app::sticker_app;
+pub mod app;
 
 mod config;
 pub use crate::config::{
