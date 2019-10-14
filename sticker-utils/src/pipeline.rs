@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::fs::File;
 use std::path::Path;
 
@@ -22,9 +23,10 @@ impl Pipeline {
     /// Create a pipeline from tagger configurations.
     ///
     /// The pipeline will apply the taggers in the given order.
-    pub fn new_from_configs(configs: &[Config]) -> Fallible<Self> {
+    pub fn new_from_configs(configs: &[impl Borrow<Config>]) -> Fallible<Self> {
         let taggers = configs
             .iter()
+            .map(Borrow::borrow)
             .map(TaggerWrapper::new)
             .collect::<Fallible<Vec<_>>>()?;
         Ok(Pipeline { taggers })
