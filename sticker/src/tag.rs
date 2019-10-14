@@ -1,9 +1,11 @@
-use std::borrow::BorrowMut;
+use std::borrow::{Borrow, BorrowMut};
 
 use conllx::graph::Sentence;
 use conllx::token::{Features, Token};
 use failure::Fallible;
 use serde_derive::{Deserialize, Serialize};
+
+use crate::encoder::{EncodingProb, SentenceDecoder};
 
 /// Tagging layer.
 #[serde(rename_all = "lowercase")]
@@ -61,7 +63,24 @@ impl LayerValue for Token {
 
 /// Trait for sequence taggers.
 pub trait Tag {
+    /// Tag sentences.
     fn tag_sentences(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()>;
+}
+
+pub type TopKLabels<'a, L> = Vec<Vec<Vec<L>>>;
+
+/// Trait for predicting the top-k labels for tokens.
+pub trait TopK<D>
+where
+    D: SentenceDecoder,
+{
+    /// Get the top-k labels for all tokens.
+    ///
+    /// *k* is fixed in the model graph.
+    fn top_k(
+        &self,
+        sentences: &[impl Borrow<Sentence>],
+    ) -> Fallible<TopKLabels<EncodingProb<D::Encoding>>>;
 }
 
 /// Results of validation.
