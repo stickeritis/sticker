@@ -10,8 +10,7 @@ use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::{CategoricalEncoder, SentenceDecoder};
 use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::Tag;
-use sticker::{Numberer, SentVectorizer};
+use sticker::{Numberer, SentVectorizer, Tag, TopK, TopKLabels};
 
 /// The `Tag` trait is not object-safe, since the `tag_sentences`
 /// method has a type parameter to accept a slice of mutably
@@ -33,12 +32,51 @@ where
     }
 }
 
-/// A covenience wrapper for `Tagger`.
+/// The `TopK` trait is not object-safe, since the `top_k`
+/// method has a type parameter to accept a slice of mutably
+/// borrowable `Sentence`s. However, in `TaggerWrapper`, we want to box
+/// different taggers to hide their type parameters. `TopKRef` is a
+/// helper trait that is implemented for any `TopK`, but is object-safe
+/// by specializing `top_k_ref` for `Sentence` references.
+trait TopKRef {
+    /// Get the top-k labels for all tokens.
+    ///
+    /// *k* is fixed in the model graph.
+    fn top_k_ref(&self, sentences: &[&Sentence]) -> Fallible<TopKLabels<(String, f32)>>;
+}
+
+impl<D> TopKRef for Tagger<D>
+where
+    Tagger<D>: TopK<D>,
+    D: Send + SentenceDecoder + Sync,
+    D::Encoding: Clone + Eq + Hash + ToString,
+{
+    fn top_k_ref(&self, sentences: &[&Sentence]) -> Fallible<TopKLabels<(String, f32)>> {
+        let top_k = self.top_k(sentences)?;
+
+        // vec.into() does not seem to work? meh!
+        Ok(top_k
+            .into_iter()
+            .map(|s| {
+                s.into_iter()
+                    .map(|t| t.into_iter().map(Into::into).collect())
+                    .collect()
+            })
+            .collect())
+    }
+}
+
+/// Auxiliary trait that bundles the `TagRef` and `TopKRef` traits.
+trait TaggerRef: TagRef + TopKRef {}
+
+impl<T> TaggerRef for T where T: TagRef + TopKRef {}
+
+/// A convenience wrapper for `Tagger`.
 ///
 /// This wrapper loads embeddings, initializes the vectorizer,
 /// initializes the graph, and loads labels given a `Config` struct.
 pub struct TaggerWrapper {
-    inner: Box<dyn TagRef + Send + Sync>,
+    inner: Box<dyn TaggerRef + Send + Sync>,
 }
 
 impl TaggerWrapper {
@@ -82,7 +120,7 @@ impl TaggerWrapper {
     ) -> Fallible<Self>
     where
         D: 'static + Send + SentenceDecoder + Sync,
-        D::Encoding: Clone + Eq + Hash + Send + Sync,
+        D::Encoding: Clone + Eq + Hash + Send + Sync + ToString,
         Numberer<D::Encoding>: CborRead,
     {
         let labels = config.labeler.load_labels().with_context(|e| {
@@ -107,5 +145,12 @@ impl TaggerWrapper {
     /// Tag sentences.
     pub fn tag_sentences(&self, sentences: &mut [&mut Sentence]) -> Fallible<()> {
         self.inner.tag_sentences_ref(sentences)
+    }
+
+    /// Get the top-k labels for all tokens.
+    ///
+    /// *k* is fixed in the model graph.
+    pub fn top_k(&self, sentences: &[&Sentence]) -> Fallible<TopKLabels<(String, f32)>> {
+        self.inner.top_k_ref(sentences)
     }
 }

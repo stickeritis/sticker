@@ -20,7 +20,7 @@ use tensorflow::{
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error};
 use crate::encoder::{CategoricalEncoder, EncodingProb, SentenceDecoder};
-use crate::{SentVectorizer, Tag};
+use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -284,6 +284,54 @@ where
         })
     }
 
+    /// Get the top-k numeric labels for the sequences.
+    fn top_k_numeric_<'a, S>(
+        &self,
+        sentences: &'a [S],
+    ) -> Fallible<impl 'a + Iterator<Item = Vec<Vec<EncodingProb<'static, usize>>>>>
+    where
+        S: Borrow<Sentence>,
+    {
+        let builder = self.prepare_batch(sentences)?;
+
+        // Tag the batch
+        let (tag_tensor, probs_tensor) = self.tag_sequences(
+            builder.seq_lens(),
+            builder.inputs(),
+            builder.subwords(),
+            &self.graph.top_k_predicted_op,
+            &self.graph.top_k_probs_op,
+        )?;
+
+        // Decode label numbers.
+        let max_seq_len = tag_tensor.dims()[1] as usize;
+        let k = tag_tensor.dims()[2] as usize;
+
+        Ok(sentences
+            .iter()
+            .map(Borrow::borrow)
+            .enumerate()
+            .map(move |(idx, sentence)| {
+                // BorrowMut derives from borrow, but the borrowed type cannot
+                // be inferred with a borrow() call here?
+                let seq_len = min(max_seq_len, sentence.len() - 1);
+                let offset = idx * max_seq_len * k;
+                let seq = &tag_tensor[offset..offset + seq_len * k];
+                let probs = &probs_tensor[offset..offset + seq_len * k];
+
+                // Get the label numbers with their probabilities.
+                seq.iter()
+                    .zip(probs)
+                    .chunks(k)
+                    .into_iter()
+                    .map(|c| {
+                        c.map(|(&label, &prob)| EncodingProb::new_from_owned(label as usize, prob))
+                    })
+                    .map(Vec::from_iter)
+                    .collect::<Vec<_>>()
+            }))
+    }
+
     fn prepare_batch(
         &self,
         sentences: &[impl Borrow<Sentence>],
@@ -309,51 +357,6 @@ where
         }
 
         Ok(builder)
-    }
-
-    fn tag_sentences_<S>(&self, sentences: &mut [S]) -> Fallible<()>
-    where
-        S: BorrowMut<Sentence>,
-    {
-        let builder = self.prepare_batch(sentences)?;
-
-        // Tag the batch
-        let (tag_tensor, probs_tensor) = self.tag_sequences(
-            builder.seq_lens(),
-            builder.inputs(),
-            builder.subwords(),
-            &self.graph.top_k_predicted_op,
-            &self.graph.top_k_probs_op,
-        )?;
-
-        // Decode label numbers.
-        let max_seq_len = tag_tensor.dims()[1] as usize;
-        let k = tag_tensor.dims()[2] as usize;
-        for (idx, sentence) in sentences.iter_mut().map(BorrowMut::borrow_mut).enumerate() {
-            // BorrowMut derives from borrow, but the borrowed type cannot
-            // be inferred with a borrow() call here?
-            let seq_len = min(max_seq_len, sentence.len() - 1);
-            let offset = idx * max_seq_len * k;
-            let seq = &tag_tensor[offset..offset + seq_len * k];
-            let probs = &probs_tensor[offset..offset + seq_len * k];
-
-            // Get the label numbers with their probabilities.
-            let encoded = seq
-                .iter()
-                .zip(probs)
-                .chunks(k)
-                .into_iter()
-                .map(|c| {
-                    c.map(|(&label, &prob)| EncodingProb::new_from_owned(label as usize, prob))
-                })
-                .map(Vec::from_iter)
-                .collect::<Vec<_>>();
-
-            // And decode the labels.
-            self.decoder.decode(&encoded, sentence)?;
-        }
-
-        Ok(())
     }
 
     fn tag_sequences(
@@ -402,9 +405,32 @@ where
     D: Send + SentenceDecoder + Sync,
     D::Encoding: Clone + Eq + Hash,
 {
-    /// Tag sentences, returning the top-k results for every token.
     fn tag_sentences(&self, sentences: &mut [impl BorrowMut<Sentence>]) -> Fallible<()> {
-        self.tag_sentences_(sentences)
+        // We have to collect the results into a Vec, otherwise we
+        // simultaneously have an immutable and a mutable borrow of
+        // sentences.
+        let top_k_numeric = self.top_k_numeric_(sentences)?.collect::<Vec<_>>();
+
+        for (top_k, sentence) in top_k_numeric.into_iter().zip(sentences.iter_mut()) {
+            self.decoder.decode(&top_k, sentence.borrow_mut())?;
+        }
+
+        Ok(())
+    }
+}
+
+impl<D> TopK<D> for Tagger<D>
+where
+    D: Send + SentenceDecoder + Sync,
+    D::Encoding: Clone + Eq + Hash,
+{
+    fn top_k(
+        &self,
+        sentences: &[impl Borrow<Sentence>],
+    ) -> Fallible<TopKLabels<EncodingProb<D::Encoding>>> {
+        self.top_k_numeric_(sentences)?
+            .map(|top_k| self.decoder.decode_without_inner(&top_k))
+            .collect()
     }
 }
 

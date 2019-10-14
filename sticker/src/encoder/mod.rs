@@ -62,6 +62,15 @@ where
     }
 }
 
+impl<'a, E> From<EncodingProb<'a, E>> for (String, f32)
+where
+    E: Clone + ToString,
+{
+    fn from(prob: EncodingProb<E>) -> Self {
+        (prob.encoding().to_string(), prob.prob())
+    }
+}
+
 /// Trait for sentence decoders.
 ///
 /// A sentence decoder adds a representation to each token in a
@@ -107,6 +116,39 @@ where
     }
 }
 
+impl<D> CategoricalEncoder<D, D::Encoding>
+where
+    D: SentenceDecoder,
+    D::Encoding: Clone + Eq + Hash,
+{
+    // Decode without applying the inner decoder.
+    pub fn decode_without_inner<'a, S>(
+        &self,
+        labels: &[S],
+    ) -> Result<Vec<Vec<EncodingProb<D::Encoding>>>, Error>
+    where
+        S: AsRef<[EncodingProb<'a, usize>]>,
+    {
+        Ok(labels
+            .iter()
+            .map(|encoding_probs| {
+                encoding_probs
+                    .as_ref()
+                    .iter()
+                    .map(|encoding_prob| {
+                        EncodingProb::new(
+                            self.numberer
+                                .value(*encoding_prob.encoding())
+                                .expect("Unknown label"),
+                            encoding_prob.prob(),
+                        )
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .collect::<Vec<_>>())
+    }
+}
+
 impl<E> SentenceEncoder for CategoricalEncoder<E, E::Encoding>
 where
     E: SentenceEncoder,
@@ -132,25 +174,8 @@ where
     where
         S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
     {
-        let encoding = labels
-            .iter()
-            .map(|encoding_probs| {
-                encoding_probs
-                    .as_ref()
-                    .iter()
-                    .map(|encoding_prob| {
-                        EncodingProb::new(
-                            self.numberer
-                                .value(*encoding_prob.encoding())
-                                .expect("Unknown label"),
-                            encoding_prob.prob(),
-                        )
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .collect::<Vec<_>>();
-
-        self.inner.decode(&encoding, sentence)
+        let categorial_encoding = self.decode_without_inner(labels)?;
+        self.inner.decode(&categorial_encoding, sentence)
     }
 }
 
