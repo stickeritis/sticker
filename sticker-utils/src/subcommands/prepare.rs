@@ -3,7 +3,7 @@ use std::hash::Hash;
 use std::io::Write;
 use std::path::Path;
 
-use clap::Arg;
+use clap::{App, Arg, ArgMatches};
 use conllx::io::{ReadSentence, Reader};
 use failure::Error;
 use serde_derive::Serialize;
@@ -13,7 +13,9 @@ use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
-use sticker_utils::{app, CborWrite, Config, EncoderType, LabelerType, TomlRead};
+use sticker_utils::{CborWrite, Config, EncoderType, LabelerType, TomlRead};
+
+use crate::{StickerApp, StickerTrainApp};
 
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static SHAPES: &str = "SHAPES";
@@ -34,14 +36,18 @@ pub struct PrepareApp {
     shapes: Option<String>,
 }
 
-impl PrepareApp {
-    fn new() -> Self {
-        let matches = app::sticker_app("sticker-prepare")
+impl StickerTrainApp for PrepareApp {}
+
+impl StickerApp for PrepareApp {
+    fn app() -> App<'static, 'static> {
+        Self::train_app("prepare")
+            .about("Prepare shape and label files for training")
             .arg(Arg::with_name(TRAIN_DATA).help("Training data").index(2))
             .arg(Arg::with_name(SHAPES).help("Shape output file").index(3))
-            .get_matches();
+    }
 
-        let config = matches.value_of(app::CONFIG).unwrap().into();
+    fn parse(matches: &ArgMatches) -> Self {
+        let config = matches.value_of(Self::CONFIG).unwrap().into();
         let train_data = matches.value_of(TRAIN_DATA).map(ToOwned::to_owned);
         let shapes = matches.value_of(SHAPES).map(ToOwned::to_owned);
 
@@ -51,65 +57,58 @@ impl PrepareApp {
             shapes,
         }
     }
-}
 
-impl Default for PrepareApp {
-    fn default() -> Self {
-        Self::new()
+    fn run(&self) {
+        let config_file = File::open(&self.config).or_exit(
+            format!("Cannot open configuration file '{}'", &self.config),
+            1,
+        );
+        let mut config =
+            Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
+        config
+            .relativize_paths(&self.config)
+            .or_exit("Cannot relativize paths in configuration", 1);
+
+        let input = Input::from(self.train_data.as_ref());
+        let treebank_reader = Reader::new(
+            input
+                .buf_read()
+                .or_exit("Cannot open corpus for reading", 1),
+        );
+        let output = Output::from(self.shapes.as_ref());
+        let shapes_write = output.write().or_exit("Cannot create shapes file", 1);
+
+        let embeddings = config
+            .input
+            .embeddings
+            .load_embeddings()
+            .or_exit("Cannot load embeddings", 1);
+        let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
+
+        match config.labeler.labeler_type {
+            LabelerType::Sequence(ref layer) => prepare_with_encoder(
+                &config,
+                vectorizer,
+                LayerEncoder::new(layer.clone()),
+                treebank_reader,
+                shapes_write,
+            ),
+            LabelerType::Parser(EncoderType::RelativePOS) => prepare_with_encoder(
+                &config,
+                vectorizer,
+                RelativePOSEncoder,
+                treebank_reader,
+                shapes_write,
+            ),
+            LabelerType::Parser(EncoderType::RelativePosition) => prepare_with_encoder(
+                &config,
+                vectorizer,
+                RelativePositionEncoder,
+                treebank_reader,
+                shapes_write,
+            ),
+        };
     }
-}
-
-fn main() {
-    let app = PrepareApp::new();
-
-    let config_file = File::open(&app.config).or_exit(
-        format!("Cannot open configuration file '{}'", &app.config),
-        1,
-    );
-    let mut config = Config::from_toml_read(config_file).or_exit("Cannot parse configuration", 1);
-    config
-        .relativize_paths(app.config)
-        .or_exit("Cannot relativize paths in configuration", 1);
-
-    let input = Input::from(app.train_data);
-    let treebank_reader = Reader::new(
-        input
-            .buf_read()
-            .or_exit("Cannot open corpus for reading", 1),
-    );
-    let output = Output::from(app.shapes);
-    let shapes_write = output.write().or_exit("Cannot create shapes file", 1);
-
-    let embeddings = config
-        .input
-        .embeddings
-        .load_embeddings()
-        .or_exit("Cannot load embeddings", 1);
-    let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
-
-    match config.labeler.labeler_type {
-        LabelerType::Sequence(ref layer) => prepare_with_encoder(
-            &config,
-            vectorizer,
-            LayerEncoder::new(layer.clone()),
-            treebank_reader,
-            shapes_write,
-        ),
-        LabelerType::Parser(EncoderType::RelativePOS) => prepare_with_encoder(
-            &config,
-            vectorizer,
-            RelativePOSEncoder,
-            treebank_reader,
-            shapes_write,
-        ),
-        LabelerType::Parser(EncoderType::RelativePosition) => prepare_with_encoder(
-            &config,
-            vectorizer,
-            RelativePositionEncoder,
-            treebank_reader,
-            shapes_write,
-        ),
-    };
 }
 
 fn prepare_with_encoder<E, R, W>(

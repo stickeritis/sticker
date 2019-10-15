@@ -11,6 +11,10 @@ repository = "https://github.com/danieldk/sticker.git"
 # license = "BlueOak-1.0.0"
 license-file = "../LICENSE.md"
 
+[[bin]]
+name = "sticker"
+path = "src/main.rs"
+
 [dependencies]
 clap = "2"
 conllx = "0.12.1"
