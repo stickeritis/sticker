@@ -1,5 +1,3 @@
-pub mod app;
-
 mod config;
 pub use crate::config::{
     Config, Embedding, EmbeddingAlloc, Embeddings, EncoderType, Input, Labeler, LabelerType,

@@ -2,7 +2,7 @@ use std::io::BufWriter;
 use std::iter::FromIterator;
 use std::process;
 
-use clap::{App, AppSettings, Arg};
+use clap::{App, AppSettings, Arg, ArgMatches};
 use conllx::graph::Node;
 use conllx::io::{ReadSentence, WriteSentence};
 use conllx::token::Features;
@@ -10,6 +10,8 @@ use stdinout::{Input, OrExit, Output};
 
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::SentenceEncoder;
+
+use crate::StickerApp;
 
 static ENCODER: &str = "ENCODER";
 static INPUT: &str = "INPUT";
@@ -26,10 +28,11 @@ pub struct Dep2LabelApp {
     output: Option<String>,
 }
 
-impl Dep2LabelApp {
-    fn new() -> Self {
-        let matches = App::new("sticker-dep2label")
+impl StickerApp for Dep2LabelApp {
+    fn app() -> App<'static, 'static> {
+        App::new("dep2label")
             .settings(DEFAULT_CLAP_SETTINGS)
+            .about("Convert dependencies to labels")
             .arg(
                 Arg::with_name(ENCODER)
                     .short("e")
@@ -41,8 +44,9 @@ impl Dep2LabelApp {
             )
             .arg(Arg::with_name(INPUT).help("Input data").index(1))
             .arg(Arg::with_name(OUTPUT).help("Output data").index(2))
-            .get_matches();
+    }
 
+    fn parse(matches: &ArgMatches) -> Self {
         let encoder = matches.value_of(ENCODER).unwrap().into();
         let input = matches.value_of(INPUT).map(ToOwned::to_owned);
         let output = matches.value_of(OUTPUT).map(ToOwned::to_owned);
@@ -53,31 +57,24 @@ impl Dep2LabelApp {
             output,
         }
     }
-}
 
-impl Default for Dep2LabelApp {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+    fn run(&self) {
+        let input = Input::from(self.input.as_ref());
+        let reader =
+            conllx::io::Reader::new(input.buf_read().or_exit("Cannot open input for reading", 1));
 
-fn main() {
-    let app = Dep2LabelApp::new();
-    let input = Input::from(app.input);
-    let reader =
-        conllx::io::Reader::new(input.buf_read().or_exit("Cannot open input for reading", 1));
+        let output = Output::from(self.output.as_ref());
+        let writer = conllx::io::Writer::new(BufWriter::new(
+            output.write().or_exit("Cannot open output for writing", 1),
+        ));
 
-    let output = Output::from(app.output);
-    let writer = conllx::io::Writer::new(BufWriter::new(
-        output.write().or_exit("Cannot open output for writing", 1),
-    ));
-
-    match app.encoder.as_str() {
-        "rel_pos" => label_with_encoder(RelativePOSEncoder, reader, writer),
-        "rel_position" => label_with_encoder(RelativePositionEncoder, reader, writer),
-        unknown => {
-            eprintln!("Unknown encoder: {}", unknown);
-            process::exit(1);
+        match self.encoder.as_str() {
+            "rel_pos" => label_with_encoder(RelativePOSEncoder, reader, writer),
+            "rel_position" => label_with_encoder(RelativePositionEncoder, reader, writer),
+            unknown => {
+                eprintln!("Unknown encoder: {}", unknown);
+                process::exit(1);
+            }
         }
     }
 }
