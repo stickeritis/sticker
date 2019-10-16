@@ -1,0 +1,22 @@
+1	Groningen	_	_	PROPN-NE	NE:B-GPE	_	_	_	_
+2	ist	_	_	AUX-VAFIN	NE:O	_	_	_	_
+3	die	_	_	DET-ART	NE:O	_	_	_	_
+4	Hauptstadt	_	_	NOUN-NN	NE:O	_	_	_	_
+5	der	_	_	DET-ART	NE:O	_	_	_	_
+6	Provinz	_	_	NOUN-NN	NE:O	_	_	_	_
+7	Groningen	_	_	PROPN-NE	NE:B-GPE	_	_	_	_
+8	.	_	_	PUNCT-$.	NE:O	_	_	_	_
+
+1	Die	_	_	DET-ART	NE:O	_	_	_	_
+2	Stadt	_	_	NOUN-NN	NE:O	_	_	_	_
+3	Groningen	_	_	PROPN-NE	NE:B-GPE	_	_	_	_
+4	wird	_	_	AUX-VAFIN	NE:O	_	_	_	_
+5	im	_	_	ADP-APPRART	NE:O	_	_	_	_
+6	niederländischen	_	_	ADJ-ADJA	NE:O	_	_	_	_
+7	Fußball	_	_	NOUN-NN	NE:O	_	_	_	_
+8	durch	_	_	ADP-APPR	NE:O	_	_	_	_
+9	den	_	_	DET-ART	NE:O	_	_	_	_
+10	FC	_	_	NOUN-NN	NE:B-ORG	_	_	_	_
+11	Groningen	_	_	PROPN-NE	NE:B-GPE	_	_	_	_
+12	vertreten	_	_	VERB-VVPP	NE:O	_	_	_	_
+13	.	_	_	PUNCT-$.	NE:O	_	_	_	_

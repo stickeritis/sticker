@@ -1,0 +1,8 @@
+.*
+[#]*
+*~
+
+target/
+
+.eggs
+__pycache__
