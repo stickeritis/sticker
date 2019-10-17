@@ -30,4 +30,4 @@ $ cd sticker
 $ cargo install --path sticker-utils
 ~~~
 
-sticker should then be installed in `~/.cargo/bin/sticker-{tag,train,server}`
+sticker should then be installed in `~/.cargo/bin/sticker`
