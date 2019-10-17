@@ -5,9 +5,9 @@ use conllx::io::{ReadSentence, Reader, WriteSentence, Writer};
 use stdinout::{Input, OrExit, Output};
 use sticker::wrapper::Pipeline;
 
-use sticker_utils::{SentProcessor, TaggerSpeed};
-
-use crate::{StickerApp, StickerPipelineApp};
+use crate::progress::TaggerSpeed;
+use crate::sent_proc::SentProcessor;
+use crate::traits::{StickerApp, StickerPipelineApp};
 
 static INPUT: &str = "INPUT";
 static OUTPUT: &str = "OUTPUT";

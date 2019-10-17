@@ -16,9 +16,9 @@ use sticker::tensorflow::{ConllxDataSet, DataSet, TaggerGraph, TaggerTrainer};
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
 
-use sticker_utils::{CompletedUnit, ReadProgress, SaveSchedule, SaveScheduler};
-
-use crate::{StickerApp, StickerTrainApp};
+use crate::progress::ReadProgress;
+use crate::save::{CompletedUnit, SaveSchedule, SaveScheduler};
+use crate::traits::{StickerApp, StickerTrainApp};
 
 static EPOCHS: &str = "EPOCHS";
 static INITIAL_LR: &str = "INITIAL_LR";

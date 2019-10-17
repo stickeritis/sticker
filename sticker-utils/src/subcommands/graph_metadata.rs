@@ -5,7 +5,7 @@ use clap::{App, AppSettings, Arg, ArgMatches};
 use stdinout::OrExit;
 use sticker::tensorflow::TaggerGraph;
 
-use crate::StickerApp;
+use crate::traits::StickerApp;
 
 static GRAPH: &str = "GRAPH";
 

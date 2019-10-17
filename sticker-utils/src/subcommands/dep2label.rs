@@ -11,7 +11,7 @@ use stdinout::{Input, OrExit, Output};
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::SentenceEncoder;
 
-use crate::StickerApp;
+use crate::traits::StickerApp;
 
 static ENCODER: &str = "ENCODER";
 static INPUT: &str = "INPUT";

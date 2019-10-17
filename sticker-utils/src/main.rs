@@ -2,10 +2,16 @@ use std::io::stdout;
 
 use clap::{crate_version, App, AppSettings, Arg, Shell, SubCommand};
 
+pub mod progress;
+
 mod subcommands;
 
-mod traits;
-pub use self::traits::{StickerApp, StickerPipelineApp, StickerTrainApp};
+pub mod sent_proc;
+
+pub mod save;
+
+pub mod traits;
+use traits::StickerApp;
 
 static DEFAULT_CLAP_SETTINGS: &[AppSettings] = &[
     AppSettings::DontCollapseArgsInUsage,
