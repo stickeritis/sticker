@@ -7,7 +7,7 @@ directory. Given a configuration file, the first step is to create a shapes
 file.
 
 ~~~shell
-$ sticker-prepare postag.conf train.conll postag.shapes
+$ sticker prepare postag.conf train.conll postag.shapes
 ~~~
 
 This file is used in the construction of the Tensorflow
@@ -28,7 +28,7 @@ configuration file (here `postag.conf`) to use the generated graph.
 Finally, you can then train the model parameters:
 
 ~~~shell
-$ sticker-train postag.conf train.conll validation.conll 
+$ sticker train postag.conf train.conll validation.conll
 ~~~
 
 The models are quite sensitive to the learning rate and may diverge
@@ -37,7 +37,7 @@ and can be set using the `lr` option. For example, to use a learning
 rate of *0.001*, use:
 
 ~~~shell
-$ sticker-train --lr 0.001 postag.conf train.conll validation.conll 
+$ sticker train --lr 0.001 postag.conf train.conll validation.conll
 ~~~
 
 The training procedure will output the best epoch. Update the
@@ -54,7 +54,7 @@ in a browser, start the training with the `--logdir` option set to a directory
 with write access: 
 
 ~~~shell
-$ sticker-train postag.conf train.conll validation.conll --logdir pos_logdir
+$ sticker train postag.conf train.conll validation.conll --logdir pos_logdir
 ~~~
 
 This will write the Tensorboard summaries to the directory `pos_logdir` in
