@@ -3,6 +3,7 @@
 *~
 
 target/
+sticker-tf-proto/src/*.rs
 
 .eggs
 __pycache__

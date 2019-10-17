@@ -10,13 +10,7 @@ repository = "https://github.com/danieldk/sticker.git"
 license = "Apache-2.0"
 
 [dependencies]
-# This is annoying, but the generated protobuf contains
-# the version number in symbols and compilation fails when
-# this dependency is updated
-protobuf = "= 2.8.0"
+protobuf = "2"
 
 [build-dependencies]
-protoc-rust = { version = "2", optional = true }
-
-[features]
-proto-compile = [ "protoc-rust" ]
+protoc-rust = "2"

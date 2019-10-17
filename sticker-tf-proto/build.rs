@@ -1,5 +1,4 @@
 fn main() {
-    #[cfg(feature = "proto-compile")]
     protoc_rust::run(protoc_rust::Args {
         out_dir: "src",
         input: &[
