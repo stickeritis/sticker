@@ -18,9 +18,9 @@ use sticker::tensorflow::{
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
 
-use sticker_utils::{CompletedUnit, ReadProgress, SaveSchedule, SaveScheduler};
-
-use crate::{StickerApp, StickerTrainApp};
+use crate::progress::ReadProgress;
+use crate::save::{CompletedUnit, SaveSchedule, SaveScheduler};
+use crate::traits::{StickerApp, StickerTrainApp};
 
 static INITIAL_LR: &str = "INITIAL_LR";
 static LR_SCALE: &str = "LR_SCALE";

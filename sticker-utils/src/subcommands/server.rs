@@ -9,9 +9,9 @@ use stdinout::OrExit;
 use sticker::wrapper::{Config, Pipeline, TomlRead};
 use threadpool::ThreadPool;
 
-use sticker_utils::{SentProcessor, TaggerSpeed};
-
-use crate::{StickerApp, StickerPipelineApp};
+use crate::progress::TaggerSpeed;
+use crate::sent_proc::SentProcessor;
+use crate::traits::{StickerApp, StickerPipelineApp};
 
 static ADDR: &str = "ADDR";
 static THREADS: &str = "THREADS";

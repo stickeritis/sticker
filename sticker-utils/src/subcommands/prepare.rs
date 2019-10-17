@@ -17,7 +17,7 @@ use sticker::serialization::CborWrite;
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
 
-use crate::{StickerApp, StickerTrainApp};
+use crate::traits::{StickerApp, StickerTrainApp};
 
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static SHAPES: &str = "SHAPES";
