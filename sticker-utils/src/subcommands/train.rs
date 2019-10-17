@@ -11,14 +11,14 @@ use stdinout::OrExit;
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::{CategoricalEncoder, SentenceEncoder};
+use sticker::serialization::CborRead;
 use sticker::tensorflow::{
     ConllxDataSet, DataSet, LearningRateSchedule, PlateauLearningRate, TaggerGraph, TaggerTrainer,
 };
+use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
-use sticker_utils::{
-    CborRead, CompletedUnit, Config, EncoderType, LabelerType, ReadProgress, SaveSchedule,
-    SaveScheduler, TomlRead,
-};
+
+use sticker_utils::{CompletedUnit, ReadProgress, SaveSchedule, SaveScheduler};
 
 use crate::{StickerApp, StickerTrainApp};
 

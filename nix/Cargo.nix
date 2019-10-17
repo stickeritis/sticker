@@ -2259,9 +2259,11 @@ rec {
           "petgraph" = "petgraph 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)";
           "protobuf" = "protobuf 2.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde" = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
+          "serde_cbor" = "serde_cbor 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde_derive" = "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
           "sticker-tf-proto" = "sticker-tf-proto 0.7.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
           "tensorflow" = "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "toml" = "toml 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)";
         };
         features = {
         };

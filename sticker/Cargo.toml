@@ -22,10 +22,13 @@ ordered-float = "1"
 petgraph = "0.4"
 protobuf = "2"
 serde = "1"
+serde_cbor = "0.10"
 serde_derive = "1"
 sticker-tf-proto = { path = "../sticker-tf-proto", version = "0.7.0" }
+toml = "0.5"
 tensorflow = "0.13"
 
 [dev-dependencies]
 approx = "0.3"
 flate2 = { version = ">= 1.0.0, <1.0.10" }
+lazy_static = "1"

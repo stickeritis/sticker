@@ -5,18 +5,17 @@ use std::path::Path;
 use conllx::graph::Sentence;
 use failure::{Fallible, ResultExt};
 
-use crate::config::Config;
-use crate::{TaggerWrapper, TomlRead};
+use super::{Config, Tagger, TomlRead};
 
 pub struct Pipeline {
-    taggers: Vec<TaggerWrapper>,
+    taggers: Vec<Tagger>,
 }
 
 impl Pipeline {
     /// Create a pipeline from the given taggers.
     ///
     /// The pipeline will apply the taggers in the given order.
-    pub fn new(taggers: Vec<TaggerWrapper>) -> Self {
+    pub fn new(taggers: Vec<Tagger>) -> Self {
         Pipeline { taggers }
     }
 
@@ -27,7 +26,7 @@ impl Pipeline {
         let taggers = configs
             .iter()
             .map(Borrow::borrow)
-            .map(TaggerWrapper::new)
+            .map(Tagger::new)
             .collect::<Fallible<Vec<_>>>()?;
         Ok(Pipeline { taggers })
     }

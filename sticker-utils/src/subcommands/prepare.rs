@@ -8,12 +8,14 @@ use conllx::io::{ReadSentence, Reader};
 use failure::Error;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
+use toml;
 
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::SentenceEncoder;
+use sticker::serialization::CborWrite;
+use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
-use sticker_utils::{CborWrite, Config, EncoderType, LabelerType, TomlRead};
 
 use crate::{StickerApp, StickerTrainApp};
 

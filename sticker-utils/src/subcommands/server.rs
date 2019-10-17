@@ -6,8 +6,10 @@ use std::sync::Arc;
 use clap::{App, Arg, ArgMatches};
 use conllx::io::{ReadSentence, Reader, Writer};
 use stdinout::OrExit;
-use sticker_utils::{Config, Pipeline, SentProcessor, TaggerSpeed, TomlRead};
+use sticker::wrapper::{Config, Pipeline, TomlRead};
 use threadpool::ThreadPool;
+
+use sticker_utils::{SentProcessor, TaggerSpeed};
 
 use crate::{StickerApp, StickerPipelineApp};
 

@@ -1,17 +1,17 @@
 use std::fs::File;
 use std::hash::Hash;
-use std::io::BufReader;
+use std::io::{BufReader, Read};
 use std::path::Path;
 
 use failure::{format_err, Error};
 use finalfusion::embeddings::Embeddings as FiFuEmbeddings;
 use finalfusion::prelude::*;
 use serde_derive::{Deserialize, Serialize};
+use toml;
 
-use sticker::tensorflow::ModelConfig;
-use sticker::{Layer, LayerEmbeddings, Numberer};
-
-use crate::CborRead;
+use crate::serialization::CborRead;
+use crate::tensorflow::ModelConfig;
+use crate::{Layer, LayerEmbeddings, Numberer};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -42,6 +42,29 @@ impl Config {
     }
 }
 
+pub trait TomlRead {
+    fn from_toml_read<R>(read: R) -> Result<Config, Error>
+    where
+        R: Read;
+}
+
+impl TomlRead for Config {
+    fn from_toml_read<R>(mut read: R) -> Result<Self, Error>
+    where
+        R: Read,
+    {
+        let mut data = String::new();
+        read.read_to_string(&mut data)?;
+        let config: Config = toml::from_str(&data)?;
+
+        if config.labeler.read_ahead.is_some() {
+            eprintln!("The labeler.read_ahead option is deprecated and not used anymore");
+        }
+
+        Ok(config)
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Embeddings {
@@ -69,7 +92,7 @@ impl Embeddings {
     pub fn load_layer_embeddings(
         &self,
         embeddings: &Embedding,
-    ) -> Result<sticker::Embeddings, Error> {
+    ) -> Result<crate::Embeddings, Error> {
         let f = File::open(&embeddings.filename)?;
         let embeds: FiFuEmbeddings<VocabWrap, StorageWrap> = match embeddings.alloc {
             EmbeddingAlloc::Read => ReadEmbeddings::read_embeddings(&mut BufReader::new(f))?,
@@ -168,4 +191,55 @@ fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> 
             )
         })?
         .to_owned())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+
+    use crate::tensorflow::ModelConfig;
+    use crate::Layer;
+    use lazy_static::lazy_static;
+
+    use super::{
+        Config, Embedding, EmbeddingAlloc, Embeddings, Input, Labeler, LabelerType, TomlRead,
+    };
+
+    lazy_static! {
+        static ref BASIC_LABELER_CHECK: Config = Config {
+            labeler: Labeler {
+                labeler_type: LabelerType::Sequence(Layer::Feature("tf".to_string())),
+                labels: "sticker.labels".to_owned(),
+                read_ahead: Some(10),
+            },
+            input: Input {
+                embeddings: Embeddings {
+                    word: Embedding {
+                        filename: "word-vectors.bin".into(),
+                        alloc: EmbeddingAlloc::Mmap,
+                    },
+                    tag: Some(Embedding {
+                        filename: "tag-vectors.bin".into(),
+                        alloc: EmbeddingAlloc::Read,
+                    }),
+                },
+                subwords: true,
+            },
+            model: ModelConfig {
+                batch_size: 128,
+                gpu_allow_growth: true,
+                graph: "sticker.graph".to_owned(),
+                parameters: "sticker.model".to_owned(),
+                intra_op_parallelism_threads: 4,
+                inter_op_parallelism_threads: 4,
+            }
+        };
+    }
+
+    #[test]
+    fn test_parse_config() {
+        let f = File::open("testdata/sticker.conf").unwrap();
+        let config = Config::from_toml_read(f).unwrap();
+        assert_eq!(*BASIC_LABELER_CHECK, config);
+    }
 }
