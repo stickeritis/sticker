@@ -22,7 +22,7 @@ impl Pipeline {
     /// Create a pipeline from tagger configurations.
     ///
     /// The pipeline will apply the taggers in the given order.
-    pub fn new_from_configs(configs: &[impl Borrow<Config>]) -> Fallible<Self> {
+    pub fn from_configs(configs: &[impl Borrow<Config>]) -> Fallible<Self> {
         let taggers = configs
             .iter()
             .map(Borrow::borrow)
@@ -34,7 +34,7 @@ impl Pipeline {
     /// Create a pipeline from tagger configuration filenames.
     ///
     /// The pipeline will apply the taggers in the given order.
-    pub fn new_from_config_filenames(filenames: &[impl AsRef<Path>]) -> Fallible<Self> {
+    pub fn from_config_filenames(filenames: &[impl AsRef<Path>]) -> Fallible<Self> {
         let mut configs = Vec::with_capacity(filenames.len());
 
         for filename in filenames {
@@ -56,7 +56,7 @@ impl Pipeline {
             configs.push(config);
         }
 
-        Self::new_from_configs(&configs)
+        Self::from_configs(&configs)
     }
 
     /// Tag sentences with the pipeline.
