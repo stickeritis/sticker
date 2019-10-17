@@ -2,7 +2,7 @@ use conllx::graph::Sentence;
 use conllx::io::WriteSentence;
 use failure::Error;
 
-use crate::Pipeline;
+use sticker::wrapper::Pipeline;
 
 // Wrap the sentence processing in a data type. This has the benefit that
 // we can use a destructor to write the last (possibly incomplete) batch.

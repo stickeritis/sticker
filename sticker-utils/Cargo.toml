@@ -27,9 +27,6 @@ serde_cbor = "0.10"
 serde_derive = "1"
 stdinout = "0.4"
 threadpool = "1"
-toml = "0.5"
 sticker = { path = "../sticker", version = "0.9.0" }
 tensorflow = "0.13"
-
-[dev-dependencies]
-lazy_static = "1"
+toml = "0.5"

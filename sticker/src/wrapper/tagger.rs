@@ -4,20 +4,21 @@ use std::hash::Hash;
 use conllx::graph::Sentence;
 use failure::{Fallible, ResultExt};
 
-use crate::config::{Config, EncoderType, LabelerType};
+use crate::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use crate::encoder::layer::LayerEncoder;
+use crate::encoder::{CategoricalEncoder, SentenceDecoder};
 use crate::serialization::CborRead;
-use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::encoder::layer::LayerEncoder;
-use sticker::encoder::{CategoricalEncoder, SentenceDecoder};
-use sticker::tensorflow::{Tagger, TaggerGraph};
-use sticker::{Numberer, SentVectorizer, Tag, TopK, TopKLabels};
+use crate::tensorflow::{Tagger as TFTagger, TaggerGraph};
+use crate::wrapper::{Config, EncoderType, LabelerType};
+use crate::{Numberer, SentVectorizer, Tag, TopK, TopKLabels};
 
 /// The `Tag` trait is not object-safe, since the `tag_sentences`
 /// method has a type parameter to accept a slice of mutably
-/// borrowable `Sentence`s. However, in TaggerWrapper, we want to box
-/// different taggers to hide their type parameters. `TagRef` is a
-/// helper trait that is implemented for any `Tag`, but is object-safe
-/// by specializing `tag_sentences_ref` for `Sentence` references.
+/// borrowable `Sentence`s. However, in the `Tagger` wrapper, we want
+/// to box different taggers to hide their type parameters. `TagRef`
+/// is a helper trait that is implemented for any `Tag`, but is
+/// object-safe by specializing `tag_sentences_ref` for `Sentence`
+/// references.
 trait TagRef {
     fn tag_sentences_ref(&self, sentences: &mut [&mut Sentence]) -> Fallible<()>;
 }
@@ -32,12 +33,12 @@ where
     }
 }
 
-/// The `TopK` trait is not object-safe, since the `top_k`
-/// method has a type parameter to accept a slice of mutably
-/// borrowable `Sentence`s. However, in `TaggerWrapper`, we want to box
+/// The `TopK` trait is not object-safe, since the `top_k` method has
+/// a type parameter to accept a slice of mutably borrowable
+/// `Sentence`s. However, in the `Tagger` wrapper, we want to box
 /// different taggers to hide their type parameters. `TopKRef` is a
-/// helper trait that is implemented for any `TopK`, but is object-safe
-/// by specializing `top_k_ref` for `Sentence` references.
+/// helper trait that is implemented for any `TopK`, but is
+/// object-safe by specializing `top_k_ref` for `Sentence` references.
 trait TopKRef {
     /// Get the top-k labels for all tokens.
     ///
@@ -45,9 +46,9 @@ trait TopKRef {
     fn top_k_ref(&self, sentences: &[&Sentence]) -> Fallible<TopKLabels<(String, f32)>>;
 }
 
-impl<D> TopKRef for Tagger<D>
+impl<D> TopKRef for TFTagger<D>
 where
-    Tagger<D>: TopK<D>,
+    TFTagger<D>: TopK<D>,
     D: Send + SentenceDecoder + Sync,
     D::Encoding: Clone + Eq + Hash + ToString,
 {
@@ -71,15 +72,15 @@ trait TaggerRef: TagRef + TopKRef {}
 
 impl<T> TaggerRef for T where T: TagRef + TopKRef {}
 
-/// A convenience wrapper for `Tagger`.
+/// A convenience wrapper for the `tensorflow::Tagger`.
 ///
 /// This wrapper loads embeddings, initializes the vectorizer,
 /// initializes the graph, and loads labels given a `Config` struct.
-pub struct TaggerWrapper {
+pub struct Tagger {
     inner: Box<dyn TaggerRef + Send + Sync>,
 }
 
-impl TaggerWrapper {
+impl Tagger {
     /// Create a tagger from the given configuration.
     pub fn new(config: &Config) -> Fallible<Self> {
         let embeddings = config
@@ -129,7 +130,7 @@ impl TaggerWrapper {
 
         let categorical_decoder = CategoricalEncoder::new(decoder, labels);
 
-        let tagger = Tagger::load_weights(
+        let tagger = TFTagger::load_weights(
             graph,
             categorical_decoder,
             vectorizer,
@@ -137,7 +138,7 @@ impl TaggerWrapper {
         )
         .with_context(|e| format!("Cannot construct tagger: {}", e))?;
 
-        Ok(TaggerWrapper {
+        Ok(Tagger {
             inner: Box::new(tagger),
         })
     }

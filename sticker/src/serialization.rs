@@ -1,36 +1,12 @@
+//! Serialization of some crate-specific types.
+
 use std::io::{Read, Write};
 
+use crate::encoder::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
+use crate::Numberer;
 use failure::Error;
-use sticker::encoder::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
-use sticker::Numberer;
 
 use serde_cbor;
-use toml;
-
-use super::Config;
-
-pub trait TomlRead {
-    fn from_toml_read<R>(read: R) -> Result<Config, Error>
-    where
-        R: Read;
-}
-
-impl TomlRead for Config {
-    fn from_toml_read<R>(mut read: R) -> Result<Self, Error>
-    where
-        R: Read,
-    {
-        let mut data = String::new();
-        read.read_to_string(&mut data)?;
-        let config: Config = toml::from_str(&data)?;
-
-        if config.labeler.read_ahead.is_some() {
-            eprintln!("The labeler.read_ahead option is deprecated and not used anymore");
-        }
-
-        Ok(config)
-    }
-}
 
 pub trait CborRead
 where
