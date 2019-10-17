@@ -112,7 +112,7 @@ impl StickerApp for ServerApp {
         }
 
         let pipeline =
-            Pipeline::new_from_configs(&configs).or_exit("Cannot construct tagging pipeline", 1);
+            Pipeline::from_configs(&configs).or_exit("Cannot construct tagging pipeline", 1);
 
         let pool = ThreadPool::new(self.n_threads);
 

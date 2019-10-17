@@ -90,7 +90,7 @@ impl StickerApp for TagApp {
     }
 
     fn run(&self) {
-        let pipeline = Pipeline::new_from_config_filenames(&self.configs)
+        let pipeline = Pipeline::from_config_filenames(&self.configs)
             .or_exit("Cannot construct tagging pipeline", 1);
 
         let input = Input::from(self.input.as_ref());
