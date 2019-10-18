@@ -2,7 +2,7 @@
 
 set -ex
 
-binaries="sticker-server sticker-tag sticker-train"
+binaries="sticker"
 
 cargo build --target "$TARGET" --release
 
@@ -24,6 +24,7 @@ for binary in ${binaries}; do
 done
 
 cp {README,LICENSE}.md "${staging}/"
+cp CONTRIBUTORS "${staging}/"
 cp -r doc "${staging}/"
 
 if [ "${TARGET}" = "x86_64-unknown-linux-gnu" ]; then
@@ -43,7 +44,8 @@ tf_archive="libtensorflow-cpu-${tf_build}-1.14.0.tar.gz"
 curl -O https://storage.googleapis.com/tensorflow/libtensorflow/${tf_archive}
 mkdir tensorflow
 tar -zxf "${tf_archive}" -C tensorflow
-cp tensorflow/lib/*${dylib_ext} "${staging}"
+mv tensorflow/lib/*${dylib_ext}* "${staging}"
+chmod u+w "${staging}"/*${dylib_ext}*
 
 # Add binary directory to the search path.
 if [ "$TARGET" = "x86_64-unknown-linux-gnu" ]; then
@@ -54,6 +56,11 @@ else
   # Darwin
   for binary in ${binaries}; do
     install_name_tool -add_rpath @executable_path/. "${staging}/${binary}"
+
+    # Fixup for current Rust Tensorflow crate. Remove >= 1.14.0.
+    install_name_tool -change @rpath/libtensorflow.so @executable_path/libtensorflow.dylib "${staging}/${binary}"
+    install_name_tool -change @rpath/libtensorflow_framework.so @executable_path/libtensorflow_framework.dylib "${staging}/${binary}"
+
   done
 fi
 
