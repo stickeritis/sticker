@@ -1,6 +1,6 @@
 [package]
 name = "sticker-tf-proto"
-version = "0.7.0"
+version = "0.10.0"
 edition = "2018"
 authors = ["Daniël de Kok <me@danieldk.eu>"]
 description = "Tensorflow protocol buffer definitions used by sticker"
