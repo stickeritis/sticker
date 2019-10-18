@@ -1,4 +1,4 @@
-dist: bionic
+dist: xenial
 env:
   global:
   - PROJECT_NAME: sticker
@@ -6,10 +6,6 @@ addons:
   apt:
     packages:
     - patchelf
-    - protobuf-compiler
-  homebrew:
-    packages:
-    - protobuf
 matrix:
   fast_finish: true
   include:
