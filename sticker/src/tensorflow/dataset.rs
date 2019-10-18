@@ -40,7 +40,7 @@ where
 /// A CoNLL-X data set.
 pub struct ConllxDataSet<R>(R);
 
-impl<R> ConllxDataSet<R> where {
+impl<R> ConllxDataSet<R> {
     /// Construct a CoNLL-X dataset.
     pub fn new(read: R) -> Self {
         ConllxDataSet(read)

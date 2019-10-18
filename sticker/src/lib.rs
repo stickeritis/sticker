@@ -6,6 +6,7 @@ pub mod encoder;
 mod input;
 pub use crate::input::{Embeddings, InputVector, LayerEmbeddings, SentVectorizer};
 
+#[allow(clippy::type_repetition_in_bounds)]
 mod numberer;
 pub use crate::numberer::Numberer;
 
