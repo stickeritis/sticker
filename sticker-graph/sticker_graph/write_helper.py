@@ -17,10 +17,7 @@ def create_graph(model, args):
     shapes = read_shapes(args)
     graph_filename = args.output_graph_file
 
-    gpuopts = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.3)
-    tfconfig = tf.compat.v1.ConfigProto(gpu_options=gpuopts)
-
-    with tf.Graph().as_default(), tf.compat.v1.Session(config=tfconfig) as session:
+    with tf.Graph().as_default() as g:
         write_args(model, args)
 
         logdir = tf.compat.v1.placeholder(
@@ -39,12 +36,12 @@ def create_graph(model, args):
 
             tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
 
-            serialized_graph = session.graph_def.SerializeToString()
+            serialized_graph = g.as_graph_def().SerializeToString()
             serialized_graph_tensor = tf.convert_to_tensor(serialized_graph)
             tf.contrib.summary.graph(
                 serialized_graph_tensor, 0, name='graph_write')
             tf.io.write_graph(
-                session.graph_def,
+                g.as_graph_def(),
                 './',
                 graph_filename,
                 as_text=False)
