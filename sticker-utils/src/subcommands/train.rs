@@ -28,6 +28,7 @@ static LR_PATIENCE: &str = "LR_PATIENCE";
 static MAX_LEN: &str = "MAX_LEN";
 static CONTINUE: &str = "CONTINUE";
 static PATIENCE: &str = "PATIENCE";
+static WARMUP: &str = "WARMUP";
 static TRAIN_DATA: &str = "TRAIN_DATA";
 static VALIDATION_DATA: &str = "VALIDATION_DATA";
 static LOGDIR: &str = "LOGDIR";
@@ -36,6 +37,7 @@ pub struct LrSchedule {
     pub initial_lr: NotNan<f32>,
     pub lr_scale: NotNan<f32>,
     pub lr_patience: usize,
+    pub warmup_steps: usize,
 }
 
 pub struct TrainApp {
@@ -56,6 +58,7 @@ impl TrainApp {
             self.lr_schedule.initial_lr.into_inner(),
             self.lr_schedule.lr_scale.into_inner(),
             self.lr_schedule.lr_patience,
+            self.lr_schedule.warmup_steps,
         )
     }
 
@@ -69,8 +72,9 @@ impl TrainApp {
         trainer: &TaggerTrainer,
         file: &mut File,
         is_training: bool,
-        lr: f32,
-    ) -> (f32, f32)
+        lr_scheduler: &mut dyn LearningRateSchedule,
+        global_step: usize,
+    ) -> (f32, f32, usize)
     where
         E: SentenceEncoder,
         E::Encoding: Clone + Eq + Hash,
@@ -86,6 +90,7 @@ impl TrainApp {
 
         let mut dataset = ConllxDataSet::new(read_progress);
 
+        let mut global_step = global_step;
         let mut instances = 0;
         let mut acc = 0f32;
         let mut loss = 0f32;
@@ -94,6 +99,7 @@ impl TrainApp {
             .batches(encoder, vectorizer, config.model.batch_size, self.max_len)
             .or_exit("Cannot read batches", 1)
         {
+            let lr = lr_scheduler.compute_step_learning_rate(global_step);
             let tensors = batch.or_exit("Cannot read batch", 1).into_parts();
 
             let batch_perf = if is_training {
@@ -119,6 +125,7 @@ impl TrainApp {
             instances += n_tokens;
 
             if is_training {
+                global_step += 1;
                 save_scheduler.save(trainer, CompletedUnit::Batch).or_exit(
                     format!("Cannot save model for batch {}", save_scheduler.batch()),
                     1,
@@ -126,15 +133,15 @@ impl TrainApp {
             }
 
             progress_bar.set_message(&format!(
-                "batch loss: {:.4}, batch accuracy: {:.4}",
-                batch_perf.loss, batch_perf.accuracy
+                "lr: {:.1e} batch loss: {:.4}, batch accuracy: {:.4}",
+                lr, batch_perf.loss, batch_perf.accuracy
             ));
         }
 
         loss /= instances as f32;
         acc /= instances as f32;
 
-        (loss, acc)
+        (loss, acc, global_step)
     }
 
     fn train_model_with_encoder<E>(
@@ -170,14 +177,15 @@ impl TrainApp {
         let mut best_epoch = 0;
         let mut best_acc = 0.0;
         let mut last_acc = 0.0;
+        let mut global_step = 0;
 
         let mut lr_schedule = self.lr_schedule();
         let mut save_scheduler = self.save_schedule.to_save_scheduler("");
 
         for epoch in 0.. {
-            let lr = lr_schedule.learning_rate(epoch, last_acc);
+            let lr = lr_schedule.compute_epoch_learning_rate(epoch, last_acc);
 
-            let (loss, acc) = self.run_epoch(
+            let (loss, acc, global_step_after_epoch) = self.run_epoch(
                 config,
                 &mut save_scheduler,
                 &mut categorical_encoder,
@@ -185,9 +193,10 @@ impl TrainApp {
                 &trainer,
                 &mut train_file,
                 true,
-                lr,
+                &mut lr_schedule,
+                global_step,
             );
-
+            global_step = global_step_after_epoch;
             eprintln!(
                 "Epoch {} (train, lr: {:.4}): loss: {:.4}, acc: {:.4}",
                 epoch, lr, loss, acc
@@ -198,7 +207,7 @@ impl TrainApp {
                 1,
             );
 
-            let (loss, acc) = self.run_epoch(
+            let (loss, acc, _) = self.run_epoch(
                 config,
                 &mut save_scheduler,
                 &mut categorical_encoder,
@@ -206,7 +215,8 @@ impl TrainApp {
                 &trainer,
                 &mut validation_file,
                 false,
-                lr,
+                &mut lr_schedule,
+                global_step,
             );
 
             last_acc = acc;
@@ -254,6 +264,15 @@ impl StickerApp for TrainApp {
                     .value_name("LR")
                     .help("Initial learning rate")
                     .default_value("0.01"),
+            )
+            .arg(
+                Arg::with_name(WARMUP)
+                    .long("warmup")
+                    .value_name("N")
+                    .help(
+                        "For the first N timesteps, the learning rate is linearly scaled up to LR.",
+                    )
+                    .default_value("0"),
             )
             .arg(
                 Arg::with_name(LR_PATIENCE)
@@ -330,6 +349,11 @@ impl StickerApp for TrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse patience", 1);
+        let warmup_steps = matches
+            .value_of(WARMUP)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse warmup", 1);
         let save_schedule = SaveSchedule::Epoch;
         let logdir = matches.value_of(LOGDIR).map(ToOwned::to_owned);
         let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
@@ -343,6 +367,7 @@ impl StickerApp for TrainApp {
                 initial_lr,
                 lr_patience,
                 lr_scale,
+                warmup_steps,
             },
             max_len,
             save_schedule,
