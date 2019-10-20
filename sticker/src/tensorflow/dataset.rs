@@ -2,8 +2,9 @@ use std::hash::Hash;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::usize;
 
-use conllx::io::{ReadSentence, Reader, Sentences};
-use failure::Fallible;
+use conllx::graph::Sentence;
+use conllx::io::{ReadSentence, Reader};
+use failure::{Error, Fallible};
 
 use super::tensor::{LabelTensor, TensorBuilder};
 use crate::encoder::{CategoricalEncoder, SentenceEncoder};
@@ -53,7 +54,7 @@ where
     E::Encoding: 'a + Clone + Eq + Hash,
     R: Read + Seek,
 {
-    type Iter = ConllxIter<'a, E, Reader<BufReader<&'ds mut R>>>;
+    type Iter = ConllxIter<'a, E, Box<dyn Iterator<Item = Result<Sentence, Error>> + 'ds>>;
 
     fn batches(
         self,
@@ -70,31 +71,29 @@ where
         Ok(ConllxIter {
             batch_size,
             encoder,
-            max_len,
-            sentences: reader.sentences(),
+            sentences: get_sentence_iter(reader, max_len),
             vectorizer,
         })
     }
 }
 
-pub struct ConllxIter<'a, E, R>
+pub struct ConllxIter<'a, E, I>
 where
     E: SentenceEncoder,
     E::Encoding: Clone + Eq + Hash,
-    R: ReadSentence,
+    I: Iterator<Item = Result<Sentence, Error>>,
 {
     batch_size: usize,
-    max_len: usize,
     encoder: &'a mut CategoricalEncoder<E, E::Encoding>,
     vectorizer: &'a SentVectorizer,
-    sentences: Sentences<R>,
+    sentences: I,
 }
 
-impl<'a, E, R> Iterator for ConllxIter<'a, E, R>
+impl<'a, E, I> Iterator for ConllxIter<'a, E, I>
 where
     E: SentenceEncoder,
     E::Encoding: Clone + Eq + Hash,
-    R: ReadSentence,
+    I: Iterator<Item = Result<Sentence, Error>>,
 {
     type Item = Fallible<TensorBuilder<LabelTensor>>;
 
@@ -105,11 +104,7 @@ where
                 Ok(sentence) => sentence,
                 Err(err) => return Some(Err(err)),
             };
-
-            if sentence.len() <= self.max_len {
-                batch_sentences.push(sentence);
-            }
-
+            batch_sentences.push(sentence);
             if batch_sentences.len() == self.batch_size {
                 break;
             }
@@ -149,5 +144,67 @@ where
         }
 
         Some(Ok(builder))
+    }
+}
+
+/// Trait providing adapters for `conllx::io::Sentences`.
+pub trait SentenceIter: Sized {
+    fn filter_by_len(self, max_len: usize) -> LengthFilter<Self>;
+}
+
+impl<I> SentenceIter for I
+where
+    I: Iterator<Item = Result<Sentence, Error>>,
+{
+    fn filter_by_len(self, max_len: usize) -> LengthFilter<Self> {
+        LengthFilter {
+            inner: self,
+            max_len,
+        }
+    }
+}
+
+/// An Iterator adapter filtering sentences by maximum length.
+pub struct LengthFilter<I> {
+    inner: I,
+    max_len: usize,
+}
+
+impl<I> Iterator for LengthFilter<I>
+where
+    I: Iterator<Item = Result<Sentence, Error>>,
+{
+    type Item = Result<Sentence, Error>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some(sent) = self.inner.next() {
+            let len = sent.as_ref().map(|s| s.len()).unwrap_or(0);
+            if len > self.max_len {
+                continue;
+            }
+            return Some(sent);
+        }
+        None
+    }
+}
+
+/// Returns an `Iterator` over `Result<Sentence, Error>`.
+///
+/// Depending on the parameters the returned iterator filters
+/// sentences by their lengths or returns the sentences in
+/// sequence without filtering them.
+///
+/// If `max_len` == `usize::MAX`, no filtering is performed.
+fn get_sentence_iter<'a, R>(
+    reader: R,
+    max_len: usize,
+) -> Box<dyn Iterator<Item = Result<Sentence, Error>> + 'a>
+where
+    R: ReadSentence + 'a,
+{
+    if max_len < usize::MAX {
+        Box::new(reader.sentences().filter_by_len(max_len))
+    } else {
+        Box::new(reader.sentences())
     }
 }
