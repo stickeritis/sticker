@@ -32,6 +32,7 @@ pub struct OpDef {
     pub name: ::std::string::String,
     pub input_arg: ::protobuf::RepeatedField<OpDef_ArgDef>,
     pub output_arg: ::protobuf::RepeatedField<OpDef_ArgDef>,
+    pub control_output: ::protobuf::RepeatedField<::std::string::String>,
     pub attr: ::protobuf::RepeatedField<OpDef_AttrDef>,
     pub deprecation: ::protobuf::SingularPtrField<OpDeprecation>,
     pub summary: ::std::string::String,
@@ -130,6 +131,31 @@ impl OpDef {
     // Take field
     pub fn take_output_arg(&mut self) -> ::protobuf::RepeatedField<OpDef_ArgDef> {
         ::std::mem::replace(&mut self.output_arg, ::protobuf::RepeatedField::new())
+    }
+
+    // repeated string control_output = 20;
+
+
+    pub fn get_control_output(&self) -> &[::std::string::String] {
+        &self.control_output
+    }
+    pub fn clear_control_output(&mut self) {
+        self.control_output.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_control_output(&mut self, v: ::protobuf::RepeatedField<::std::string::String>) {
+        self.control_output = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_control_output(&mut self) -> &mut ::protobuf::RepeatedField<::std::string::String> {
+        &mut self.control_output
+    }
+
+    // Take field
+    pub fn take_control_output(&mut self) -> ::protobuf::RepeatedField<::std::string::String> {
+        ::std::mem::replace(&mut self.control_output, ::protobuf::RepeatedField::new())
     }
 
     // repeated .tensorflow.OpDef.AttrDef attr = 4;
@@ -341,6 +367,9 @@ impl ::protobuf::Message for OpDef {
                 3 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.output_arg)?;
                 },
+                20 => {
+                    ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.control_output)?;
+                },
                 4 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.attr)?;
                 },
@@ -404,6 +433,9 @@ impl ::protobuf::Message for OpDef {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        for value in &self.control_output {
+            my_size += ::protobuf::rt::string_size(20, &value);
+        };
         for value in &self.attr {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
@@ -448,6 +480,9 @@ impl ::protobuf::Message for OpDef {
             os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
+        };
+        for v in &self.control_output {
+            os.write_string(20, &v)?;
         };
         for v in &self.attr {
             os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
@@ -534,6 +569,11 @@ impl ::protobuf::Message for OpDef {
                     |m: &OpDef| { &m.output_arg },
                     |m: &mut OpDef| { &mut m.output_arg },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                    "control_output",
+                    |m: &OpDef| { &m.control_output },
+                    |m: &mut OpDef| { &mut m.control_output },
+                ));
                 fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<OpDef_AttrDef>>(
                     "attr",
                     |m: &OpDef| { &m.attr },
@@ -599,6 +639,7 @@ impl ::protobuf::Clear for OpDef {
         self.name.clear();
         self.input_arg.clear();
         self.output_arg.clear();
+        self.control_output.clear();
         self.attr.clear();
         self.deprecation.clear();
         self.summary.clear();
@@ -1846,35 +1887,36 @@ impl ::protobuf::reflect::ProtobufValue for OpList {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n&tensorflow/core/framework/op_def.proto\x12\ntensorflow\x1a*tensorflow\
     /core/framework/attr_value.proto\x1a%tensorflow/core/framework/types.pro\
-    to\"\xcd\x07\n\x05OpDef\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\
+    to\"\xf4\x07\n\x05OpDef\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\
     \x125\n\tinput_arg\x18\x02\x20\x03(\x0b2\x18.tensorflow.OpDef.ArgDefR\
     \x08inputArg\x127\n\noutput_arg\x18\x03\x20\x03(\x0b2\x18.tensorflow.OpD\
-    ef.ArgDefR\toutputArg\x12-\n\x04attr\x18\x04\x20\x03(\x0b2\x19.tensorflo\
-    w.OpDef.AttrDefR\x04attr\x12;\n\x0bdeprecation\x18\x08\x20\x01(\x0b2\x19\
-    .tensorflow.OpDeprecationR\x0bdeprecation\x12\x18\n\x07summary\x18\x05\
-    \x20\x01(\tR\x07summary\x12\x20\n\x0bdescription\x18\x06\x20\x01(\tR\x0b\
-    description\x12%\n\x0eis_commutative\x18\x12\x20\x01(\x08R\risCommutativ\
-    e\x12!\n\x0cis_aggregate\x18\x10\x20\x01(\x08R\x0bisAggregate\x12\x1f\n\
-    \x0bis_stateful\x18\x11\x20\x01(\x08R\nisStateful\x12<\n\x1aallows_unini\
-    tialized_input\x18\x13\x20\x01(\x08R\x18allowsUninitializedInput\x1a\xe3\
-    \x01\n\x06ArgDef\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x20\n\
-    \x0bdescription\x18\x02\x20\x01(\tR\x0bdescription\x12(\n\x04type\x18\
-    \x03\x20\x01(\x0e2\x14.tensorflow.DataTypeR\x04type\x12\x1b\n\ttype_attr\
-    \x18\x04\x20\x01(\tR\x08typeAttr\x12\x1f\n\x0bnumber_attr\x18\x05\x20\
-    \x01(\tR\nnumberAttr\x12$\n\x0etype_list_attr\x18\x06\x20\x01(\tR\x0ctyp\
-    eListAttr\x12\x15\n\x06is_ref\x18\x10\x20\x01(\x08R\x05isRef\x1a\x88\x02\
-    \n\x07AttrDef\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x12\n\
-    \x04type\x18\x02\x20\x01(\tR\x04type\x12:\n\rdefault_value\x18\x03\x20\
-    \x01(\x0b2\x15.tensorflow.AttrValueR\x0cdefaultValue\x12\x20\n\x0bdescri\
-    ption\x18\x04\x20\x01(\tR\x0bdescription\x12\x1f\n\x0bhas_minimum\x18\
-    \x05\x20\x01(\x08R\nhasMinimum\x12\x18\n\x07minimum\x18\x06\x20\x01(\x03\
-    R\x07minimum\x12<\n\x0eallowed_values\x18\x07\x20\x01(\x0b2\x15.tensorfl\
-    ow.AttrValueR\rallowedValues\"K\n\rOpDeprecation\x12\x18\n\x07version\
-    \x18\x01\x20\x01(\x05R\x07version\x12\x20\n\x0bexplanation\x18\x02\x20\
-    \x01(\tR\x0bexplanation\"+\n\x06OpList\x12!\n\x02op\x18\x01\x20\x03(\x0b\
-    2\x11.tensorflow.OpDefR\x02opBk\n\x18org.tensorflow.frameworkB\x0bOpDefP\
-    rotosP\x01Z=github.com/tensorflow/tensorflow/tensorflow/go/core/framewor\
-    k\xf8\x01\x01b\x06proto3\
+    ef.ArgDefR\toutputArg\x12%\n\x0econtrol_output\x18\x14\x20\x03(\tR\rcont\
+    rolOutput\x12-\n\x04attr\x18\x04\x20\x03(\x0b2\x19.tensorflow.OpDef.Attr\
+    DefR\x04attr\x12;\n\x0bdeprecation\x18\x08\x20\x01(\x0b2\x19.tensorflow.\
+    OpDeprecationR\x0bdeprecation\x12\x18\n\x07summary\x18\x05\x20\x01(\tR\
+    \x07summary\x12\x20\n\x0bdescription\x18\x06\x20\x01(\tR\x0bdescription\
+    \x12%\n\x0eis_commutative\x18\x12\x20\x01(\x08R\risCommutative\x12!\n\
+    \x0cis_aggregate\x18\x10\x20\x01(\x08R\x0bisAggregate\x12\x1f\n\x0bis_st\
+    ateful\x18\x11\x20\x01(\x08R\nisStateful\x12<\n\x1aallows_uninitialized_\
+    input\x18\x13\x20\x01(\x08R\x18allowsUninitializedInput\x1a\xe3\x01\n\
+    \x06ArgDef\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x20\n\x0bde\
+    scription\x18\x02\x20\x01(\tR\x0bdescription\x12(\n\x04type\x18\x03\x20\
+    \x01(\x0e2\x14.tensorflow.DataTypeR\x04type\x12\x1b\n\ttype_attr\x18\x04\
+    \x20\x01(\tR\x08typeAttr\x12\x1f\n\x0bnumber_attr\x18\x05\x20\x01(\tR\nn\
+    umberAttr\x12$\n\x0etype_list_attr\x18\x06\x20\x01(\tR\x0ctypeListAttr\
+    \x12\x15\n\x06is_ref\x18\x10\x20\x01(\x08R\x05isRef\x1a\x88\x02\n\x07Att\
+    rDef\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04name\x12\x12\n\x04type\x18\
+    \x02\x20\x01(\tR\x04type\x12:\n\rdefault_value\x18\x03\x20\x01(\x0b2\x15\
+    .tensorflow.AttrValueR\x0cdefaultValue\x12\x20\n\x0bdescription\x18\x04\
+    \x20\x01(\tR\x0bdescription\x12\x1f\n\x0bhas_minimum\x18\x05\x20\x01(\
+    \x08R\nhasMinimum\x12\x18\n\x07minimum\x18\x06\x20\x01(\x03R\x07minimum\
+    \x12<\n\x0eallowed_values\x18\x07\x20\x01(\x0b2\x15.tensorflow.AttrValue\
+    R\rallowedValues\"K\n\rOpDeprecation\x12\x18\n\x07version\x18\x01\x20\
+    \x01(\x05R\x07version\x12\x20\n\x0bexplanation\x18\x02\x20\x01(\tR\x0bex\
+    planation\"+\n\x06OpList\x12!\n\x02op\x18\x01\x20\x03(\x0b2\x11.tensorfl\
+    ow.OpDefR\x02opBk\n\x18org.tensorflow.frameworkB\x0bOpDefProtosP\x01Z=gi\
+    thub.com/tensorflow/tensorflow/tensorflow/go/core/framework\xf8\x01\x01b\
+    \x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
