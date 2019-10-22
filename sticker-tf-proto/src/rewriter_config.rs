@@ -406,6 +406,8 @@ pub struct RewriterConfig {
     pub disable_model_pruning: bool,
     pub scoped_allocator_optimization: RewriterConfig_Toggle,
     pub pin_to_host_optimization: RewriterConfig_Toggle,
+    pub implementation_selector: RewriterConfig_Toggle,
+    pub auto_mixed_precision: RewriterConfig_Toggle,
     pub disable_meta_optimizer: bool,
     pub meta_optimizer_iterations: RewriterConfig_NumIterationsType,
     pub min_graph_nodes: i32,
@@ -417,6 +419,8 @@ pub struct RewriterConfig {
     pub scoped_allocator_opts: ::protobuf::SingularPtrField<ScopedAllocatorOptions>,
     pub optimizers: ::protobuf::RepeatedField<::std::string::String>,
     pub custom_optimizers: ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer>,
+    pub inter_optimizer_verifier_config: ::protobuf::SingularPtrField<super::verifier_config::VerifierConfig>,
+    pub post_optimization_verifier_config: ::protobuf::SingularPtrField<super::verifier_config::VerifierConfig>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -611,6 +615,36 @@ impl RewriterConfig {
     // Param is passed by value, moved
     pub fn set_pin_to_host_optimization(&mut self, v: RewriterConfig_Toggle) {
         self.pin_to_host_optimization = v;
+    }
+
+    // .tensorflow.RewriterConfig.Toggle implementation_selector = 22;
+
+
+    pub fn get_implementation_selector(&self) -> RewriterConfig_Toggle {
+        self.implementation_selector
+    }
+    pub fn clear_implementation_selector(&mut self) {
+        self.implementation_selector = RewriterConfig_Toggle::DEFAULT;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_implementation_selector(&mut self, v: RewriterConfig_Toggle) {
+        self.implementation_selector = v;
+    }
+
+    // .tensorflow.RewriterConfig.Toggle auto_mixed_precision = 23;
+
+
+    pub fn get_auto_mixed_precision(&self) -> RewriterConfig_Toggle {
+        self.auto_mixed_precision
+    }
+    pub fn clear_auto_mixed_precision(&mut self) {
+        self.auto_mixed_precision = RewriterConfig_Toggle::DEFAULT;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_auto_mixed_precision(&mut self, v: RewriterConfig_Toggle) {
+        self.auto_mixed_precision = v;
     }
 
     // bool disable_meta_optimizer = 19;
@@ -844,6 +878,72 @@ impl RewriterConfig {
     pub fn take_custom_optimizers(&mut self) -> ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer> {
         ::std::mem::replace(&mut self.custom_optimizers, ::protobuf::RepeatedField::new())
     }
+
+    // .tensorflow.VerifierConfig inter_optimizer_verifier_config = 300;
+
+
+    pub fn get_inter_optimizer_verifier_config(&self) -> &super::verifier_config::VerifierConfig {
+        self.inter_optimizer_verifier_config.as_ref().unwrap_or_else(|| super::verifier_config::VerifierConfig::default_instance())
+    }
+    pub fn clear_inter_optimizer_verifier_config(&mut self) {
+        self.inter_optimizer_verifier_config.clear();
+    }
+
+    pub fn has_inter_optimizer_verifier_config(&self) -> bool {
+        self.inter_optimizer_verifier_config.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_inter_optimizer_verifier_config(&mut self, v: super::verifier_config::VerifierConfig) {
+        self.inter_optimizer_verifier_config = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_inter_optimizer_verifier_config(&mut self) -> &mut super::verifier_config::VerifierConfig {
+        if self.inter_optimizer_verifier_config.is_none() {
+            self.inter_optimizer_verifier_config.set_default();
+        }
+        self.inter_optimizer_verifier_config.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_inter_optimizer_verifier_config(&mut self) -> super::verifier_config::VerifierConfig {
+        self.inter_optimizer_verifier_config.take().unwrap_or_else(|| super::verifier_config::VerifierConfig::new())
+    }
+
+    // .tensorflow.VerifierConfig post_optimization_verifier_config = 301;
+
+
+    pub fn get_post_optimization_verifier_config(&self) -> &super::verifier_config::VerifierConfig {
+        self.post_optimization_verifier_config.as_ref().unwrap_or_else(|| super::verifier_config::VerifierConfig::default_instance())
+    }
+    pub fn clear_post_optimization_verifier_config(&mut self) {
+        self.post_optimization_verifier_config.clear();
+    }
+
+    pub fn has_post_optimization_verifier_config(&self) -> bool {
+        self.post_optimization_verifier_config.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_post_optimization_verifier_config(&mut self, v: super::verifier_config::VerifierConfig) {
+        self.post_optimization_verifier_config = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_post_optimization_verifier_config(&mut self) -> &mut super::verifier_config::VerifierConfig {
+        if self.post_optimization_verifier_config.is_none() {
+            self.post_optimization_verifier_config.set_default();
+        }
+        self.post_optimization_verifier_config.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_post_optimization_verifier_config(&mut self) -> super::verifier_config::VerifierConfig {
+        self.post_optimization_verifier_config.take().unwrap_or_else(|| super::verifier_config::VerifierConfig::new())
+    }
 }
 
 impl ::protobuf::Message for RewriterConfig {
@@ -859,6 +959,16 @@ impl ::protobuf::Message for RewriterConfig {
             }
         };
         for v in &self.custom_optimizers {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        for v in &self.inter_optimizer_verifier_config {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        for v in &self.post_optimization_verifier_config {
             if !v.is_initialized() {
                 return false;
             }
@@ -910,6 +1020,12 @@ impl ::protobuf::Message for RewriterConfig {
                 18 => {
                     ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.pin_to_host_optimization, 18, &mut self.unknown_fields)?
                 },
+                22 => {
+                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.implementation_selector, 22, &mut self.unknown_fields)?
+                },
+                23 => {
+                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.auto_mixed_precision, 23, &mut self.unknown_fields)?
+                },
                 19 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
                         return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
@@ -959,6 +1075,12 @@ impl ::protobuf::Message for RewriterConfig {
                 200 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.custom_optimizers)?;
                 },
+                300 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.inter_optimizer_verifier_config)?;
+                },
+                301 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.post_optimization_verifier_config)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -1007,6 +1129,12 @@ impl ::protobuf::Message for RewriterConfig {
         if self.pin_to_host_optimization != RewriterConfig_Toggle::DEFAULT {
             my_size += ::protobuf::rt::enum_size(18, self.pin_to_host_optimization);
         }
+        if self.implementation_selector != RewriterConfig_Toggle::DEFAULT {
+            my_size += ::protobuf::rt::enum_size(22, self.implementation_selector);
+        }
+        if self.auto_mixed_precision != RewriterConfig_Toggle::DEFAULT {
+            my_size += ::protobuf::rt::enum_size(23, self.auto_mixed_precision);
+        }
         if self.disable_meta_optimizer != false {
             my_size += 3;
         }
@@ -1043,6 +1171,14 @@ impl ::protobuf::Message for RewriterConfig {
             let len = value.compute_size();
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        if let Some(ref v) = self.inter_optimizer_verifier_config.as_ref() {
+            let len = v.compute_size();
+            my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
+        if let Some(ref v) = self.post_optimization_verifier_config.as_ref() {
+            let len = v.compute_size();
+            my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -1085,6 +1221,12 @@ impl ::protobuf::Message for RewriterConfig {
         if self.pin_to_host_optimization != RewriterConfig_Toggle::DEFAULT {
             os.write_enum(18, self.pin_to_host_optimization.value())?;
         }
+        if self.implementation_selector != RewriterConfig_Toggle::DEFAULT {
+            os.write_enum(22, self.implementation_selector.value())?;
+        }
+        if self.auto_mixed_precision != RewriterConfig_Toggle::DEFAULT {
+            os.write_enum(23, self.auto_mixed_precision.value())?;
+        }
         if self.disable_meta_optimizer != false {
             os.write_bool(19, self.disable_meta_optimizer)?;
         }
@@ -1124,6 +1266,16 @@ impl ::protobuf::Message for RewriterConfig {
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
+        if let Some(ref v) = self.inter_optimizer_verifier_config.as_ref() {
+            os.write_tag(300, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
+        if let Some(ref v) = self.post_optimization_verifier_config.as_ref() {
+            os.write_tag(301, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1226,6 +1378,16 @@ impl ::protobuf::Message for RewriterConfig {
                     |m: &RewriterConfig| { &m.pin_to_host_optimization },
                     |m: &mut RewriterConfig| { &mut m.pin_to_host_optimization },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                    "implementation_selector",
+                    |m: &RewriterConfig| { &m.implementation_selector },
+                    |m: &mut RewriterConfig| { &mut m.implementation_selector },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                    "auto_mixed_precision",
+                    |m: &RewriterConfig| { &m.auto_mixed_precision },
+                    |m: &mut RewriterConfig| { &mut m.auto_mixed_precision },
+                ));
                 fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
                     "disable_meta_optimizer",
                     |m: &RewriterConfig| { &m.disable_meta_optimizer },
@@ -1281,6 +1443,16 @@ impl ::protobuf::Message for RewriterConfig {
                     |m: &RewriterConfig| { &m.custom_optimizers },
                     |m: &mut RewriterConfig| { &mut m.custom_optimizers },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::verifier_config::VerifierConfig>>(
+                    "inter_optimizer_verifier_config",
+                    |m: &RewriterConfig| { &m.inter_optimizer_verifier_config },
+                    |m: &mut RewriterConfig| { &mut m.inter_optimizer_verifier_config },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::verifier_config::VerifierConfig>>(
+                    "post_optimization_verifier_config",
+                    |m: &RewriterConfig| { &m.post_optimization_verifier_config },
+                    |m: &mut RewriterConfig| { &mut m.post_optimization_verifier_config },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new::<RewriterConfig>(
                     "RewriterConfig",
                     fields,
@@ -1315,6 +1487,8 @@ impl ::protobuf::Clear for RewriterConfig {
         self.disable_model_pruning = false;
         self.scoped_allocator_optimization = RewriterConfig_Toggle::DEFAULT;
         self.pin_to_host_optimization = RewriterConfig_Toggle::DEFAULT;
+        self.implementation_selector = RewriterConfig_Toggle::DEFAULT;
+        self.auto_mixed_precision = RewriterConfig_Toggle::DEFAULT;
         self.disable_meta_optimizer = false;
         self.meta_optimizer_iterations = RewriterConfig_NumIterationsType::DEFAULT_NUM_ITERS;
         self.min_graph_nodes = 0;
@@ -1326,6 +1500,8 @@ impl ::protobuf::Clear for RewriterConfig {
         self.scoped_allocator_opts.clear();
         self.optimizers.clear();
         self.custom_optimizers.clear();
+        self.inter_optimizer_verifier_config.clear();
+        self.post_optimization_verifier_config.clear();
         self.unknown_fields.clear();
     }
 }
@@ -1739,57 +1915,64 @@ impl ::protobuf::reflect::ProtobufValue for RewriterConfig_MemOptType {
 
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n.tensorflow/core/protobuf/rewriter_config.proto\x12\ntensorflow\x1a*te\
-    nsorflow/core/framework/attr_value.proto\"P\n\x13AutoParallelOptions\x12\
-    \x16\n\x06enable\x18\x01\x20\x01(\x08R\x06enable\x12!\n\x0cnum_replicas\
-    \x18\x02\x20\x01(\x05R\x0bnumReplicas\"5\n\x16ScopedAllocatorOptions\x12\
-    \x1b\n\tenable_op\x18\x01\x20\x03(\tR\x08enableOp\"\xeb\x11\n\x0eRewrite\
-    rConfig\x12L\n\x10layout_optimizer\x18\x01\x20\x01(\x0e2!.tensorflow.Rew\
-    riterConfig.ToggleR\x0flayoutOptimizer\x12L\n\x10constant_folding\x18\
-    \x03\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x0fconstantFolding\
-    \x12P\n\x12shape_optimization\x18\r\x20\x01(\x0e2!.tensorflow.RewriterCo\
-    nfig.ToggleR\x11shapeOptimization\x12?\n\tremapping\x18\x0e\x20\x01(\x0e\
-    2!.tensorflow.RewriterConfig.ToggleR\tremapping\x12Z\n\x17arithmetic_opt\
-    imization\x18\x07\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x16ar\
-    ithmeticOptimization\x12Z\n\x17dependency_optimization\x18\x08\x20\x01(\
-    \x0e2!.tensorflow.RewriterConfig.ToggleR\x16dependencyOptimization\x12N\
-    \n\x11loop_optimization\x18\t\x20\x01(\x0e2!.tensorflow.RewriterConfig.T\
-    oggleR\x10loopOptimization\x12V\n\x15function_optimization\x18\n\x20\x01\
-    (\x0e2!.tensorflow.RewriterConfig.ToggleR\x14functionOptimization\x12H\n\
-    \x0edebug_stripper\x18\x0b\x20\x01(\x0e2!.tensorflow.RewriterConfig.Togg\
-    leR\rdebugStripper\x122\n\x15disable_model_pruning\x18\x02\x20\x01(\x08R\
-    \x13disableModelPruning\x12e\n\x1dscoped_allocator_optimization\x18\x0f\
-    \x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x1bscopedAllocatorOpti\
-    mization\x12Z\n\x18pin_to_host_optimization\x18\x12\x20\x01(\x0e2!.tenso\
-    rflow.RewriterConfig.ToggleR\x15pinToHostOptimization\x124\n\x16disable_\
-    meta_optimizer\x18\x13\x20\x01(\x08R\x14disableMetaOptimizer\x12h\n\x19m\
-    eta_optimizer_iterations\x18\x0c\x20\x01(\x0e2,.tensorflow.RewriterConfi\
-    g.NumIterationsTypeR\x17metaOptimizerIterations\x12&\n\x0fmin_graph_node\
-    s\x18\x11\x20\x01(\x05R\rminGraphNodes\x12V\n\x13memory_optimization\x18\
-    \x04\x20\x01(\x0e2%.tensorflow.RewriterConfig.MemOptTypeR\x12memoryOptim\
-    ization\x12S\n'memory_optimizer_target_node_name_scope\x18\x06\x20\x01(\
-    \tR\"memoryOptimizerTargetNodeNameScope\x129\n\x19meta_optimizer_timeout\
-    _ms\x18\x14\x20\x01(\x03R\x16metaOptimizerTimeoutMs\x12D\n\rauto_paralle\
-    l\x18\x05\x20\x01(\x0b2\x1f.tensorflow.AutoParallelOptionsR\x0cautoParal\
-    lel\x127\n\x18fail_on_optimizer_errors\x18\x15\x20\x01(\x08R\x15failOnOp\
-    timizerErrors\x12V\n\x15scoped_allocator_opts\x18\x10\x20\x01(\x0b2\".te\
-    nsorflow.ScopedAllocatorOptionsR\x13scopedAllocatorOpts\x12\x1e\n\noptim\
-    izers\x18d\x20\x03(\tR\noptimizers\x12]\n\x11custom_optimizers\x18\xc8\
-    \x01\x20\x03(\x0b2/.tensorflow.RewriterConfig.CustomGraphOptimizerR\x10c\
-    ustomOptimizers\x1a\xea\x01\n\x14CustomGraphOptimizer\x12\x12\n\x04name\
-    \x18\x01\x20\x01(\tR\x04name\x12f\n\rparameter_map\x18\x02\x20\x03(\x0b2\
-    A.tensorflow.RewriterConfig.CustomGraphOptimizer.ParameterMapEntryR\x0cp\
-    arameterMap\x1aV\n\x11ParameterMapEntry\x12\x10\n\x03key\x18\x01\x20\x01\
-    (\tR\x03key\x12+\n\x05value\x18\x02\x20\x01(\x0b2\x15.tensorflow.AttrVal\
-    ueR\x05value:\x028\x01\"6\n\x06Toggle\x12\x0b\n\x07DEFAULT\x10\0\x12\x06\
-    \n\x02ON\x10\x01\x12\x07\n\x03OFF\x10\x02\x12\x0e\n\nAGGRESSIVE\x10\x03\
-    \"<\n\x11NumIterationsType\x12\x15\n\x11DEFAULT_NUM_ITERS\x10\0\x12\x07\
-    \n\x03ONE\x10\x01\x12\x07\n\x03TWO\x10\x02\"\x9f\x01\n\nMemOptType\x12\
-    \x13\n\x0fDEFAULT_MEM_OPT\x10\0\x12\x0e\n\nNO_MEM_OPT\x10\x01\x12\n\n\
-    \x06MANUAL\x10\x02\x12\x17\n\x13SWAPPING_HEURISTICS\x10\x04\x12\x1c\n\
-    \x18RECOMPUTATION_HEURISTICS\x10\x05\x12\x19\n\x15SCHEDULING_HEURISTICS\
-    \x10\x06\x12\x0e\n\nHEURISTICS\x10\x03Bs\n\x18org.tensorflow.frameworkB\
-    \x14RewriterConfigProtosP\x01Z<github.com/tensorflow/tensorflow/tensorfl\
-    ow/go/core/protobuf\xf8\x01\x01b\x06proto3\
+    nsorflow/core/framework/attr_value.proto\x1a.tensorflow/core/protobuf/ve\
+    rifier_config.proto\"P\n\x13AutoParallelOptions\x12\x16\n\x06enable\x18\
+    \x01\x20\x01(\x08R\x06enable\x12!\n\x0cnum_replicas\x18\x02\x20\x01(\x05\
+    R\x0bnumReplicas\"5\n\x16ScopedAllocatorOptions\x12\x1b\n\tenable_op\x18\
+    \x01\x20\x03(\tR\x08enableOp\"\xe8\x14\n\x0eRewriterConfig\x12L\n\x10lay\
+    out_optimizer\x18\x01\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\
+    \x0flayoutOptimizer\x12L\n\x10constant_folding\x18\x03\x20\x01(\x0e2!.te\
+    nsorflow.RewriterConfig.ToggleR\x0fconstantFolding\x12P\n\x12shape_optim\
+    ization\x18\r\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x11shapeO\
+    ptimization\x12?\n\tremapping\x18\x0e\x20\x01(\x0e2!.tensorflow.Rewriter\
+    Config.ToggleR\tremapping\x12Z\n\x17arithmetic_optimization\x18\x07\x20\
+    \x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x16arithmeticOptimization\
+    \x12Z\n\x17dependency_optimization\x18\x08\x20\x01(\x0e2!.tensorflow.Rew\
+    riterConfig.ToggleR\x16dependencyOptimization\x12N\n\x11loop_optimizatio\
+    n\x18\t\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x10loopOptimiza\
+    tion\x12V\n\x15function_optimization\x18\n\x20\x01(\x0e2!.tensorflow.Rew\
+    riterConfig.ToggleR\x14functionOptimization\x12H\n\x0edebug_stripper\x18\
+    \x0b\x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\rdebugStripper\x12\
+    2\n\x15disable_model_pruning\x18\x02\x20\x01(\x08R\x13disableModelPrunin\
+    g\x12e\n\x1dscoped_allocator_optimization\x18\x0f\x20\x01(\x0e2!.tensorf\
+    low.RewriterConfig.ToggleR\x1bscopedAllocatorOptimization\x12Z\n\x18pin_\
+    to_host_optimization\x18\x12\x20\x01(\x0e2!.tensorflow.RewriterConfig.To\
+    ggleR\x15pinToHostOptimization\x12Z\n\x17implementation_selector\x18\x16\
+    \x20\x01(\x0e2!.tensorflow.RewriterConfig.ToggleR\x16implementationSelec\
+    tor\x12S\n\x14auto_mixed_precision\x18\x17\x20\x01(\x0e2!.tensorflow.Rew\
+    riterConfig.ToggleR\x12autoMixedPrecision\x124\n\x16disable_meta_optimiz\
+    er\x18\x13\x20\x01(\x08R\x14disableMetaOptimizer\x12h\n\x19meta_optimize\
+    r_iterations\x18\x0c\x20\x01(\x0e2,.tensorflow.RewriterConfig.NumIterati\
+    onsTypeR\x17metaOptimizerIterations\x12&\n\x0fmin_graph_nodes\x18\x11\
+    \x20\x01(\x05R\rminGraphNodes\x12V\n\x13memory_optimization\x18\x04\x20\
+    \x01(\x0e2%.tensorflow.RewriterConfig.MemOptTypeR\x12memoryOptimization\
+    \x12S\n'memory_optimizer_target_node_name_scope\x18\x06\x20\x01(\tR\"mem\
+    oryOptimizerTargetNodeNameScope\x129\n\x19meta_optimizer_timeout_ms\x18\
+    \x14\x20\x01(\x03R\x16metaOptimizerTimeoutMs\x12D\n\rauto_parallel\x18\
+    \x05\x20\x01(\x0b2\x1f.tensorflow.AutoParallelOptionsR\x0cautoParallel\
+    \x127\n\x18fail_on_optimizer_errors\x18\x15\x20\x01(\x08R\x15failOnOptim\
+    izerErrors\x12V\n\x15scoped_allocator_opts\x18\x10\x20\x01(\x0b2\".tenso\
+    rflow.ScopedAllocatorOptionsR\x13scopedAllocatorOpts\x12\x1e\n\noptimize\
+    rs\x18d\x20\x03(\tR\noptimizers\x12]\n\x11custom_optimizers\x18\xc8\x01\
+    \x20\x03(\x0b2/.tensorflow.RewriterConfig.CustomGraphOptimizerR\x10custo\
+    mOptimizers\x12b\n\x1finter_optimizer_verifier_config\x18\xac\x02\x20\
+    \x01(\x0b2\x1a.tensorflow.VerifierConfigR\x1cinterOptimizerVerifierConfi\
+    g\x12f\n!post_optimization_verifier_config\x18\xad\x02\x20\x01(\x0b2\x1a\
+    .tensorflow.VerifierConfigR\x1epostOptimizationVerifierConfig\x1a\xea\
+    \x01\n\x14CustomGraphOptimizer\x12\x12\n\x04name\x18\x01\x20\x01(\tR\x04\
+    name\x12f\n\rparameter_map\x18\x02\x20\x03(\x0b2A.tensorflow.RewriterCon\
+    fig.CustomGraphOptimizer.ParameterMapEntryR\x0cparameterMap\x1aV\n\x11Pa\
+    rameterMapEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12+\n\x05va\
+    lue\x18\x02\x20\x01(\x0b2\x15.tensorflow.AttrValueR\x05value:\x028\x01\"\
+    6\n\x06Toggle\x12\x0b\n\x07DEFAULT\x10\0\x12\x06\n\x02ON\x10\x01\x12\x07\
+    \n\x03OFF\x10\x02\x12\x0e\n\nAGGRESSIVE\x10\x03\"<\n\x11NumIterationsTyp\
+    e\x12\x15\n\x11DEFAULT_NUM_ITERS\x10\0\x12\x07\n\x03ONE\x10\x01\x12\x07\
+    \n\x03TWO\x10\x02\"\x9f\x01\n\nMemOptType\x12\x13\n\x0fDEFAULT_MEM_OPT\
+    \x10\0\x12\x0e\n\nNO_MEM_OPT\x10\x01\x12\n\n\x06MANUAL\x10\x02\x12\x17\n\
+    \x13SWAPPING_HEURISTICS\x10\x04\x12\x1c\n\x18RECOMPUTATION_HEURISTICS\
+    \x10\x05\x12\x19\n\x15SCHEDULING_HEURISTICS\x10\x06\x12\x0e\n\nHEURISTIC\
+    S\x10\x03B5\n\x18org.tensorflow.frameworkB\x14RewriterConfigProtosP\x01\
+    \xf8\x01\x01b\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

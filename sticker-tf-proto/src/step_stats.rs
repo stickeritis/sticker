@@ -1954,6 +1954,7 @@ pub struct DeviceStepStats {
     // message fields
     pub device: ::std::string::String,
     pub node_stats: ::protobuf::RepeatedField<NodeExecStats>,
+    pub thread_names: ::std::collections::HashMap<u32, ::std::string::String>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -2020,6 +2021,31 @@ impl DeviceStepStats {
     pub fn take_node_stats(&mut self) -> ::protobuf::RepeatedField<NodeExecStats> {
         ::std::mem::replace(&mut self.node_stats, ::protobuf::RepeatedField::new())
     }
+
+    // repeated .tensorflow.DeviceStepStats.ThreadNamesEntry thread_names = 3;
+
+
+    pub fn get_thread_names(&self) -> &::std::collections::HashMap<u32, ::std::string::String> {
+        &self.thread_names
+    }
+    pub fn clear_thread_names(&mut self) {
+        self.thread_names.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_thread_names(&mut self, v: ::std::collections::HashMap<u32, ::std::string::String>) {
+        self.thread_names = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_thread_names(&mut self) -> &mut ::std::collections::HashMap<u32, ::std::string::String> {
+        &mut self.thread_names
+    }
+
+    // Take field
+    pub fn take_thread_names(&mut self) -> ::std::collections::HashMap<u32, ::std::string::String> {
+        ::std::mem::replace(&mut self.thread_names, ::std::collections::HashMap::new())
+    }
 }
 
 impl ::protobuf::Message for DeviceStepStats {
@@ -2042,6 +2068,9 @@ impl ::protobuf::Message for DeviceStepStats {
                 2 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.node_stats)?;
                 },
+                3 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.thread_names)?;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -2061,6 +2090,7 @@ impl ::protobuf::Message for DeviceStepStats {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(3, &self.thread_names);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -2075,6 +2105,7 @@ impl ::protobuf::Message for DeviceStepStats {
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(3, &self.thread_names, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -2127,6 +2158,11 @@ impl ::protobuf::Message for DeviceStepStats {
                     |m: &DeviceStepStats| { &m.node_stats },
                     |m: &mut DeviceStepStats| { &mut m.node_stats },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(
+                    "thread_names",
+                    |m: &DeviceStepStats| { &m.thread_names },
+                    |m: &mut DeviceStepStats| { &mut m.thread_names },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new::<DeviceStepStats>(
                     "DeviceStepStats",
                     fields,
@@ -2151,6 +2187,7 @@ impl ::protobuf::Clear for DeviceStepStats {
     fn clear(&mut self) {
         self.device.clear();
         self.node_stats.clear();
+        self.thread_names.clear();
         self.unknown_fields.clear();
     }
 }
@@ -2382,12 +2419,16 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x18\x0e\x20\x01(\x03R\x0fopStartRelNanos\x12'\n\x10op_end_rel_nanos\x18\
     \x0f\x20\x01(\x03R\ropEndRelNanos\x12)\n\x11all_end_rel_nanos\x18\x10\
     \x20\x01(\x03R\x0eallEndRelNanos\x12'\n\x0fscheduled_nanos\x18\x11\x20\
-    \x01(\x03R\x0escheduledNanos\"c\n\x0fDeviceStepStats\x12\x16\n\x06device\
-    \x18\x01\x20\x01(\tR\x06device\x128\n\nnode_stats\x18\x02\x20\x03(\x0b2\
-    \x19.tensorflow.NodeExecStatsR\tnodeStats\"E\n\tStepStats\x128\n\tdev_st\
-    ats\x18\x01\x20\x03(\x0b2\x1b.tensorflow.DeviceStepStatsR\x08devStatsBo\
-    \n\x18org.tensorflow.frameworkB\x0fStepStatsProtosP\x01Z=github.com/tens\
-    orflow/tensorflow/tensorflow/go/core/framework\xf8\x01\x01b\x06proto3\
+    \x01(\x03R\x0escheduledNanos\"\xf4\x01\n\x0fDeviceStepStats\x12\x16\n\
+    \x06device\x18\x01\x20\x01(\tR\x06device\x128\n\nnode_stats\x18\x02\x20\
+    \x03(\x0b2\x19.tensorflow.NodeExecStatsR\tnodeStats\x12O\n\x0cthread_nam\
+    es\x18\x03\x20\x03(\x0b2,.tensorflow.DeviceStepStats.ThreadNamesEntryR\
+    \x0bthreadNames\x1a>\n\x10ThreadNamesEntry\x12\x10\n\x03key\x18\x01\x20\
+    \x01(\rR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\
+    \x01\"E\n\tStepStats\x128\n\tdev_stats\x18\x01\x20\x03(\x0b2\x1b.tensorf\
+    low.DeviceStepStatsR\x08devStatsBo\n\x18org.tensorflow.frameworkB\x0fSte\
+    pStatsProtosP\x01Z=github.com/tensorflow/tensorflow/tensorflow/go/core/f\
+    ramework\xf8\x01\x01b\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

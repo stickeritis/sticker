@@ -511,6 +511,10 @@ pub struct GPUOptions_Experimental {
     pub use_unified_memory: bool,
     pub num_dev_to_dev_copy_streams: i32,
     pub collective_ring_order: ::std::string::String,
+    pub timestamped_allocator: bool,
+    pub kernel_tracker_max_interval: i32,
+    pub kernel_tracker_max_bytes: i32,
+    pub kernel_tracker_max_pending: i32,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -607,6 +611,66 @@ impl GPUOptions_Experimental {
     pub fn take_collective_ring_order(&mut self) -> ::std::string::String {
         ::std::mem::replace(&mut self.collective_ring_order, ::std::string::String::new())
     }
+
+    // bool timestamped_allocator = 5;
+
+
+    pub fn get_timestamped_allocator(&self) -> bool {
+        self.timestamped_allocator
+    }
+    pub fn clear_timestamped_allocator(&mut self) {
+        self.timestamped_allocator = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_timestamped_allocator(&mut self, v: bool) {
+        self.timestamped_allocator = v;
+    }
+
+    // int32 kernel_tracker_max_interval = 7;
+
+
+    pub fn get_kernel_tracker_max_interval(&self) -> i32 {
+        self.kernel_tracker_max_interval
+    }
+    pub fn clear_kernel_tracker_max_interval(&mut self) {
+        self.kernel_tracker_max_interval = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_kernel_tracker_max_interval(&mut self, v: i32) {
+        self.kernel_tracker_max_interval = v;
+    }
+
+    // int32 kernel_tracker_max_bytes = 8;
+
+
+    pub fn get_kernel_tracker_max_bytes(&self) -> i32 {
+        self.kernel_tracker_max_bytes
+    }
+    pub fn clear_kernel_tracker_max_bytes(&mut self) {
+        self.kernel_tracker_max_bytes = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_kernel_tracker_max_bytes(&mut self, v: i32) {
+        self.kernel_tracker_max_bytes = v;
+    }
+
+    // int32 kernel_tracker_max_pending = 9;
+
+
+    pub fn get_kernel_tracker_max_pending(&self) -> i32 {
+        self.kernel_tracker_max_pending
+    }
+    pub fn clear_kernel_tracker_max_pending(&mut self) {
+        self.kernel_tracker_max_pending = 0;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_kernel_tracker_max_pending(&mut self, v: i32) {
+        self.kernel_tracker_max_pending = v;
+    }
 }
 
 impl ::protobuf::Message for GPUOptions_Experimental {
@@ -643,6 +707,34 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                 4 => {
                     ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.collective_ring_order)?;
                 },
+                5 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.timestamped_allocator = tmp;
+                },
+                7 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.kernel_tracker_max_interval = tmp;
+                },
+                8 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.kernel_tracker_max_bytes = tmp;
+                },
+                9 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_int32()?;
+                    self.kernel_tracker_max_pending = tmp;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -668,6 +760,18 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         if !self.collective_ring_order.is_empty() {
             my_size += ::protobuf::rt::string_size(4, &self.collective_ring_order);
         }
+        if self.timestamped_allocator != false {
+            my_size += 2;
+        }
+        if self.kernel_tracker_max_interval != 0 {
+            my_size += ::protobuf::rt::value_size(7, self.kernel_tracker_max_interval, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if self.kernel_tracker_max_bytes != 0 {
+            my_size += ::protobuf::rt::value_size(8, self.kernel_tracker_max_bytes, ::protobuf::wire_format::WireTypeVarint);
+        }
+        if self.kernel_tracker_max_pending != 0 {
+            my_size += ::protobuf::rt::value_size(9, self.kernel_tracker_max_pending, ::protobuf::wire_format::WireTypeVarint);
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -687,6 +791,18 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         }
         if !self.collective_ring_order.is_empty() {
             os.write_string(4, &self.collective_ring_order)?;
+        }
+        if self.timestamped_allocator != false {
+            os.write_bool(5, self.timestamped_allocator)?;
+        }
+        if self.kernel_tracker_max_interval != 0 {
+            os.write_int32(7, self.kernel_tracker_max_interval)?;
+        }
+        if self.kernel_tracker_max_bytes != 0 {
+            os.write_int32(8, self.kernel_tracker_max_bytes)?;
+        }
+        if self.kernel_tracker_max_pending != 0 {
+            os.write_int32(9, self.kernel_tracker_max_pending)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -750,6 +866,26 @@ impl ::protobuf::Message for GPUOptions_Experimental {
                     |m: &GPUOptions_Experimental| { &m.collective_ring_order },
                     |m: &mut GPUOptions_Experimental| { &mut m.collective_ring_order },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                    "timestamped_allocator",
+                    |m: &GPUOptions_Experimental| { &m.timestamped_allocator },
+                    |m: &mut GPUOptions_Experimental| { &mut m.timestamped_allocator },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                    "kernel_tracker_max_interval",
+                    |m: &GPUOptions_Experimental| { &m.kernel_tracker_max_interval },
+                    |m: &mut GPUOptions_Experimental| { &mut m.kernel_tracker_max_interval },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                    "kernel_tracker_max_bytes",
+                    |m: &GPUOptions_Experimental| { &m.kernel_tracker_max_bytes },
+                    |m: &mut GPUOptions_Experimental| { &mut m.kernel_tracker_max_bytes },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                    "kernel_tracker_max_pending",
+                    |m: &GPUOptions_Experimental| { &m.kernel_tracker_max_pending },
+                    |m: &mut GPUOptions_Experimental| { &mut m.kernel_tracker_max_pending },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new::<GPUOptions_Experimental>(
                     "GPUOptions_Experimental",
                     fields,
@@ -776,6 +912,10 @@ impl ::protobuf::Clear for GPUOptions_Experimental {
         self.use_unified_memory = false;
         self.num_dev_to_dev_copy_streams = 0;
         self.collective_ring_order.clear();
+        self.timestamped_allocator = false;
+        self.kernel_tracker_max_interval = 0;
+        self.kernel_tracker_max_bytes = 0;
+        self.kernel_tracker_max_pending = 0;
         self.unknown_fields.clear();
     }
 }
@@ -3158,6 +3298,11 @@ pub struct ConfigProto_Experimental {
     pub executor_type: ::std::string::String,
     pub recv_buf_max_chunk: i32,
     pub use_numa_affinity: bool,
+    pub collective_deterministic_sequential_execution: bool,
+    pub collective_nccl: bool,
+    pub share_session_state_in_clusterspec_propagation: bool,
+    pub disable_thread_spinning: bool,
+    pub share_cluster_devices_in_session: bool,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -3255,6 +3400,81 @@ impl ConfigProto_Experimental {
     pub fn set_use_numa_affinity(&mut self, v: bool) {
         self.use_numa_affinity = v;
     }
+
+    // bool collective_deterministic_sequential_execution = 6;
+
+
+    pub fn get_collective_deterministic_sequential_execution(&self) -> bool {
+        self.collective_deterministic_sequential_execution
+    }
+    pub fn clear_collective_deterministic_sequential_execution(&mut self) {
+        self.collective_deterministic_sequential_execution = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_collective_deterministic_sequential_execution(&mut self, v: bool) {
+        self.collective_deterministic_sequential_execution = v;
+    }
+
+    // bool collective_nccl = 7;
+
+
+    pub fn get_collective_nccl(&self) -> bool {
+        self.collective_nccl
+    }
+    pub fn clear_collective_nccl(&mut self) {
+        self.collective_nccl = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_collective_nccl(&mut self, v: bool) {
+        self.collective_nccl = v;
+    }
+
+    // bool share_session_state_in_clusterspec_propagation = 8;
+
+
+    pub fn get_share_session_state_in_clusterspec_propagation(&self) -> bool {
+        self.share_session_state_in_clusterspec_propagation
+    }
+    pub fn clear_share_session_state_in_clusterspec_propagation(&mut self) {
+        self.share_session_state_in_clusterspec_propagation = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_share_session_state_in_clusterspec_propagation(&mut self, v: bool) {
+        self.share_session_state_in_clusterspec_propagation = v;
+    }
+
+    // bool disable_thread_spinning = 9;
+
+
+    pub fn get_disable_thread_spinning(&self) -> bool {
+        self.disable_thread_spinning
+    }
+    pub fn clear_disable_thread_spinning(&mut self) {
+        self.disable_thread_spinning = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_disable_thread_spinning(&mut self, v: bool) {
+        self.disable_thread_spinning = v;
+    }
+
+    // bool share_cluster_devices_in_session = 10;
+
+
+    pub fn get_share_cluster_devices_in_session(&self) -> bool {
+        self.share_cluster_devices_in_session
+    }
+    pub fn clear_share_cluster_devices_in_session(&mut self) {
+        self.share_cluster_devices_in_session = false;
+    }
+
+    // Param is passed by value, moved
+    pub fn set_share_cluster_devices_in_session(&mut self, v: bool) {
+        self.share_cluster_devices_in_session = v;
+    }
 }
 
 impl ::protobuf::Message for ConfigProto_Experimental {
@@ -3286,6 +3506,41 @@ impl ::protobuf::Message for ConfigProto_Experimental {
                     let tmp = is.read_bool()?;
                     self.use_numa_affinity = tmp;
                 },
+                6 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.collective_deterministic_sequential_execution = tmp;
+                },
+                7 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.collective_nccl = tmp;
+                },
+                8 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.share_session_state_in_clusterspec_propagation = tmp;
+                },
+                9 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.disable_thread_spinning = tmp;
+                },
+                10 => {
+                    if wire_type != ::protobuf::wire_format::WireTypeVarint {
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                    }
+                    let tmp = is.read_bool()?;
+                    self.share_cluster_devices_in_session = tmp;
+                },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
                 },
@@ -3310,6 +3565,21 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         if self.use_numa_affinity != false {
             my_size += 2;
         }
+        if self.collective_deterministic_sequential_execution != false {
+            my_size += 2;
+        }
+        if self.collective_nccl != false {
+            my_size += 2;
+        }
+        if self.share_session_state_in_clusterspec_propagation != false {
+            my_size += 2;
+        }
+        if self.disable_thread_spinning != false {
+            my_size += 2;
+        }
+        if self.share_cluster_devices_in_session != false {
+            my_size += 2;
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -3327,6 +3597,21 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         }
         if self.use_numa_affinity != false {
             os.write_bool(5, self.use_numa_affinity)?;
+        }
+        if self.collective_deterministic_sequential_execution != false {
+            os.write_bool(6, self.collective_deterministic_sequential_execution)?;
+        }
+        if self.collective_nccl != false {
+            os.write_bool(7, self.collective_nccl)?;
+        }
+        if self.share_session_state_in_clusterspec_propagation != false {
+            os.write_bool(8, self.share_session_state_in_clusterspec_propagation)?;
+        }
+        if self.disable_thread_spinning != false {
+            os.write_bool(9, self.disable_thread_spinning)?;
+        }
+        if self.share_cluster_devices_in_session != false {
+            os.write_bool(10, self.share_cluster_devices_in_session)?;
         }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
@@ -3390,6 +3675,31 @@ impl ::protobuf::Message for ConfigProto_Experimental {
                     |m: &ConfigProto_Experimental| { &m.use_numa_affinity },
                     |m: &mut ConfigProto_Experimental| { &mut m.use_numa_affinity },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                    "collective_deterministic_sequential_execution",
+                    |m: &ConfigProto_Experimental| { &m.collective_deterministic_sequential_execution },
+                    |m: &mut ConfigProto_Experimental| { &mut m.collective_deterministic_sequential_execution },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                    "collective_nccl",
+                    |m: &ConfigProto_Experimental| { &m.collective_nccl },
+                    |m: &mut ConfigProto_Experimental| { &mut m.collective_nccl },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                    "share_session_state_in_clusterspec_propagation",
+                    |m: &ConfigProto_Experimental| { &m.share_session_state_in_clusterspec_propagation },
+                    |m: &mut ConfigProto_Experimental| { &mut m.share_session_state_in_clusterspec_propagation },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                    "disable_thread_spinning",
+                    |m: &ConfigProto_Experimental| { &m.disable_thread_spinning },
+                    |m: &mut ConfigProto_Experimental| { &mut m.disable_thread_spinning },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                    "share_cluster_devices_in_session",
+                    |m: &ConfigProto_Experimental| { &m.share_cluster_devices_in_session },
+                    |m: &mut ConfigProto_Experimental| { &mut m.share_cluster_devices_in_session },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new::<ConfigProto_Experimental>(
                     "ConfigProto_Experimental",
                     fields,
@@ -3416,6 +3726,11 @@ impl ::protobuf::Clear for ConfigProto_Experimental {
         self.executor_type.clear();
         self.recv_buf_max_chunk = 0;
         self.use_numa_affinity = false;
+        self.collective_deterministic_sequential_execution = false;
+        self.collective_nccl = false;
+        self.share_session_state_in_clusterspec_propagation = false;
+        self.disable_thread_spinning = false;
+        self.share_cluster_devices_in_session = false;
         self.unknown_fields.clear();
     }
 }
@@ -4108,6 +4423,7 @@ pub struct RunMetadata {
     pub step_stats: ::protobuf::SingularPtrField<super::step_stats::StepStats>,
     pub cost_graph: ::protobuf::SingularPtrField<super::cost_graph::CostGraphDef>,
     pub partition_graphs: ::protobuf::RepeatedField<super::graph::GraphDef>,
+    pub function_graphs: ::protobuf::RepeatedField<RunMetadata_FunctionGraphs>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -4214,6 +4530,31 @@ impl RunMetadata {
     pub fn take_partition_graphs(&mut self) -> ::protobuf::RepeatedField<super::graph::GraphDef> {
         ::std::mem::replace(&mut self.partition_graphs, ::protobuf::RepeatedField::new())
     }
+
+    // repeated .tensorflow.RunMetadata.FunctionGraphs function_graphs = 4;
+
+
+    pub fn get_function_graphs(&self) -> &[RunMetadata_FunctionGraphs] {
+        &self.function_graphs
+    }
+    pub fn clear_function_graphs(&mut self) {
+        self.function_graphs.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_function_graphs(&mut self, v: ::protobuf::RepeatedField<RunMetadata_FunctionGraphs>) {
+        self.function_graphs = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_function_graphs(&mut self) -> &mut ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
+        &mut self.function_graphs
+    }
+
+    // Take field
+    pub fn take_function_graphs(&mut self) -> ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
+        ::std::mem::replace(&mut self.function_graphs, ::protobuf::RepeatedField::new())
+    }
 }
 
 impl ::protobuf::Message for RunMetadata {
@@ -4233,6 +4574,11 @@ impl ::protobuf::Message for RunMetadata {
                 return false;
             }
         };
+        for v in &self.function_graphs {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
         true
     }
 
@@ -4248,6 +4594,9 @@ impl ::protobuf::Message for RunMetadata {
                 },
                 3 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.partition_graphs)?;
+                },
+                4 => {
+                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.function_graphs)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -4273,6 +4622,10 @@ impl ::protobuf::Message for RunMetadata {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
+        for value in &self.function_graphs {
+            let len = value.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        };
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -4291,6 +4644,11 @@ impl ::protobuf::Message for RunMetadata {
         }
         for v in &self.partition_graphs {
             os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        };
+        for v in &self.function_graphs {
+            os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
@@ -4351,6 +4709,11 @@ impl ::protobuf::Message for RunMetadata {
                     |m: &RunMetadata| { &m.partition_graphs },
                     |m: &mut RunMetadata| { &mut m.partition_graphs },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<RunMetadata_FunctionGraphs>>(
+                    "function_graphs",
+                    |m: &RunMetadata| { &m.function_graphs },
+                    |m: &mut RunMetadata| { &mut m.function_graphs },
+                ));
                 ::protobuf::reflect::MessageDescriptor::new::<RunMetadata>(
                     "RunMetadata",
                     fields,
@@ -4376,6 +4739,7 @@ impl ::protobuf::Clear for RunMetadata {
         self.step_stats.clear();
         self.cost_graph.clear();
         self.partition_graphs.clear();
+        self.function_graphs.clear();
         self.unknown_fields.clear();
     }
 }
@@ -4387,6 +4751,296 @@ impl ::std::fmt::Debug for RunMetadata {
 }
 
 impl ::protobuf::reflect::ProtobufValue for RunMetadata {
+    fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
+        ::protobuf::reflect::ProtobufValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
+pub struct RunMetadata_FunctionGraphs {
+    // message fields
+    pub partition_graphs: ::protobuf::RepeatedField<super::graph::GraphDef>,
+    pub pre_optimization_graph: ::protobuf::SingularPtrField<super::graph::GraphDef>,
+    pub post_optimization_graph: ::protobuf::SingularPtrField<super::graph::GraphDef>,
+    // special fields
+    pub unknown_fields: ::protobuf::UnknownFields,
+    pub cached_size: ::protobuf::CachedSize,
+}
+
+impl<'a> ::std::default::Default for &'a RunMetadata_FunctionGraphs {
+    fn default() -> &'a RunMetadata_FunctionGraphs {
+        <RunMetadata_FunctionGraphs as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl RunMetadata_FunctionGraphs {
+    pub fn new() -> RunMetadata_FunctionGraphs {
+        ::std::default::Default::default()
+    }
+
+    // repeated .tensorflow.GraphDef partition_graphs = 1;
+
+
+    pub fn get_partition_graphs(&self) -> &[super::graph::GraphDef] {
+        &self.partition_graphs
+    }
+    pub fn clear_partition_graphs(&mut self) {
+        self.partition_graphs.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_partition_graphs(&mut self, v: ::protobuf::RepeatedField<super::graph::GraphDef>) {
+        self.partition_graphs = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_partition_graphs(&mut self) -> &mut ::protobuf::RepeatedField<super::graph::GraphDef> {
+        &mut self.partition_graphs
+    }
+
+    // Take field
+    pub fn take_partition_graphs(&mut self) -> ::protobuf::RepeatedField<super::graph::GraphDef> {
+        ::std::mem::replace(&mut self.partition_graphs, ::protobuf::RepeatedField::new())
+    }
+
+    // .tensorflow.GraphDef pre_optimization_graph = 2;
+
+
+    pub fn get_pre_optimization_graph(&self) -> &super::graph::GraphDef {
+        self.pre_optimization_graph.as_ref().unwrap_or_else(|| super::graph::GraphDef::default_instance())
+    }
+    pub fn clear_pre_optimization_graph(&mut self) {
+        self.pre_optimization_graph.clear();
+    }
+
+    pub fn has_pre_optimization_graph(&self) -> bool {
+        self.pre_optimization_graph.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_pre_optimization_graph(&mut self, v: super::graph::GraphDef) {
+        self.pre_optimization_graph = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_pre_optimization_graph(&mut self) -> &mut super::graph::GraphDef {
+        if self.pre_optimization_graph.is_none() {
+            self.pre_optimization_graph.set_default();
+        }
+        self.pre_optimization_graph.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_pre_optimization_graph(&mut self) -> super::graph::GraphDef {
+        self.pre_optimization_graph.take().unwrap_or_else(|| super::graph::GraphDef::new())
+    }
+
+    // .tensorflow.GraphDef post_optimization_graph = 3;
+
+
+    pub fn get_post_optimization_graph(&self) -> &super::graph::GraphDef {
+        self.post_optimization_graph.as_ref().unwrap_or_else(|| super::graph::GraphDef::default_instance())
+    }
+    pub fn clear_post_optimization_graph(&mut self) {
+        self.post_optimization_graph.clear();
+    }
+
+    pub fn has_post_optimization_graph(&self) -> bool {
+        self.post_optimization_graph.is_some()
+    }
+
+    // Param is passed by value, moved
+    pub fn set_post_optimization_graph(&mut self, v: super::graph::GraphDef) {
+        self.post_optimization_graph = ::protobuf::SingularPtrField::some(v);
+    }
+
+    // Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    pub fn mut_post_optimization_graph(&mut self) -> &mut super::graph::GraphDef {
+        if self.post_optimization_graph.is_none() {
+            self.post_optimization_graph.set_default();
+        }
+        self.post_optimization_graph.as_mut().unwrap()
+    }
+
+    // Take field
+    pub fn take_post_optimization_graph(&mut self) -> super::graph::GraphDef {
+        self.post_optimization_graph.take().unwrap_or_else(|| super::graph::GraphDef::new())
+    }
+}
+
+impl ::protobuf::Message for RunMetadata_FunctionGraphs {
+    fn is_initialized(&self) -> bool {
+        for v in &self.partition_graphs {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        for v in &self.pre_optimization_graph {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        for v in &self.post_optimization_graph {
+            if !v.is_initialized() {
+                return false;
+            }
+        };
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.partition_graphs)?;
+                },
+                2 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.pre_optimization_graph)?;
+                },
+                3 => {
+                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.post_optimization_graph)?;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        for value in &self.partition_graphs {
+            let len = value.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        };
+        if let Some(ref v) = self.pre_optimization_graph.as_ref() {
+            let len = v.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
+        if let Some(ref v) = self.post_optimization_graph.as_ref() {
+            let len = v.compute_size();
+            my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
+        }
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+        for v in &self.partition_graphs {
+            os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        };
+        if let Some(ref v) = self.pre_optimization_graph.as_ref() {
+            os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
+        if let Some(ref v) = self.post_optimization_graph.as_ref() {
+            os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
+            os.write_raw_varint32(v.get_cached_size())?;
+            v.write_to_with_cached_sizes(os)?;
+        }
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &dyn (::std::any::Any) {
+        self as &dyn (::std::any::Any)
+    }
+    fn as_any_mut(&mut self) -> &mut dyn (::std::any::Any) {
+        self as &mut dyn (::std::any::Any)
+    }
+    fn into_any(self: Box<Self>) -> ::std::boxed::Box<dyn (::std::any::Any)> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        Self::descriptor_static()
+    }
+
+    fn new() -> RunMetadata_FunctionGraphs {
+        RunMetadata_FunctionGraphs::new()
+    }
+
+    fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+        };
+        unsafe {
+            descriptor.get(|| {
+                let mut fields = ::std::vec::Vec::new();
+                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
+                    "partition_graphs",
+                    |m: &RunMetadata_FunctionGraphs| { &m.partition_graphs },
+                    |m: &mut RunMetadata_FunctionGraphs| { &mut m.partition_graphs },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
+                    "pre_optimization_graph",
+                    |m: &RunMetadata_FunctionGraphs| { &m.pre_optimization_graph },
+                    |m: &mut RunMetadata_FunctionGraphs| { &mut m.pre_optimization_graph },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
+                    "post_optimization_graph",
+                    |m: &RunMetadata_FunctionGraphs| { &m.post_optimization_graph },
+                    |m: &mut RunMetadata_FunctionGraphs| { &mut m.post_optimization_graph },
+                ));
+                ::protobuf::reflect::MessageDescriptor::new::<RunMetadata_FunctionGraphs>(
+                    "RunMetadata_FunctionGraphs",
+                    fields,
+                    file_descriptor_proto()
+                )
+            })
+        }
+    }
+
+    fn default_instance() -> &'static RunMetadata_FunctionGraphs {
+        static mut instance: ::protobuf::lazy::Lazy<RunMetadata_FunctionGraphs> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const RunMetadata_FunctionGraphs,
+        };
+        unsafe {
+            instance.get(RunMetadata_FunctionGraphs::new)
+        }
+    }
+}
+
+impl ::protobuf::Clear for RunMetadata_FunctionGraphs {
+    fn clear(&mut self) {
+        self.partition_graphs.clear();
+        self.pre_optimization_graph.clear();
+        self.post_optimization_graph.clear();
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for RunMetadata_FunctionGraphs {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for RunMetadata_FunctionGraphs {
     fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
         ::protobuf::reflect::ProtobufValueRef::Message(self)
     }
@@ -5071,9 +5725,9 @@ impl ::protobuf::reflect::ProtobufValue for CallableOptions {
 static file_descriptor_proto_data: &'static [u8] = b"\
     \n%tensorflow/core/protobuf/config.proto\x12\ntensorflow\x1a*tensorflow/\
     core/framework/cost_graph.proto\x1a%tensorflow/core/framework/graph.prot\
-    o\x1a*tensorflow/core/framework/step_stats.proto\x1a$tensorflow/core/pro\
-    tobuf/debug.proto\x1a&tensorflow/core/protobuf/cluster.proto\x1a.tensorf\
-    low/core/protobuf/rewriter_config.proto\"\xc4\x06\n\nGPUOptions\x12D\n\
+    o\x1a*tensorflow/core/framework/step_stats.proto\x1a&tensorflow/core/pro\
+    tobuf/cluster.proto\x1a$tensorflow/core/protobuf/debug.proto\x1a.tensorf\
+    low/core/protobuf/rewriter_config.proto\"\xae\x08\n\nGPUOptions\x12D\n\
     \x1fper_process_gpu_memory_fraction\x18\x01\x20\x01(\x01R\x1bperProcessG\
     puMemoryFraction\x12!\n\x0callow_growth\x18\x04\x20\x01(\x08R\x0ballowGr\
     owth\x12%\n\x0eallocator_type\x18\x02\x20\x01(\tR\rallocatorType\x126\n\
@@ -5084,100 +5738,117 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x05R\x19pollingInactiveDelayMsecs\x120\n\x14force_gpu_compatible\x18\
     \x08\x20\x01(\x08R\x12forceGpuCompatible\x12G\n\x0cexperimental\x18\t\
     \x20\x01(\x0b2#.tensorflow.GPUOptions.ExperimentalR\x0cexperimental\x1a\
-    \xc4\x02\n\x0cExperimental\x12[\n\x0fvirtual_devices\x18\x01\x20\x03(\
+    \xae\x04\n\x0cExperimental\x12[\n\x0fvirtual_devices\x18\x01\x20\x03(\
     \x0b22.tensorflow.GPUOptions.Experimental.VirtualDevicesR\x0evirtualDevi\
     ces\x12,\n\x12use_unified_memory\x18\x02\x20\x01(\x08R\x10useUnifiedMemo\
     ry\x12;\n\x1bnum_dev_to_dev_copy_streams\x18\x03\x20\x01(\x05R\x16numDev\
     ToDevCopyStreams\x122\n\x15collective_ring_order\x18\x04\x20\x01(\tR\x13\
-    collectiveRingOrder\x1a8\n\x0eVirtualDevices\x12&\n\x0fmemory_limit_mb\
-    \x18\x01\x20\x03(\x02R\rmemoryLimitMb\"\x82\x04\n\x10OptimizerOptions\
-    \x12M\n#do_common_subexpression_elimination\x18\x01\x20\x01(\x08R\x20doC\
-    ommonSubexpressionElimination\x12.\n\x13do_constant_folding\x18\x02\x20\
-    \x01(\x08R\x11doConstantFolding\x12>\n\x1cmax_folded_constant_in_bytes\
-    \x18\x06\x20\x01(\x03R\x18maxFoldedConstantInBytes\x120\n\x14do_function\
-    _inlining\x18\x04\x20\x01(\x08R\x12doFunctionInlining\x12?\n\topt_level\
-    \x18\x03\x20\x01(\x0e2\".tensorflow.OptimizerOptions.LevelR\x08optLevel\
-    \x12U\n\x10global_jit_level\x18\x05\x20\x01(\x0e2+.tensorflow.OptimizerO\
-    ptions.GlobalJitLevelR\x0eglobalJitLevel\"\x20\n\x05Level\x12\x06\n\x02L\
-    1\x10\0\x12\x0f\n\x02L0\x10\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01\"C\n\
-    \x0eGlobalJitLevel\x12\x0b\n\x07DEFAULT\x10\0\x12\x10\n\x03OFF\x10\xff\
-    \xff\xff\xff\xff\xff\xff\xff\xff\x01\x12\x08\n\x04ON_1\x10\x01\x12\x08\n\
-    \x04ON_2\x10\x02\"\x90\x04\n\x0cGraphOptions\x124\n\x16enable_recv_sched\
-    uling\x18\x02\x20\x01(\x08R\x14enableRecvScheduling\x12I\n\x11optimizer_\
-    options\x18\x03\x20\x01(\x0b2\x1c.tensorflow.OptimizerOptionsR\x10optimi\
-    zerOptions\x12(\n\x10build_cost_model\x18\x04\x20\x01(\x03R\x0ebuildCost\
-    Model\x123\n\x16build_cost_model_after\x18\t\x20\x01(\x03R\x13buildCostM\
-    odelAfter\x12!\n\x0cinfer_shapes\x18\x05\x20\x01(\x08R\x0binferShapes\
-    \x12,\n\x12place_pruned_graph\x18\x06\x20\x01(\x08R\x10placePrunedGraph\
-    \x128\n\x18enable_bfloat16_sendrecv\x18\x07\x20\x01(\x08R\x16enableBfloa\
-    t16Sendrecv\x12#\n\rtimeline_step\x18\x08\x20\x01(\x05R\x0ctimelineStep\
-    \x12C\n\x0frewrite_options\x18\n\x20\x01(\x0b2\x1a.tensorflow.RewriterCo\
-    nfigR\x0erewriteOptionsJ\x04\x08\x01\x10\x02R%skip_common_subexpression_\
-    elimination\"Y\n\x15ThreadPoolOptionProto\x12\x1f\n\x0bnum_threads\x18\
-    \x01\x20\x01(\x05R\nnumThreads\x12\x1f\n\x0bglobal_name\x18\x02\x20\x01(\
-    \tR\nglobalName\"\xae\x01\n\nRPCOptions\x12>\n\x1cuse_rpc_for_inprocess_\
-    master\x18\x01\x20\x01(\x08R\x18useRpcForInprocessMaster\x123\n\x15compr\
-    ession_algorithm\x18\x02\x20\x01(\tR\x14compressionAlgorithm\x12+\n\x11c\
-    ompression_level\x18\x03\x20\x01(\x05R\x10compressionLevel\"\xd8\t\n\x0b\
-    ConfigProto\x12K\n\x0cdevice_count\x18\x01\x20\x03(\x0b2(.tensorflow.Con\
-    figProto.DeviceCountEntryR\x0bdeviceCount\x12?\n\x1cintra_op_parallelism\
-    _threads\x18\x02\x20\x01(\x05R\x19intraOpParallelismThreads\x12?\n\x1cin\
-    ter_op_parallelism_threads\x18\x05\x20\x01(\x05R\x19interOpParallelismTh\
-    reads\x125\n\x17use_per_session_threads\x18\t\x20\x01(\x08R\x14usePerSes\
-    sionThreads\x12a\n\x1csession_inter_op_thread_pool\x18\x0c\x20\x03(\x0b2\
-    !.tensorflow.ThreadPoolOptionProtoR\x18sessionInterOpThreadPool\x12)\n\
-    \x10placement_period\x18\x03\x20\x01(\x05R\x0fplacementPeriod\x12%\n\x0e\
-    device_filters\x18\x04\x20\x03(\tR\rdeviceFilters\x127\n\x0bgpu_options\
-    \x18\x06\x20\x01(\x0b2\x16.tensorflow.GPUOptionsR\ngpuOptions\x120\n\x14\
-    allow_soft_placement\x18\x07\x20\x01(\x08R\x12allowSoftPlacement\x120\n\
-    \x14log_device_placement\x18\x08\x20\x01(\x08R\x12logDevicePlacement\x12\
-    =\n\rgraph_options\x18\n\x20\x01(\x0b2\x18.tensorflow.GraphOptionsR\x0cg\
-    raphOptions\x125\n\x17operation_timeout_in_ms\x18\x0b\x20\x01(\x03R\x14o\
-    perationTimeoutInMs\x127\n\x0brpc_options\x18\r\x20\x01(\x0b2\x16.tensor\
-    flow.RPCOptionsR\nrpcOptions\x127\n\x0bcluster_def\x18\x0e\x20\x01(\x0b2\
-    \x16.tensorflow.ClusterDefR\nclusterDef\x122\n\x15isolate_session_state\
-    \x18\x0f\x20\x01(\x08R\x13isolateSessionState\x12H\n\x0cexperimental\x18\
-    \x10\x20\x01(\x0b2$.tensorflow.ConfigProto.ExperimentalR\x0cexperimental\
-    \x1a>\n\x10DeviceCountEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\
-    \x12\x14\n\x05value\x18\x02\x20\x01(\x05R\x05value:\x028\x01\x1a\xca\x01\
-    \n\x0cExperimental\x126\n\x17collective_group_leader\x18\x01\x20\x01(\tR\
-    \x15collectiveGroupLeader\x12#\n\rexecutor_type\x18\x03\x20\x01(\tR\x0ce\
-    xecutorType\x12+\n\x12recv_buf_max_chunk\x18\x04\x20\x01(\x05R\x0frecvBu\
-    fMaxChunk\x12*\n\x11use_numa_affinity\x18\x05\x20\x01(\x08R\x0fuseNumaAf\
-    finityJ\x04\x08\x02\x10\x03\"\xfe\x04\n\nRunOptions\x12B\n\x0btrace_leve\
-    l\x18\x01\x20\x01(\x0e2!.tensorflow.RunOptions.TraceLevelR\ntraceLevel\
-    \x12\"\n\rtimeout_in_ms\x18\x02\x20\x01(\x03R\x0btimeoutInMs\x12/\n\x14i\
-    nter_op_thread_pool\x18\x03\x20\x01(\x05R\x11interOpThreadPool\x126\n\
-    \x17output_partition_graphs\x18\x05\x20\x01(\x08R\x15outputPartitionGrap\
-    hs\x12=\n\rdebug_options\x18\x06\x20\x01(\x0b2\x18.tensorflow.DebugOptio\
-    nsR\x0cdebugOptions\x12J\n\"report_tensor_allocations_upon_oom\x18\x07\
-    \x20\x01(\x08R\x1ereportTensorAllocationsUponOom\x12G\n\x0cexperimental\
-    \x18\x08\x20\x01(\x0b2#.tensorflow.RunOptions.ExperimentalR\x0cexperimen\
-    tal\x1aq\n\x0cExperimental\x120\n\x14collective_graph_key\x18\x01\x20\
-    \x01(\x03R\x12collectiveGraphKey\x12/\n\x14use_run_handler_pool\x18\x02\
-    \x20\x01(\x08R\x11useRunHandlerPool\"R\n\nTraceLevel\x12\x0c\n\x08NO_TRA\
-    CE\x10\0\x12\x12\n\x0eSOFTWARE_TRACE\x10\x01\x12\x12\n\x0eHARDWARE_TRACE\
-    \x10\x02\x12\x0e\n\nFULL_TRACE\x10\x03J\x04\x08\x04\x10\x05\"\xbd\x01\n\
-    \x0bRunMetadata\x124\n\nstep_stats\x18\x01\x20\x01(\x0b2\x15.tensorflow.\
-    StepStatsR\tstepStats\x127\n\ncost_graph\x18\x02\x20\x01(\x0b2\x18.tenso\
-    rflow.CostGraphDefR\tcostGraph\x12?\n\x10partition_graphs\x18\x03\x20\
-    \x03(\x0b2\x14.tensorflow.GraphDefR\x0fpartitionGraphs\"P\n\x10TensorCon\
-    nection\x12\x1f\n\x0bfrom_tensor\x18\x01\x20\x01(\tR\nfromTensor\x12\x1b\
-    \n\tto_tensor\x18\x02\x20\x01(\tR\x08toTensor\"\xa5\x04\n\x0fCallableOpt\
-    ions\x12\x12\n\x04feed\x18\x01\x20\x03(\tR\x04feed\x12\x14\n\x05fetch\
-    \x18\x02\x20\x03(\tR\x05fetch\x12\x16\n\x06target\x18\x03\x20\x03(\tR\
-    \x06target\x127\n\x0brun_options\x18\x04\x20\x01(\x0b2\x16.tensorflow.Ru\
-    nOptionsR\nrunOptions\x12I\n\x11tensor_connection\x18\x05\x20\x03(\x0b2\
-    \x1c.tensorflow.TensorConnectionR\x10tensorConnection\x12O\n\x0cfeed_dev\
-    ices\x18\x06\x20\x03(\x0b2,.tensorflow.CallableOptions.FeedDevicesEntryR\
-    \x0bfeedDevices\x12R\n\rfetch_devices\x18\x07\x20\x03(\x0b2-.tensorflow.\
-    CallableOptions.FetchDevicesEntryR\x0cfetchDevices\x12&\n\x0ffetch_skip_\
-    sync\x18\x08\x20\x01(\x08R\rfetchSkipSync\x1a>\n\x10FeedDevicesEntry\x12\
-    \x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\
-    \x01(\tR\x05value:\x028\x01\x1a?\n\x11FetchDevicesEntry\x12\x10\n\x03key\
-    \x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05va\
-    lue:\x028\x01B-\n\x18org.tensorflow.frameworkB\x0cConfigProtosP\x01\xf8\
-    \x01\x01b\x06proto3\
+    collectiveRingOrder\x123\n\x15timestamped_allocator\x18\x05\x20\x01(\x08\
+    R\x14timestampedAllocator\x12=\n\x1bkernel_tracker_max_interval\x18\x07\
+    \x20\x01(\x05R\x18kernelTrackerMaxInterval\x127\n\x18kernel_tracker_max_\
+    bytes\x18\x08\x20\x01(\x05R\x15kernelTrackerMaxBytes\x12;\n\x1akernel_tr\
+    acker_max_pending\x18\t\x20\x01(\x05R\x17kernelTrackerMaxPending\x1a8\n\
+    \x0eVirtualDevices\x12&\n\x0fmemory_limit_mb\x18\x01\x20\x03(\x02R\rmemo\
+    ryLimitMb\"\x82\x04\n\x10OptimizerOptions\x12M\n#do_common_subexpression\
+    _elimination\x18\x01\x20\x01(\x08R\x20doCommonSubexpressionElimination\
+    \x12.\n\x13do_constant_folding\x18\x02\x20\x01(\x08R\x11doConstantFoldin\
+    g\x12>\n\x1cmax_folded_constant_in_bytes\x18\x06\x20\x01(\x03R\x18maxFol\
+    dedConstantInBytes\x120\n\x14do_function_inlining\x18\x04\x20\x01(\x08R\
+    \x12doFunctionInlining\x12?\n\topt_level\x18\x03\x20\x01(\x0e2\".tensorf\
+    low.OptimizerOptions.LevelR\x08optLevel\x12U\n\x10global_jit_level\x18\
+    \x05\x20\x01(\x0e2+.tensorflow.OptimizerOptions.GlobalJitLevelR\x0egloba\
+    lJitLevel\"\x20\n\x05Level\x12\x06\n\x02L1\x10\0\x12\x0f\n\x02L0\x10\xff\
+    \xff\xff\xff\xff\xff\xff\xff\xff\x01\"C\n\x0eGlobalJitLevel\x12\x0b\n\
+    \x07DEFAULT\x10\0\x12\x10\n\x03OFF\x10\xff\xff\xff\xff\xff\xff\xff\xff\
+    \xff\x01\x12\x08\n\x04ON_1\x10\x01\x12\x08\n\x04ON_2\x10\x02\"\x90\x04\n\
+    \x0cGraphOptions\x124\n\x16enable_recv_scheduling\x18\x02\x20\x01(\x08R\
+    \x14enableRecvScheduling\x12I\n\x11optimizer_options\x18\x03\x20\x01(\
+    \x0b2\x1c.tensorflow.OptimizerOptionsR\x10optimizerOptions\x12(\n\x10bui\
+    ld_cost_model\x18\x04\x20\x01(\x03R\x0ebuildCostModel\x123\n\x16build_co\
+    st_model_after\x18\t\x20\x01(\x03R\x13buildCostModelAfter\x12!\n\x0cinfe\
+    r_shapes\x18\x05\x20\x01(\x08R\x0binferShapes\x12,\n\x12place_pruned_gra\
+    ph\x18\x06\x20\x01(\x08R\x10placePrunedGraph\x128\n\x18enable_bfloat16_s\
+    endrecv\x18\x07\x20\x01(\x08R\x16enableBfloat16Sendrecv\x12#\n\rtimeline\
+    _step\x18\x08\x20\x01(\x05R\x0ctimelineStep\x12C\n\x0frewrite_options\
+    \x18\n\x20\x01(\x0b2\x1a.tensorflow.RewriterConfigR\x0erewriteOptionsJ\
+    \x04\x08\x01\x10\x02R%skip_common_subexpression_elimination\"Y\n\x15Thre\
+    adPoolOptionProto\x12\x1f\n\x0bnum_threads\x18\x01\x20\x01(\x05R\nnumThr\
+    eads\x12\x1f\n\x0bglobal_name\x18\x02\x20\x01(\tR\nglobalName\"\xae\x01\
+    \n\nRPCOptions\x12>\n\x1cuse_rpc_for_inprocess_master\x18\x01\x20\x01(\
+    \x08R\x18useRpcForInprocessMaster\x123\n\x15compression_algorithm\x18\
+    \x02\x20\x01(\tR\x14compressionAlgorithm\x12+\n\x11compression_level\x18\
+    \x03\x20\x01(\x05R\x10compressionLevel\"\xc7\x0c\n\x0bConfigProto\x12K\n\
+    \x0cdevice_count\x18\x01\x20\x03(\x0b2(.tensorflow.ConfigProto.DeviceCou\
+    ntEntryR\x0bdeviceCount\x12?\n\x1cintra_op_parallelism_threads\x18\x02\
+    \x20\x01(\x05R\x19intraOpParallelismThreads\x12?\n\x1cinter_op_paralleli\
+    sm_threads\x18\x05\x20\x01(\x05R\x19interOpParallelismThreads\x125\n\x17\
+    use_per_session_threads\x18\t\x20\x01(\x08R\x14usePerSessionThreads\x12a\
+    \n\x1csession_inter_op_thread_pool\x18\x0c\x20\x03(\x0b2!.tensorflow.Thr\
+    eadPoolOptionProtoR\x18sessionInterOpThreadPool\x12)\n\x10placement_peri\
+    od\x18\x03\x20\x01(\x05R\x0fplacementPeriod\x12%\n\x0edevice_filters\x18\
+    \x04\x20\x03(\tR\rdeviceFilters\x127\n\x0bgpu_options\x18\x06\x20\x01(\
+    \x0b2\x16.tensorflow.GPUOptionsR\ngpuOptions\x120\n\x14allow_soft_placem\
+    ent\x18\x07\x20\x01(\x08R\x12allowSoftPlacement\x120\n\x14log_device_pla\
+    cement\x18\x08\x20\x01(\x08R\x12logDevicePlacement\x12=\n\rgraph_options\
+    \x18\n\x20\x01(\x0b2\x18.tensorflow.GraphOptionsR\x0cgraphOptions\x125\n\
+    \x17operation_timeout_in_ms\x18\x0b\x20\x01(\x03R\x14operationTimeoutInM\
+    s\x127\n\x0brpc_options\x18\r\x20\x01(\x0b2\x16.tensorflow.RPCOptionsR\n\
+    rpcOptions\x127\n\x0bcluster_def\x18\x0e\x20\x01(\x0b2\x16.tensorflow.Cl\
+    usterDefR\nclusterDef\x122\n\x15isolate_session_state\x18\x0f\x20\x01(\
+    \x08R\x13isolateSessionState\x12H\n\x0cexperimental\x18\x10\x20\x01(\x0b\
+    2$.tensorflow.ConfigProto.ExperimentalR\x0cexperimental\x1a>\n\x10Device\
+    CountEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05valu\
+    e\x18\x02\x20\x01(\x05R\x05value:\x028\x01\x1a\xb9\x04\n\x0cExperimental\
+    \x126\n\x17collective_group_leader\x18\x01\x20\x01(\tR\x15collectiveGrou\
+    pLeader\x12#\n\rexecutor_type\x18\x03\x20\x01(\tR\x0cexecutorType\x12+\n\
+    \x12recv_buf_max_chunk\x18\x04\x20\x01(\x05R\x0frecvBufMaxChunk\x12*\n\
+    \x11use_numa_affinity\x18\x05\x20\x01(\x08R\x0fuseNumaAffinity\x12a\n-co\
+    llective_deterministic_sequential_execution\x18\x06\x20\x01(\x08R*collec\
+    tiveDeterministicSequentialExecution\x12'\n\x0fcollective_nccl\x18\x07\
+    \x20\x01(\x08R\x0ecollectiveNccl\x12a\n.share_session_state_in_clustersp\
+    ec_propagation\x18\x08\x20\x01(\x08R)shareSessionStateInClusterspecPropa\
+    gation\x126\n\x17disable_thread_spinning\x18\t\x20\x01(\x08R\x15disableT\
+    hreadSpinning\x12F\n\x20share_cluster_devices_in_session\x18\n\x20\x01(\
+    \x08R\x1cshareClusterDevicesInSessionJ\x04\x08\x02\x10\x03\"\xfe\x04\n\n\
+    RunOptions\x12B\n\x0btrace_level\x18\x01\x20\x01(\x0e2!.tensorflow.RunOp\
+    tions.TraceLevelR\ntraceLevel\x12\"\n\rtimeout_in_ms\x18\x02\x20\x01(\
+    \x03R\x0btimeoutInMs\x12/\n\x14inter_op_thread_pool\x18\x03\x20\x01(\x05\
+    R\x11interOpThreadPool\x126\n\x17output_partition_graphs\x18\x05\x20\x01\
+    (\x08R\x15outputPartitionGraphs\x12=\n\rdebug_options\x18\x06\x20\x01(\
+    \x0b2\x18.tensorflow.DebugOptionsR\x0cdebugOptions\x12J\n\"report_tensor\
+    _allocations_upon_oom\x18\x07\x20\x01(\x08R\x1ereportTensorAllocationsUp\
+    onOom\x12G\n\x0cexperimental\x18\x08\x20\x01(\x0b2#.tensorflow.RunOption\
+    s.ExperimentalR\x0cexperimental\x1aq\n\x0cExperimental\x120\n\x14collect\
+    ive_graph_key\x18\x01\x20\x01(\x03R\x12collectiveGraphKey\x12/\n\x14use_\
+    run_handler_pool\x18\x02\x20\x01(\x08R\x11useRunHandlerPool\"R\n\nTraceL\
+    evel\x12\x0c\n\x08NO_TRACE\x10\0\x12\x12\n\x0eSOFTWARE_TRACE\x10\x01\x12\
+    \x12\n\x0eHARDWARE_TRACE\x10\x02\x12\x0e\n\nFULL_TRACE\x10\x03J\x04\x08\
+    \x04\x10\x05\"\xfc\x03\n\x0bRunMetadata\x124\n\nstep_stats\x18\x01\x20\
+    \x01(\x0b2\x15.tensorflow.StepStatsR\tstepStats\x127\n\ncost_graph\x18\
+    \x02\x20\x01(\x0b2\x18.tensorflow.CostGraphDefR\tcostGraph\x12?\n\x10par\
+    tition_graphs\x18\x03\x20\x03(\x0b2\x14.tensorflow.GraphDefR\x0fpartitio\
+    nGraphs\x12O\n\x0ffunction_graphs\x18\x04\x20\x03(\x0b2&.tensorflow.RunM\
+    etadata.FunctionGraphsR\x0efunctionGraphs\x1a\xeb\x01\n\x0eFunctionGraph\
+    s\x12?\n\x10partition_graphs\x18\x01\x20\x03(\x0b2\x14.tensorflow.GraphD\
+    efR\x0fpartitionGraphs\x12J\n\x16pre_optimization_graph\x18\x02\x20\x01(\
+    \x0b2\x14.tensorflow.GraphDefR\x14preOptimizationGraph\x12L\n\x17post_op\
+    timization_graph\x18\x03\x20\x01(\x0b2\x14.tensorflow.GraphDefR\x15postO\
+    ptimizationGraph\"P\n\x10TensorConnection\x12\x1f\n\x0bfrom_tensor\x18\
+    \x01\x20\x01(\tR\nfromTensor\x12\x1b\n\tto_tensor\x18\x02\x20\x01(\tR\
+    \x08toTensor\"\xa5\x04\n\x0fCallableOptions\x12\x12\n\x04feed\x18\x01\
+    \x20\x03(\tR\x04feed\x12\x14\n\x05fetch\x18\x02\x20\x03(\tR\x05fetch\x12\
+    \x16\n\x06target\x18\x03\x20\x03(\tR\x06target\x127\n\x0brun_options\x18\
+    \x04\x20\x01(\x0b2\x16.tensorflow.RunOptionsR\nrunOptions\x12I\n\x11tens\
+    or_connection\x18\x05\x20\x03(\x0b2\x1c.tensorflow.TensorConnectionR\x10\
+    tensorConnection\x12O\n\x0cfeed_devices\x18\x06\x20\x03(\x0b2,.tensorflo\
+    w.CallableOptions.FeedDevicesEntryR\x0bfeedDevices\x12R\n\rfetch_devices\
+    \x18\x07\x20\x03(\x0b2-.tensorflow.CallableOptions.FetchDevicesEntryR\
+    \x0cfetchDevices\x12&\n\x0ffetch_skip_sync\x18\x08\x20\x01(\x08R\rfetchS\
+    kipSync\x1a>\n\x10FeedDevicesEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\
+    \x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\x01\x1a?\n\
+    \x11FetchDevicesEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\
+    \x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\x01B-\n\x18org.tensor\
+    flow.frameworkB\x0cConfigProtosP\x01\xf8\x01\x01b\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {

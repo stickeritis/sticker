@@ -256,8 +256,10 @@ pub struct FunctionDef {
     // message fields
     pub signature: ::protobuf::SingularPtrField<super::op_def::OpDef>,
     pub attr: ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>,
+    pub arg_attr: ::std::collections::HashMap<u32, FunctionDef_ArgAttrs>,
     pub node_def: ::protobuf::RepeatedField<super::node_def::NodeDef>,
     pub ret: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+    pub control_ret: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -332,6 +334,31 @@ impl FunctionDef {
         ::std::mem::replace(&mut self.attr, ::std::collections::HashMap::new())
     }
 
+    // repeated .tensorflow.FunctionDef.ArgAttrEntry arg_attr = 7;
+
+
+    pub fn get_arg_attr(&self) -> &::std::collections::HashMap<u32, FunctionDef_ArgAttrs> {
+        &self.arg_attr
+    }
+    pub fn clear_arg_attr(&mut self) {
+        self.arg_attr.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_arg_attr(&mut self, v: ::std::collections::HashMap<u32, FunctionDef_ArgAttrs>) {
+        self.arg_attr = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_arg_attr(&mut self) -> &mut ::std::collections::HashMap<u32, FunctionDef_ArgAttrs> {
+        &mut self.arg_attr
+    }
+
+    // Take field
+    pub fn take_arg_attr(&mut self) -> ::std::collections::HashMap<u32, FunctionDef_ArgAttrs> {
+        ::std::mem::replace(&mut self.arg_attr, ::std::collections::HashMap::new())
+    }
+
     // repeated .tensorflow.NodeDef node_def = 3;
 
 
@@ -381,6 +408,31 @@ impl FunctionDef {
     pub fn take_ret(&mut self) -> ::std::collections::HashMap<::std::string::String, ::std::string::String> {
         ::std::mem::replace(&mut self.ret, ::std::collections::HashMap::new())
     }
+
+    // repeated .tensorflow.FunctionDef.ControlRetEntry control_ret = 6;
+
+
+    pub fn get_control_ret(&self) -> &::std::collections::HashMap<::std::string::String, ::std::string::String> {
+        &self.control_ret
+    }
+    pub fn clear_control_ret(&mut self) {
+        self.control_ret.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_control_ret(&mut self, v: ::std::collections::HashMap<::std::string::String, ::std::string::String>) {
+        self.control_ret = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_control_ret(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, ::std::string::String> {
+        &mut self.control_ret
+    }
+
+    // Take field
+    pub fn take_control_ret(&mut self) -> ::std::collections::HashMap<::std::string::String, ::std::string::String> {
+        ::std::mem::replace(&mut self.control_ret, ::std::collections::HashMap::new())
+    }
 }
 
 impl ::protobuf::Message for FunctionDef {
@@ -408,11 +460,17 @@ impl ::protobuf::Message for FunctionDef {
                 5 => {
                     ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(wire_type, is, &mut self.attr)?;
                 },
+                7 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeMessage<FunctionDef_ArgAttrs>>(wire_type, is, &mut self.arg_attr)?;
+                },
                 3 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.node_def)?;
                 },
                 4 => {
                     ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.ret)?;
+                },
+                6 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.control_ret)?;
                 },
                 _ => {
                     ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
@@ -431,11 +489,13 @@ impl ::protobuf::Message for FunctionDef {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(5, &self.attr);
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeMessage<FunctionDef_ArgAttrs>>(7, &self.arg_attr);
         for value in &self.node_def {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         };
         my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(4, &self.ret);
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(6, &self.control_ret);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
@@ -448,12 +508,14 @@ impl ::protobuf::Message for FunctionDef {
             v.write_to_with_cached_sizes(os)?;
         }
         ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(5, &self.attr, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeMessage<FunctionDef_ArgAttrs>>(7, &self.arg_attr, os)?;
         for v in &self.node_def {
             os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
         };
         ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(4, &self.ret, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(6, &self.control_ret, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -506,6 +568,11 @@ impl ::protobuf::Message for FunctionDef {
                     |m: &FunctionDef| { &m.attr },
                     |m: &mut FunctionDef| { &mut m.attr },
                 ));
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeMessage<FunctionDef_ArgAttrs>>(
+                    "arg_attr",
+                    |m: &FunctionDef| { &m.arg_attr },
+                    |m: &mut FunctionDef| { &mut m.arg_attr },
+                ));
                 fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::node_def::NodeDef>>(
                     "node_def",
                     |m: &FunctionDef| { &m.node_def },
@@ -515,6 +582,11 @@ impl ::protobuf::Message for FunctionDef {
                     "ret",
                     |m: &FunctionDef| { &m.ret },
                     |m: &mut FunctionDef| { &mut m.ret },
+                ));
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(
+                    "control_ret",
+                    |m: &FunctionDef| { &m.control_ret },
+                    |m: &mut FunctionDef| { &mut m.control_ret },
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<FunctionDef>(
                     "FunctionDef",
@@ -540,8 +612,10 @@ impl ::protobuf::Clear for FunctionDef {
     fn clear(&mut self) {
         self.signature.clear();
         self.attr.clear();
+        self.arg_attr.clear();
         self.node_def.clear();
         self.ret.clear();
+        self.control_ret.clear();
         self.unknown_fields.clear();
     }
 }
@@ -553,6 +627,170 @@ impl ::std::fmt::Debug for FunctionDef {
 }
 
 impl ::protobuf::reflect::ProtobufValue for FunctionDef {
+    fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
+        ::protobuf::reflect::ProtobufValueRef::Message(self)
+    }
+}
+
+#[derive(PartialEq,Clone,Default)]
+pub struct FunctionDef_ArgAttrs {
+    // message fields
+    pub attr: ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>,
+    // special fields
+    pub unknown_fields: ::protobuf::UnknownFields,
+    pub cached_size: ::protobuf::CachedSize,
+}
+
+impl<'a> ::std::default::Default for &'a FunctionDef_ArgAttrs {
+    fn default() -> &'a FunctionDef_ArgAttrs {
+        <FunctionDef_ArgAttrs as ::protobuf::Message>::default_instance()
+    }
+}
+
+impl FunctionDef_ArgAttrs {
+    pub fn new() -> FunctionDef_ArgAttrs {
+        ::std::default::Default::default()
+    }
+
+    // repeated .tensorflow.FunctionDef.ArgAttrs.AttrEntry attr = 1;
+
+
+    pub fn get_attr(&self) -> &::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
+        &self.attr
+    }
+    pub fn clear_attr(&mut self) {
+        self.attr.clear();
+    }
+
+    // Param is passed by value, moved
+    pub fn set_attr(&mut self, v: ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>) {
+        self.attr = v;
+    }
+
+    // Mutable pointer to the field.
+    pub fn mut_attr(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
+        &mut self.attr
+    }
+
+    // Take field
+    pub fn take_attr(&mut self) -> ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
+        ::std::mem::replace(&mut self.attr, ::std::collections::HashMap::new())
+    }
+}
+
+impl ::protobuf::Message for FunctionDef_ArgAttrs {
+    fn is_initialized(&self) -> bool {
+        true
+    }
+
+    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+        while !is.eof()? {
+            let (field_number, wire_type) = is.read_tag_unpack()?;
+            match field_number {
+                1 => {
+                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(wire_type, is, &mut self.attr)?;
+                },
+                _ => {
+                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
+                },
+            };
+        }
+        ::std::result::Result::Ok(())
+    }
+
+    // Compute sizes of nested messages
+    #[allow(unused_variables)]
+    fn compute_size(&self) -> u32 {
+        let mut my_size = 0;
+        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(1, &self.attr);
+        my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
+        self.cached_size.set(my_size);
+        my_size
+    }
+
+    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(1, &self.attr, os)?;
+        os.write_unknown_fields(self.get_unknown_fields())?;
+        ::std::result::Result::Ok(())
+    }
+
+    fn get_cached_size(&self) -> u32 {
+        self.cached_size.get()
+    }
+
+    fn get_unknown_fields(&self) -> &::protobuf::UnknownFields {
+        &self.unknown_fields
+    }
+
+    fn mut_unknown_fields(&mut self) -> &mut ::protobuf::UnknownFields {
+        &mut self.unknown_fields
+    }
+
+    fn as_any(&self) -> &dyn (::std::any::Any) {
+        self as &dyn (::std::any::Any)
+    }
+    fn as_any_mut(&mut self) -> &mut dyn (::std::any::Any) {
+        self as &mut dyn (::std::any::Any)
+    }
+    fn into_any(self: Box<Self>) -> ::std::boxed::Box<dyn (::std::any::Any)> {
+        self
+    }
+
+    fn descriptor(&self) -> &'static ::protobuf::reflect::MessageDescriptor {
+        Self::descriptor_static()
+    }
+
+    fn new() -> FunctionDef_ArgAttrs {
+        FunctionDef_ArgAttrs::new()
+    }
+
+    fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+        };
+        unsafe {
+            descriptor.get(|| {
+                let mut fields = ::std::vec::Vec::new();
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(
+                    "attr",
+                    |m: &FunctionDef_ArgAttrs| { &m.attr },
+                    |m: &mut FunctionDef_ArgAttrs| { &mut m.attr },
+                ));
+                ::protobuf::reflect::MessageDescriptor::new::<FunctionDef_ArgAttrs>(
+                    "FunctionDef_ArgAttrs",
+                    fields,
+                    file_descriptor_proto()
+                )
+            })
+        }
+    }
+
+    fn default_instance() -> &'static FunctionDef_ArgAttrs {
+        static mut instance: ::protobuf::lazy::Lazy<FunctionDef_ArgAttrs> = ::protobuf::lazy::Lazy {
+            lock: ::protobuf::lazy::ONCE_INIT,
+            ptr: 0 as *const FunctionDef_ArgAttrs,
+        };
+        unsafe {
+            instance.get(FunctionDef_ArgAttrs::new)
+        }
+    }
+}
+
+impl ::protobuf::Clear for FunctionDef_ArgAttrs {
+    fn clear(&mut self) {
+        self.attr.clear();
+        self.unknown_fields.clear();
+    }
+}
+
+impl ::std::fmt::Debug for FunctionDef_ArgAttrs {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::protobuf::text_format::fmt(self, f)
+    }
+}
+
+impl ::protobuf::reflect::ProtobufValue for FunctionDef_ArgAttrs {
     fn as_ref(&self) -> ::protobuf::reflect::ProtobufValueRef {
         ::protobuf::reflect::ProtobufValueRef::Message(self)
     }
@@ -775,19 +1013,30 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     f.proto\x1a&tensorflow/core/framework/op_def.proto\"~\n\x12FunctionDefLi\
     brary\x123\n\x08function\x18\x01\x20\x03(\x0b2\x17.tensorflow.FunctionDe\
     fR\x08function\x123\n\x08gradient\x18\x02\x20\x03(\x0b2\x17.tensorflow.G\
-    radientDefR\x08gradient\"\xe7\x02\n\x0bFunctionDef\x12/\n\tsignature\x18\
+    radientDefR\x08gradient\"\xac\x06\n\x0bFunctionDef\x12/\n\tsignature\x18\
     \x01\x20\x01(\x0b2\x11.tensorflow.OpDefR\tsignature\x125\n\x04attr\x18\
-    \x05\x20\x03(\x0b2!.tensorflow.FunctionDef.AttrEntryR\x04attr\x12.\n\x08\
-    node_def\x18\x03\x20\x03(\x0b2\x13.tensorflow.NodeDefR\x07nodeDef\x122\n\
-    \x03ret\x18\x04\x20\x03(\x0b2\x20.tensorflow.FunctionDef.RetEntryR\x03re\
-    t\x1aN\n\tAttrEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12+\n\
-    \x05value\x18\x02\x20\x01(\x0b2\x15.tensorflow.AttrValueR\x05value:\x028\
-    \x01\x1a6\n\x08RetEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\x03key\x12\
-    \x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\x01J\x04\x08\x02\x10\
-    \x03\"W\n\x0bGradientDef\x12#\n\rfunction_name\x18\x01\x20\x01(\tR\x0cfu\
-    nctionName\x12#\n\rgradient_func\x18\x02\x20\x01(\tR\x0cgradientFuncBn\n\
-    \x18org.tensorflow.frameworkB\x0eFunctionProtosP\x01Z=github.com/tensorf\
-    low/tensorflow/tensorflow/go/core/framework\xf8\x01\x01b\x06proto3\
+    \x05\x20\x03(\x0b2!.tensorflow.FunctionDef.AttrEntryR\x04attr\x12?\n\x08\
+    arg_attr\x18\x07\x20\x03(\x0b2$.tensorflow.FunctionDef.ArgAttrEntryR\x07\
+    argAttr\x12.\n\x08node_def\x18\x03\x20\x03(\x0b2\x13.tensorflow.NodeDefR\
+    \x07nodeDef\x122\n\x03ret\x18\x04\x20\x03(\x0b2\x20.tensorflow.FunctionD\
+    ef.RetEntryR\x03ret\x12H\n\x0bcontrol_ret\x18\x06\x20\x03(\x0b2'.tensorf\
+    low.FunctionDef.ControlRetEntryR\ncontrolRet\x1aN\n\tAttrEntry\x12\x10\n\
+    \x03key\x18\x01\x20\x01(\tR\x03key\x12+\n\x05value\x18\x02\x20\x01(\x0b2\
+    \x15.tensorflow.AttrValueR\x05value:\x028\x01\x1a\x9a\x01\n\x08ArgAttrs\
+    \x12>\n\x04attr\x18\x01\x20\x03(\x0b2*.tensorflow.FunctionDef.ArgAttrs.A\
+    ttrEntryR\x04attr\x1aN\n\tAttrEntry\x12\x10\n\x03key\x18\x01\x20\x01(\tR\
+    \x03key\x12+\n\x05value\x18\x02\x20\x01(\x0b2\x15.tensorflow.AttrValueR\
+    \x05value:\x028\x01\x1a\\\n\x0cArgAttrEntry\x12\x10\n\x03key\x18\x01\x20\
+    \x01(\rR\x03key\x126\n\x05value\x18\x02\x20\x01(\x0b2\x20.tensorflow.Fun\
+    ctionDef.ArgAttrsR\x05value:\x028\x01\x1a6\n\x08RetEntry\x12\x10\n\x03ke\
+    y\x18\x01\x20\x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05v\
+    alue:\x028\x01\x1a=\n\x0fControlRetEntry\x12\x10\n\x03key\x18\x01\x20\
+    \x01(\tR\x03key\x12\x14\n\x05value\x18\x02\x20\x01(\tR\x05value:\x028\
+    \x01J\x04\x08\x02\x10\x03\"W\n\x0bGradientDef\x12#\n\rfunction_name\x18\
+    \x01\x20\x01(\tR\x0cfunctionName\x12#\n\rgradient_func\x18\x02\x20\x01(\
+    \tR\x0cgradientFuncBn\n\x18org.tensorflow.frameworkB\x0eFunctionProtosP\
+    \x01Z=github.com/tensorflow/tensorflow/tensorflow/go/core/framework\xf8\
+    \x01\x01b\x06proto3\
 ";
 
 static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
