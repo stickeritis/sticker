@@ -42,12 +42,12 @@ impl LearningRateSchedule for ConstantLearningRate {
 /// exponentionally over time. To be specific, the learning rate is
 /// calculated as follows:
 ///
-/// *lr = initial_lr * decay_rate ^ (epoch / decay_steps)*
+/// *lr = initial_lr * decay_rate ^ (global_step / decay_steps)*
 pub struct ExponentialDecay {
     initial_lr: f32,
     lr: f32,
     decay_rate: f32,
-    decay_epochs: usize,
+    decay_steps: usize,
     warmup_steps: usize,
     staircase: bool,
 }
@@ -57,13 +57,13 @@ impl ExponentialDecay {
     ///
     /// If `staircase` is true, the exponent of the decay is
     /// computed using integer division. This has the effect that
-    /// the learning rate only changes every `decay_epochs` epochs.
+    /// the learning rate only changes every `decay_steps` steps.
     /// If `warmup_steps` > 0, the learning rate is linearly scaled
     /// for `warmup_steps` from 0 -> `initial_lr`.
     pub fn new(
         initial_lr: f32,
         decay_rate: f32,
-        decay_epochs: usize,
+        decay_steps: usize,
         staircase: bool,
         warmup_steps: usize,
     ) -> Self {
@@ -76,7 +76,7 @@ impl ExponentialDecay {
             "The decay rate must be in (0, 1)."
         );
         assert!(
-            decay_epochs > 0,
+            decay_steps > 0,
             "The number decay steps should be non-zero."
         );
 
@@ -84,7 +84,7 @@ impl ExponentialDecay {
             lr: initial_lr,
             initial_lr,
             decay_rate,
-            decay_epochs,
+            decay_steps,
             staircase,
             warmup_steps,
         }
@@ -94,20 +94,21 @@ impl ExponentialDecay {
 impl LearningRateSchedule for ExponentialDecay {
     fn compute_step_learning_rate(&mut self, global_step: usize) -> f32 {
         if global_step < self.warmup_steps {
-            (self.initial_lr / (self.warmup_steps as f32)) * global_step as f32
-        } else {
-            self.lr
+            return (self.initial_lr / (self.warmup_steps as f32)) * global_step as f32;
         }
+
+        // start decay after warmup
+        let step = global_step - self.warmup_steps;
+        let exponent = if self.staircase {
+            (step / self.decay_steps) as f32
+        } else {
+            step as f32 / self.decay_steps as f32
+        };
+        self.lr = self.initial_lr * self.decay_rate.powf(exponent);
+        self.lr
     }
 
-    fn compute_epoch_learning_rate(&mut self, epoch: usize, _last_score: f32) -> f32 {
-        let exponent = if self.staircase {
-            (epoch / self.decay_epochs) as f32
-        } else {
-            epoch as f32 / self.decay_epochs as f32
-        };
-
-        self.lr = self.initial_lr * self.decay_rate.powf(exponent);
+    fn compute_epoch_learning_rate(&mut self, _epoch: usize, _last_score: f32) -> f32 {
         self.lr
     }
 }
@@ -191,18 +192,19 @@ mod tests {
     #[test]
     pub fn exponential_decay_lr() {
         let mut decay1 = ExponentialDecay::new(0.1, 0.2, 10, true, 0);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(0, 0.), 0.1);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(1, 0.), 0.1);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(5, 0.), 0.1);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(15, 0.), 0.02);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(25, 0.), 0.004);
+        assert_relative_eq!(decay1.compute_step_learning_rate(0), 0.1);
+        assert_relative_eq!(decay1.compute_step_learning_rate(1), 0.1);
+        assert_relative_eq!(decay1.compute_step_learning_rate(5), 0.1);
+        assert_relative_eq!(decay1.compute_step_learning_rate(15), 0.02);
+        assert_relative_eq!(decay1.compute_step_learning_rate(25), 0.004);
 
         let mut decay2 = ExponentialDecay::new(0.1, 0.2, 10, false, 0);
-        assert_relative_eq!(decay2.compute_epoch_learning_rate(0, 0.), 0.1);
-        assert_relative_eq!(decay2.compute_epoch_learning_rate(1, 0.), 0.085133992);
-        assert_relative_eq!(decay2.compute_epoch_learning_rate(5, 0.), 0.044721359);
-        assert_relative_eq!(decay2.compute_epoch_learning_rate(15, 0.), 0.008944271);
-        assert_relative_eq!(decay2.compute_epoch_learning_rate(25, 0.), 0.001788854);
+        assert_relative_eq!(decay2.compute_step_learning_rate(0), 0.1);
+        assert_relative_eq!(decay2.compute_step_learning_rate(1), 0.085133992);
+
+        assert_relative_eq!(decay2.compute_step_learning_rate(5), 0.044721359);
+        assert_relative_eq!(decay2.compute_step_learning_rate(15), 0.008944271);
+        assert_relative_eq!(decay2.compute_step_learning_rate(25), 0.001788854);
     }
     #[test]
 
@@ -215,12 +217,13 @@ mod tests {
         assert_relative_eq!(decay1.compute_step_learning_rate(4), 0.08);
         assert_relative_eq!(decay1.compute_step_learning_rate(5), 0.1);
         assert_relative_eq!(decay1.compute_step_learning_rate(6), 0.1);
-
+        // warmup over
         assert_relative_eq!(decay1.compute_epoch_learning_rate(0, 0.), 0.1);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(1, 0.), 0.1);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(5, 0.), 0.1);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(15, 0.), 0.02);
-        assert_relative_eq!(decay1.compute_epoch_learning_rate(25, 0.), 0.004);
+
+        assert_relative_eq!(decay1.compute_step_learning_rate(7), 0.1);
+        assert_relative_eq!(decay1.compute_step_learning_rate(11), 0.1);
+        assert_relative_eq!(decay1.compute_step_learning_rate(21), 0.02);
+        assert_relative_eq!(decay1.compute_step_learning_rate(31), 0.004);
     }
 
     #[test]
