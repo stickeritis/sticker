@@ -51,4 +51,7 @@ mod tensor_shape;
 mod types;
 
 #[allow(renamed_and_removed_lints)]
+mod verifier_config;
+
+#[allow(renamed_and_removed_lints)]
 mod versions;

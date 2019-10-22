@@ -7,6 +7,7 @@ fn main() {
             "protos/tensorflow/core/protobuf/config.proto",
             "protos/tensorflow/core/protobuf/debug.proto",
             "protos/tensorflow/core/protobuf/rewriter_config.proto",
+            "protos/tensorflow/core/protobuf/verifier_config.proto",
             "protos/tensorflow/core/framework/allocation_description.proto",
             "protos/tensorflow/core/framework/attr_value.proto",
             "protos/tensorflow/core/framework/cost_graph.proto",
