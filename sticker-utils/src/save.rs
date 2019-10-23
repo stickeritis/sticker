@@ -1,86 +1,166 @@
-use failure::Fallible;
+use std::marker::PhantomData;
 
+use failure::{Fallible, ResultExt};
 use sticker::tensorflow::TaggerTrainer;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
-pub enum CompletedUnit {
-    /// A batch is completed.
-    Batch,
+pub enum CompletedUnit<P> {
+    /// A batch is completed with the given performance.
+    Batch(P),
 
-    /// An epoch is completed.
-    Epoch,
+    /// An epoch is completed with the given performance.
+    ///
+    /// The performance is of an epoch is typically evaluated against
+    /// a validation set.
+    Epoch(P),
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub enum SaveSchedule {
-    /// Save after every N batches.
-    Batches(usize),
-
-    /// Save after every epoch.
-    Epoch,
-
-    /// Save every epoch and after every N batches.
-    EpochAndBatches(usize),
+/// Trait for model savers.
+pub trait Save<P> {
+    /// Save a model
+    ///
+    /// Calling this method amounts to a request to save a
+    /// model. Whether an actual model is saved depends on the
+    /// implementor. E.g. `EpochSaver` only saves a model for
+    /// each epoch, so requests to save at a completed batch
+    /// are ignored.
+    ///
+    /// The performance should be that a better performance compares
+    /// as larger. If smaller is better in a performance measure, the
+    /// actual measure can be wrapped in `std::cmp::Reverse` to
+    /// reverse the ordering.
+    fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit<P>) -> Fallible<()>;
 }
 
-impl SaveSchedule {
-    /// Create a scheduler from the schedule.
-    pub fn to_save_scheduler(self, prefix: impl Into<String>) -> SaveScheduler {
-        SaveScheduler {
+/// Save epochs.
+#[derive(Clone)]
+pub struct EpochSaver<P> {
+    epoch: usize,
+    prefix: String,
+    _phantom: PhantomData<P>,
+}
+
+impl<P> EpochSaver<P> {
+    pub fn new(prefix: impl Into<String>) -> Self {
+        EpochSaver {
             prefix: prefix.into(),
-            batch: 0,
             epoch: 0,
-            epoch_batch: 0,
-            schedule: self,
+            _phantom: PhantomData,
         }
     }
 }
 
-/// Scheduler that saves at points dictated by the schedule.
-pub struct SaveScheduler {
-    prefix: String,
-    epoch_batch: usize,
-    epoch: usize,
-    batch: usize,
-    schedule: SaveSchedule,
+impl<P> Save<P> for EpochSaver<P> {
+    fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit<P>) -> Fallible<()> {
+        if let CompletedUnit::Epoch(_) = completed {
+            trainer
+                .save(format!("{}epoch-{}", self.prefix, self.epoch))
+                .context(format!("Cannot save model for epoch {}", self.epoch))?;
+            self.epoch += 1;
+        }
+
+        Ok(())
+    }
 }
 
-impl SaveScheduler {
-    /// Current batch.
-    pub fn batch(&self) -> usize {
-        self.batch
-    }
+/// Save best epochs with the best performance so far.
+#[derive(Clone)]
+pub struct BestEpochSaver<P> {
+    best_epoch_performance: Option<P>,
+    epoch: usize,
+    prefix: String,
+}
 
-    /// Current epoch.
-    pub fn epoch(&self) -> usize {
-        self.epoch
+impl<P> BestEpochSaver<P> {
+    pub fn new(prefix: impl Into<String>) -> Self {
+        BestEpochSaver {
+            best_epoch_performance: None,
+            epoch: 0,
+            prefix: prefix.into(),
+        }
     }
+}
 
-    /// Save the model parameters when a save point has been reached.
-    pub fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit) -> Fallible<()> {
-        match completed {
-            CompletedUnit::Epoch => {
-                match self.schedule {
-                    SaveSchedule::Epoch | SaveSchedule::EpochAndBatches(_) => {
-                        trainer.save(format!("{}epoch-{}", self.prefix, self.epoch))?
+impl<P> Save<P> for BestEpochSaver<P>
+where
+    P: PartialOrd,
+{
+    fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit<P>) -> Fallible<()> {
+        if let CompletedUnit::Epoch(perf) = completed {
+            let improvement = match self.best_epoch_performance {
+                Some(ref mut best) => {
+                    if perf > *best {
+                        *best = perf;
+                        true
+                    } else {
+                        false
                     }
-                    SaveSchedule::Batches(_) => (),
                 }
+                None => {
+                    self.best_epoch_performance = Some(perf);
+                    true
+                }
+            };
 
+            if improvement {
+                trainer
+                    .save(format!("{}epoch-{}", self.prefix, self.epoch))
+                    .context(format!("Cannot save model for epoch {}", self.epoch))?;
+            }
+
+            self.epoch += 1;
+        }
+
+        Ok(())
+    }
+}
+
+/// Save every epoch and N batches.
+#[derive(Clone)]
+pub struct EpochAndBatchesSaver<P> {
+    batch: usize,
+    epoch: usize,
+    epoch_batch: usize,
+    n_batches: usize,
+    prefix: String,
+    _phantom: PhantomData<P>,
+}
+
+impl<P> EpochAndBatchesSaver<P> {
+    /// Construct a saver that saves every epoch and N batches.
+    pub fn new(prefix: impl Into<String>, n_batches: usize) -> Self {
+        EpochAndBatchesSaver {
+            batch: 0,
+            epoch: 0,
+            epoch_batch: 0,
+            n_batches,
+            prefix: prefix.into(),
+            _phantom: PhantomData,
+        }
+    }
+}
+
+impl<P> Save<P> for EpochAndBatchesSaver<P> {
+    fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit<P>) -> Fallible<()> {
+        match completed {
+            CompletedUnit::Epoch(_) => {
+                trainer
+                    .save(format!("{}epoch-{}", self.prefix, self.epoch))
+                    .context(format!("Cannot save model for epoch {}", self.epoch))?;
                 self.epoch += 1;
                 self.epoch_batch = 0;
             }
-            CompletedUnit::Batch => {
-                match self.schedule {
-                    SaveSchedule::Batches(batches) | SaveSchedule::EpochAndBatches(batches) => {
-                        if (self.batch + 1) % batches == 0 {
-                            trainer.save(format!(
-                                "{}epoch-{}-batch-{}",
-                                self.prefix, self.epoch, self.epoch_batch
-                            ))?
-                        }
-                    }
-                    SaveSchedule::Epoch => (),
+            CompletedUnit::Batch(_) => {
+                if (self.batch + 1) % self.n_batches == 0 {
+                    trainer
+                        .save(format!(
+                            "{}epoch-{}-batch-{}",
+                            self.prefix, self.epoch, self.epoch_batch
+                        ))
+                        .context(format!(
+                            "Cannot save model for epoch {} batch {}",
+                            self.epoch, self.batch
+                        ))?;
                 }
 
                 self.batch += 1;
