@@ -31,6 +31,13 @@ focus has been on:
   * Very liberal [license](LICENSE.md)
   * Docker containers with models
 
+## Status
+
+sticker is almost production-ready and we are preparing for release
+1.0.0. Graphs and models crated with the current version **must** work
+with sticker 1.x.y. There may still be breaking API or configuration
+file changes until 1.0.0 is released.
+
 ## Where to go from here
 
 * [Installing sticker](doc/INSTALL.md)
