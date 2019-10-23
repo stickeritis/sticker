@@ -17,7 +17,7 @@ use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
 
 use crate::progress::ReadProgress;
-use crate::save::{CompletedUnit, SaveSchedule, SaveScheduler};
+use crate::save::{CompletedUnit, EpochAndBatchesSaver, EpochSaver, Save};
 use crate::traits::{StickerApp, StickerTrainApp};
 
 static EPOCHS: &str = "EPOCHS";
@@ -29,13 +29,40 @@ static TRAIN_DATA: &str = "TRAIN_DATA";
 static VALIDATION_DATA: &str = "VALIDATION_DATA";
 static LOGDIR: &str = "LOGDIR";
 
+#[derive(Clone)]
+pub enum PretrainSaver {
+    Epoch(EpochSaver<f32>),
+    EpochAndBatches(EpochAndBatchesSaver<f32>),
+}
+
+impl From<EpochSaver<f32>> for PretrainSaver {
+    fn from(saver: EpochSaver<f32>) -> Self {
+        PretrainSaver::Epoch(saver)
+    }
+}
+
+impl From<EpochAndBatchesSaver<f32>> for PretrainSaver {
+    fn from(saver: EpochAndBatchesSaver<f32>) -> Self {
+        PretrainSaver::EpochAndBatches(saver)
+    }
+}
+
+impl Save<f32> for PretrainSaver {
+    fn save(&mut self, trainer: &TaggerTrainer, completed: CompletedUnit<f32>) -> Fallible<()> {
+        match self {
+            PretrainSaver::Epoch(saver) => saver.save(trainer, completed),
+            PretrainSaver::EpochAndBatches(saver) => saver.save(trainer, completed),
+        }
+    }
+}
+
 pub struct PretrainApp {
     config: String,
     epochs: usize,
     initial_lr: NotNan<f32>,
     max_len: usize,
     parameters: Option<String>,
-    save_schedule: SaveSchedule,
+    saver: PretrainSaver,
     train_data: String,
     validation_data: String,
     logdir: Option<String>,
@@ -92,14 +119,14 @@ impl PretrainApp {
         let mut best_epoch = 0;
         let mut best_acc = 0.0;
 
-        let mut save_scheduler = self.save_schedule.to_save_scheduler("pretrain-");
-
         let train_size = train_file.metadata()?.len() as usize;
+
+        let mut saver = self.saver.clone();
 
         for epoch in 0..self.epochs {
             let (loss, acc) = self.run_epoch(
                 config,
-                &mut save_scheduler,
+                &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
                 &trainer,
@@ -111,14 +138,9 @@ impl PretrainApp {
 
             eprintln!("Epoch {} (train, loss: {:.4}, acc: {:.4}", epoch, loss, acc);
 
-            save_scheduler.save(&trainer, CompletedUnit::Epoch).or_exit(
-                format!("Cannot save model for epoch {}", save_scheduler.epoch()),
-                1,
-            );
-
             let (loss, acc) = self.run_epoch(
                 config,
-                &mut save_scheduler,
+                &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
                 &trainer,
@@ -127,6 +149,10 @@ impl PretrainApp {
                 train_size,
                 epoch,
             )?;
+
+            saver
+                .save(&trainer, CompletedUnit::Epoch(acc))
+                .or_exit("Error saving model", 1);
 
             if acc > best_acc {
                 best_epoch = epoch;
@@ -148,7 +174,7 @@ impl PretrainApp {
     fn run_epoch<E>(
         &self,
         config: &Config,
-        save_scheduler: &mut SaveScheduler,
+        saver: &mut PretrainSaver,
         encoder: &mut CategoricalEncoder<E, E::Encoding>,
         vectorizer: &SentVectorizer,
         trainer: &TaggerTrainer,
@@ -219,10 +245,9 @@ impl PretrainApp {
             instances += n_tokens;
 
             if is_training {
-                save_scheduler.save(trainer, CompletedUnit::Batch).or_exit(
-                    format!("Cannot save model for batch {}", save_scheduler.batch()),
-                    1,
-                );
+                saver
+                    .save(trainer, CompletedUnit::Batch(batch_perf.accuracy))
+                    .or_exit("Error saving model", 1);
             }
         }
 
@@ -311,15 +336,17 @@ impl StickerApp for PretrainApp {
             .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1))
             .unwrap_or(usize::MAX);
         let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
-        let save_schedule = matches
+        let saver = matches
             .value_of(SAVE_BATCH)
             .map(|n| {
-                SaveSchedule::EpochAndBatches(
+                EpochAndBatchesSaver::new(
+                    "pretrain-",
                     n.parse()
                         .or_exit("Cannot parse number of batches after which to save", 1),
                 )
+                .into()
             })
-            .unwrap_or(SaveSchedule::Epoch);
+            .unwrap_or_else(|| EpochSaver::new("pretrain-").into());
         let logdir = matches.value_of(LOGDIR).map(ToOwned::to_owned);
 
         let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
@@ -331,7 +358,7 @@ impl StickerApp for PretrainApp {
             initial_lr,
             max_len,
             parameters,
-            save_schedule,
+            saver,
             train_data,
             validation_data,
             logdir,

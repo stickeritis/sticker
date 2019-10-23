@@ -19,7 +19,7 @@ use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
 
 use crate::progress::ReadProgress;
-use crate::save::{CompletedUnit, SaveSchedule, SaveScheduler};
+use crate::save::{BestEpochSaver, CompletedUnit, Save};
 use crate::traits::{StickerApp, StickerTrainApp};
 
 static INITIAL_LR: &str = "INITIAL_LR";
@@ -46,7 +46,7 @@ pub struct TrainApp {
     max_len: usize,
     parameters: Option<String>,
     patience: usize,
-    save_schedule: SaveSchedule,
+    saver: BestEpochSaver<f32>,
     train_data: String,
     validation_data: String,
     logdir: Option<String>,
@@ -66,7 +66,7 @@ impl TrainApp {
     fn run_epoch<E>(
         &self,
         config: &Config,
-        save_scheduler: &mut SaveScheduler,
+        saver: &mut BestEpochSaver<f32>,
         encoder: &mut CategoricalEncoder<E, E::Encoding>,
         vectorizer: &SentVectorizer,
         trainer: &TaggerTrainer,
@@ -126,10 +126,9 @@ impl TrainApp {
 
             if is_training {
                 global_step += 1;
-                save_scheduler.save(trainer, CompletedUnit::Batch).or_exit(
-                    format!("Cannot save model for batch {}", save_scheduler.batch()),
-                    1,
-                );
+                saver
+                    .save(trainer, CompletedUnit::Batch(batch_perf.accuracy))
+                    .or_exit("Error saving model", 1);
             }
 
             progress_bar.set_message(&format!(
@@ -174,20 +173,21 @@ impl TrainApp {
             .or_exit("Cannot load embeddings", 1);
         let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
 
+        let mut saver = self.saver.clone();
+
         let mut best_epoch = 0;
         let mut best_acc = 0.0;
         let mut last_acc = 0.0;
         let mut global_step = 0;
 
         let mut lr_schedule = self.lr_schedule();
-        let mut save_scheduler = self.save_schedule.to_save_scheduler("");
 
         for epoch in 0.. {
             let lr = lr_schedule.compute_epoch_learning_rate(epoch, last_acc);
 
             let (loss, acc, global_step_after_epoch) = self.run_epoch(
                 config,
-                &mut save_scheduler,
+                &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
                 &trainer,
@@ -202,14 +202,9 @@ impl TrainApp {
                 epoch, lr, loss, acc
             );
 
-            save_scheduler.save(&trainer, CompletedUnit::Epoch).or_exit(
-                format!("Cannot save model for epoch {}", save_scheduler.epoch()),
-                1,
-            );
-
             let (loss, acc, _) = self.run_epoch(
                 config,
-                &mut save_scheduler,
+                &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
                 &trainer,
@@ -218,6 +213,10 @@ impl TrainApp {
                 &mut lr_schedule,
                 global_step,
             );
+
+            saver
+                .save(&trainer, CompletedUnit::Epoch(acc))
+                .or_exit("Error saving model", 1);
 
             last_acc = acc;
             if acc > best_acc {
@@ -354,7 +353,7 @@ impl StickerApp for TrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse warmup", 1);
-        let save_schedule = SaveSchedule::Epoch;
+        let saver = BestEpochSaver::new("");
         let logdir = matches.value_of(LOGDIR).map(ToOwned::to_owned);
         let train_data = matches.value_of(TRAIN_DATA).unwrap().into();
         let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
@@ -370,7 +369,7 @@ impl StickerApp for TrainApp {
                 warmup_steps,
             },
             max_len,
-            save_schedule,
+            saver,
             train_data,
             validation_data,
             logdir,
