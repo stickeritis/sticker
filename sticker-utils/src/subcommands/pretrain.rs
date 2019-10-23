@@ -58,6 +58,7 @@ impl Save<f32> for PretrainSaver {
 }
 
 pub struct PretrainApp {
+    batch_size: usize,
     config: String,
     epochs: usize,
     initial_lr: NotNan<f32>,
@@ -128,7 +129,6 @@ impl PretrainApp {
 
         for epoch in 0..self.epochs {
             let (loss, acc, global_step_after_epoch) = self.run_epoch(
-                config,
                 &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
@@ -143,7 +143,6 @@ impl PretrainApp {
             eprintln!("Epoch {} (train, loss: {:.4}, acc: {:.4}", epoch, loss, acc);
 
             let (loss, acc, _) = self.run_epoch(
-                config,
                 &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
@@ -178,7 +177,6 @@ impl PretrainApp {
     #[allow(clippy::too_many_arguments)]
     fn run_epoch<E>(
         &self,
-        config: &Config,
         saver: &mut PretrainSaver,
         encoder: &mut CategoricalEncoder<E, E::Encoding>,
         vectorizer: &SentVectorizer,
@@ -210,7 +208,7 @@ impl PretrainApp {
         let mut loss = 0f32;
         let mut internal_global_step = global_step;
         for batch in dataset
-            .batches(encoder, vectorizer, config.model.batch_size, self.max_len)
+            .batches(encoder, vectorizer, self.batch_size, self.max_len)
             .or_exit("Cannot read batches", 1)
         {
             let tensors = batch.or_exit("Cannot read batch", 1).into_parts();
@@ -345,6 +343,11 @@ impl StickerApp for PretrainApp {
 
     fn parse(matches: &ArgMatches) -> Self {
         let config = matches.value_of(Self::CONFIG).unwrap().into();
+        let batch_size = matches
+            .value_of(Self::BATCH_SIZE)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse batch size", 1);
         let epochs = matches
             .value_of(EPOCHS)
             .unwrap()
@@ -383,6 +386,7 @@ impl StickerApp for PretrainApp {
         let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
 
         PretrainApp {
+            batch_size,
             config,
             epochs,
             initial_lr,

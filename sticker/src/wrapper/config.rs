@@ -57,6 +57,10 @@ impl TomlRead for Config {
         read.read_to_string(&mut data)?;
         let config: Config = toml::from_str(&data)?;
 
+        if config.model.batch_size.is_some() {
+            eprintln!("The model.batch_size option is deprecated and not used anymore");
+        }
+
         if config.labeler.read_ahead.is_some() {
             eprintln!("The labeler.read_ahead option is deprecated and not used anymore");
         }
@@ -226,7 +230,7 @@ mod tests {
                 subwords: true,
             },
             model: ModelConfig {
-                batch_size: 128,
+                batch_size: Some(128),
                 gpu_allow_growth: true,
                 graph: "sticker.graph".to_owned(),
                 parameters: "sticker.model".to_owned(),

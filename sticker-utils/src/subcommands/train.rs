@@ -41,6 +41,7 @@ pub struct LrSchedule {
 }
 
 pub struct TrainApp {
+    batch_size: usize,
     config: String,
     lr_schedule: LrSchedule,
     max_len: usize,
@@ -65,7 +66,6 @@ impl TrainApp {
     #[allow(clippy::too_many_arguments)]
     fn run_epoch<E>(
         &self,
-        config: &Config,
         saver: &mut BestEpochSaver<f32>,
         encoder: &mut CategoricalEncoder<E, E::Encoding>,
         vectorizer: &SentVectorizer,
@@ -96,7 +96,7 @@ impl TrainApp {
         let mut loss = 0f32;
 
         for batch in dataset
-            .batches(encoder, vectorizer, config.model.batch_size, self.max_len)
+            .batches(encoder, vectorizer, self.batch_size, self.max_len)
             .or_exit("Cannot read batches", 1)
         {
             let lr = lr_scheduler.compute_step_learning_rate(global_step);
@@ -186,7 +186,6 @@ impl TrainApp {
             let lr = lr_schedule.compute_epoch_learning_rate(epoch, last_acc);
 
             let (loss, acc, global_step_after_epoch) = self.run_epoch(
-                config,
                 &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
@@ -203,7 +202,6 @@ impl TrainApp {
             );
 
             let (loss, acc, _) = self.run_epoch(
-                config,
                 &mut saver,
                 &mut categorical_encoder,
                 &vectorizer,
@@ -323,6 +321,11 @@ impl StickerApp for TrainApp {
 
     fn parse(matches: &ArgMatches) -> Self {
         let config = matches.value_of(Self::CONFIG).unwrap().into();
+        let batch_size = matches
+            .value_of(Self::BATCH_SIZE)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse batch size", 1);
         let initial_lr = matches
             .value_of(INITIAL_LR)
             .unwrap()
@@ -359,6 +362,7 @@ impl StickerApp for TrainApp {
         let validation_data = matches.value_of(VALIDATION_DATA).unwrap().into();
 
         TrainApp {
+            batch_size,
             config,
             parameters,
             patience,

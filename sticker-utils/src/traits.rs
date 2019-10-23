@@ -44,6 +44,7 @@ pub trait StickerPipelineApp: StickerApp {
 }
 
 pub trait StickerTrainApp: StickerApp {
+    const BATCH_SIZE: &'static str = "BATCH_SIZE";
     const CONFIG: &'static str = "CONFIG";
 
     fn train_app<'a, 'b>(name: &str) -> App<'a, 'b> {
@@ -55,6 +56,12 @@ pub trait StickerTrainApp: StickerApp {
                     .help("Sticker configuration")
                     .index(1)
                     .required(true),
+            )
+            .arg(
+                Arg::with_name(Self::BATCH_SIZE)
+                    .help("Batch size")
+                    .long("batchsize")
+                    .default_value("256"),
             )
     }
 }

@@ -23,9 +23,8 @@ use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ModelConfig {
-    /// Model batch size, should be kept constant between training and
-    /// prediction.
-    pub batch_size: usize,
+    /// Model batch size (unused).
+    pub batch_size: Option<usize>,
 
     /// Only allocate as much GPU memory as needed.
     #[serde(default)]
@@ -59,7 +58,7 @@ impl ModelConfig {
 impl Default for ModelConfig {
     fn default() -> Self {
         ModelConfig {
-            batch_size: 128,
+            batch_size: None,
             gpu_allow_growth: true,
             graph: String::new(),
             inter_op_parallelism_threads: 1,
