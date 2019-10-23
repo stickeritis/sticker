@@ -22,6 +22,7 @@ use crate::traits::{StickerApp, StickerTrainApp};
 
 static EPOCHS: &str = "EPOCHS";
 static INITIAL_LR: &str = "INITIAL_LR";
+static WARMUP: &str = "WARMUP";
 static MAX_LEN: &str = "MAX_LEN";
 static CONTINUE: &str = "CONTINUE";
 static SAVE_BATCH: &str = "SAVE_BATCH";
@@ -60,6 +61,7 @@ pub struct PretrainApp {
     config: String,
     epochs: usize,
     initial_lr: NotNan<f32>,
+    warmup_steps: usize,
     max_len: usize,
     parameters: Option<String>,
     saver: PretrainSaver,
@@ -122,9 +124,10 @@ impl PretrainApp {
         let train_size = train_file.metadata()?.len() as usize;
 
         let mut saver = self.saver.clone();
+        let mut global_step = 0;
 
         for epoch in 0..self.epochs {
-            let (loss, acc) = self.run_epoch(
+            let (loss, acc, global_step_after_epoch) = self.run_epoch(
                 config,
                 &mut saver,
                 &mut categorical_encoder,
@@ -133,12 +136,13 @@ impl PretrainApp {
                 &mut train_file,
                 true,
                 train_size,
+                global_step,
                 epoch,
             )?;
-
+            global_step = global_step_after_epoch;
             eprintln!("Epoch {} (train, loss: {:.4}, acc: {:.4}", epoch, loss, acc);
 
-            let (loss, acc) = self.run_epoch(
+            let (loss, acc, _) = self.run_epoch(
                 config,
                 &mut saver,
                 &mut categorical_encoder,
@@ -147,6 +151,7 @@ impl PretrainApp {
                 &mut validation_file,
                 false,
                 train_size,
+                global_step,
                 epoch,
             )?;
 
@@ -181,8 +186,9 @@ impl PretrainApp {
         file: &mut File,
         is_training: bool,
         train_size: usize,
+        global_step: usize,
         epoch: usize,
-    ) -> Result<(f32, f32), Error>
+    ) -> Result<(f32, f32, usize), Error>
     where
         E: SentenceEncoder,
         E::Encoding: Clone + Eq + Hash,
@@ -202,7 +208,7 @@ impl PretrainApp {
         let mut instances = 0;
         let mut acc = 0f32;
         let mut loss = 0f32;
-
+        let mut internal_global_step = global_step;
         for batch in dataset
             .batches(encoder, vectorizer, config.model.batch_size, self.max_len)
             .or_exit("Cannot read batches", 1)
@@ -210,9 +216,16 @@ impl PretrainApp {
             let tensors = batch.or_exit("Cannot read batch", 1).into_parts();
 
             let batch_perf = if is_training {
-                let bytes_done = (epoch * train_size) + file.seek(SeekFrom::Current(0))? as usize;
-                let lr_scale = 1f32 - (bytes_done as f32 / (self.epochs * train_size) as f32);
-                let lr = lr_scale * self.initial_lr.into_inner();
+                let lr = if internal_global_step < self.warmup_steps {
+                    (self.initial_lr.into_inner() / (self.warmup_steps as f32))
+                        * internal_global_step as f32
+                } else {
+                    let bytes_done =
+                        (epoch * train_size) + file.seek(SeekFrom::Current(0))? as usize;
+                    let lr_scale = 1f32 - (bytes_done as f32 / (self.epochs * train_size) as f32);
+                    lr_scale * self.initial_lr.into_inner()
+                };
+
                 let batch_perf = trainer.train(
                     &tensors.seq_lens,
                     &tensors.inputs,
@@ -245,6 +258,8 @@ impl PretrainApp {
             instances += n_tokens;
 
             if is_training {
+                internal_global_step += 1;
+
                 saver
                     .save(trainer, CompletedUnit::Batch(batch_perf.accuracy))
                     .or_exit("Error saving model", 1);
@@ -254,7 +269,7 @@ impl PretrainApp {
         loss /= instances as f32;
         acc /= instances as f32;
 
-        Ok((loss, acc))
+        Ok((loss, acc, internal_global_step))
     }
 }
 
@@ -277,6 +292,15 @@ impl StickerApp for PretrainApp {
                     .value_name("LR")
                     .help("Initial learning rate")
                     .default_value("0.01"),
+            )
+            .arg(
+                Arg::with_name(WARMUP)
+                    .long("warmup")
+                    .value_name("N")
+                    .help(
+                        "For the first N timesteps, the learning rate is linearly scaled up to LR.",
+                    )
+                    .default_value("0"),
             )
             .arg(
                 Arg::with_name(EPOCHS)
@@ -331,6 +355,12 @@ impl StickerApp for PretrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse initial learning rate", 1);
+        let warmup_steps = matches
+            .value_of(WARMUP)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot parse warmup", 1);
+
         let max_len = matches
             .value_of(MAX_LEN)
             .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1))
@@ -356,6 +386,7 @@ impl StickerApp for PretrainApp {
             config,
             epochs,
             initial_lr,
+            warmup_steps,
             max_len,
             parameters,
             saver,
