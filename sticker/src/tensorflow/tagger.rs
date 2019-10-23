@@ -10,15 +10,13 @@ use failure::{err_msg, Error, Fallible};
 use itertools::Itertools;
 use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
-use protobuf::Message;
 use serde_derive::{Deserialize, Serialize};
-use sticker_tf_proto::ConfigProto;
 use tensorflow::{
     Graph, ImportGraphDefOptions, Operation, Session, SessionOptions, SessionRunArgs, Tensor,
 };
 
 use super::tensor::{NoLabels, TensorBuilder};
-use super::util::{prepare_path, status_to_error};
+use super::util::{prepare_path, status_to_error, ConfigProtoBuilder};
 use crate::encoder::{CategoricalEncoder, EncodingProb, SentenceDecoder};
 use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
@@ -50,18 +48,11 @@ pub struct ModelConfig {
 
 impl ModelConfig {
     pub fn to_protobuf(&self) -> Result<Vec<u8>, Error> {
-        let mut config_proto = ConfigProto::new();
-        config_proto.intra_op_parallelism_threads = self.intra_op_parallelism_threads as i32;
-        config_proto.inter_op_parallelism_threads = self.inter_op_parallelism_threads as i32;
-        config_proto
-            .gpu_options
-            .set_default()
-            .set_allow_growth(self.gpu_allow_growth);
-
-        let mut bytes = Vec::new();
-        config_proto.write_to_vec(&mut bytes)?;
-
-        Ok(bytes)
+        ConfigProtoBuilder::default()
+            .inter_op_parallelism_threads(self.inter_op_parallelism_threads)
+            .intra_op_parallelism_threads(self.intra_op_parallelism_threads)
+            .gpu_allow_growth(self.gpu_allow_growth)
+            .protobuf()
     }
 }
 
@@ -226,7 +217,7 @@ impl TaggerGraph {
             Some(ref graph_metadata_op) => {
                 let mut args = SessionRunArgs::new();
                 let metadata_token = args.request_fetch(graph_metadata_op, 0);
-                let session = new_session(self)?;
+                let session = self.metadata_session()?;
                 session.run(&mut args).map_err(status_to_error)?;
                 let metadata: Tensor<String> =
                     args.fetch(metadata_token).map_err(status_to_error)?;
@@ -236,6 +227,17 @@ impl TaggerGraph {
         };
 
         Ok(metadata)
+    }
+
+    fn metadata_session(&self) -> Fallible<Session> {
+        let config_proto = ConfigProtoBuilder::default().gpu_count(0).protobuf()?;
+
+        let mut session_opts = SessionOptions::new();
+        session_opts
+            .set_config(&config_proto)
+            .map_err(status_to_error)?;
+
+        Session::new(&session_opts, &self.graph).map_err(status_to_error)
     }
 }
 
@@ -273,7 +275,7 @@ where
         let mut args = SessionRunArgs::new();
         args.add_feed(&graph.save_path_op, 0, &path_tensor);
         args.add_target(&graph.restore_op);
-        let session = new_session(&graph)?;
+        let session = Self::new_session(&graph)?;
         session.run(&mut args).map_err(status_to_error)?;
 
         Ok(Tagger {
@@ -282,6 +284,15 @@ where
             session,
             vectorizer,
         })
+    }
+
+    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
+        let mut session_opts = SessionOptions::new();
+        session_opts
+            .set_config(&graph.model_config.to_protobuf()?)
+            .map_err(status_to_error)?;
+
+        Session::new(&session_opts, &graph.graph).map_err(status_to_error)
     }
 
     /// Get the top-k numeric labels for the sequences.
@@ -432,15 +443,6 @@ where
             .map(|top_k| self.decoder.decode_without_inner(&top_k))
             .collect()
     }
-}
-
-fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
-    let mut session_opts = SessionOptions::new();
-    session_opts
-        .set_config(&graph.model_config.to_protobuf()?)
-        .map_err(status_to_error)?;
-
-    Session::new(&session_opts, &graph.graph).map_err(status_to_error)
 }
 
 #[cfg(test)]
