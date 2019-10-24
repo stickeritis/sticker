@@ -50,7 +50,10 @@ class RNNModel(Model):
         lr = tf.compat.v1.placeholder(tf.float32, [], "lr")
 
         train_step = tf.compat.v1.train.get_or_create_global_step()
-        self._train_op = tf.compat.v1.train.AdamOptimizer(
-            lr).minimize(loss, name="train", global_step=train_step)
+        optimizer = tf.compat.v1.train.AdamOptimizer(lr)
+        if args.auto_mixed_precision:
+            optimizer = tf.compat.v1.train.experimental.enable_mixed_precision_graph_rewrite(optimizer)
+
+        self._train_op = optimizer.minimize(loss, name="train", global_step=train_step)
 
         self.create_summary_ops(acc, None, loss, lr)

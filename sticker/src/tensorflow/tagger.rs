@@ -20,6 +20,16 @@ use super::util::{prepare_path, status_to_error, ConfigProtoBuilder};
 use crate::encoder::{CategoricalEncoder, EncodingProb, SentenceDecoder};
 use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
+/// Graph metadata
+///
+/// This only contains the fields that we are interested in. Since we
+/// do not deny unknown fields, these are silently ignored.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
+struct Metadata {
+    #[serde(default)]
+    pub auto_mixed_precision: bool,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ModelConfig {
@@ -46,11 +56,12 @@ pub struct ModelConfig {
 }
 
 impl ModelConfig {
-    pub fn to_protobuf(&self) -> Result<Vec<u8>, Error> {
+    pub fn to_protobuf(&self, auto_mixed_precision: bool) -> Result<Vec<u8>, Error> {
         ConfigProtoBuilder::default()
             .inter_op_parallelism_threads(self.inter_op_parallelism_threads)
             .intra_op_parallelism_threads(self.intra_op_parallelism_threads)
             .gpu_allow_growth(self.gpu_allow_growth)
+            .auto_mixed_precision(auto_mixed_precision)
             .protobuf()
     }
 }
@@ -211,6 +222,17 @@ impl TaggerGraph {
             .map_err(status_to_error)
     }
 
+    pub(crate) fn has_auto_mixed_precision(&self) -> Fallible<bool> {
+        let metadata_str = match self.metadata()? {
+            Some(metadata) => metadata,
+            None => return Ok(false),
+        };
+
+        let metadata: Metadata = toml::from_str(&metadata_str)?;
+
+        Ok(metadata.auto_mixed_precision)
+    }
+
     pub fn metadata(&self) -> Fallible<Option<String>> {
         let metadata = match self.graph_metadata_op {
             Some(ref graph_metadata_op) => {
@@ -288,7 +310,11 @@ where
     fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
         let mut session_opts = SessionOptions::new();
         session_opts
-            .set_config(&graph.model_config.to_protobuf()?)
+            .set_config(
+                &graph
+                    .model_config
+                    .to_protobuf(graph.has_auto_mixed_precision()?)?,
+            )
             .map_err(status_to_error)?;
 
         Session::new(&session_opts, &graph.graph).map_err(status_to_error)
