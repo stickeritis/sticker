@@ -34,6 +34,7 @@ mod resource_handle;
 
 #[allow(renamed_and_removed_lints)]
 mod rewriter_config;
+pub use rewriter_config::RewriterConfig_Toggle;
 
 #[allow(renamed_and_removed_lints)]
 mod step_stats;

@@ -85,6 +85,10 @@ def get_common_parser():
         help="use CRF layer for classification",
         action="store_true")
     parser.add_argument(
+        "--auto_mixed_precision",
+        help="Enable auto mixed precision (experimental)",
+        action="store_true")
+    parser.add_argument(
         "--subword_gru",
         help="use GRU RNN cells in the character RNN",
         action="store_true")

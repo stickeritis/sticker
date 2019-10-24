@@ -2,7 +2,7 @@ use std::path::Path;
 
 use failure::{err_msg, format_err, Error, Fallible};
 use protobuf::Message;
-use sticker_tf_proto::ConfigProto;
+use sticker_tf_proto::{ConfigProto, RewriterConfig_Toggle};
 use tensorflow::Status;
 
 /// Tensorflow requires a path that contains a directory component.
@@ -38,6 +38,21 @@ impl ConfigProtoBuilder {
         proto.inter_op_parallelism_threads = 1;
 
         ConfigProtoBuilder { proto }
+    }
+
+    pub fn auto_mixed_precision(mut self, mixed_precision: bool) -> Self {
+        let toggle = if mixed_precision {
+            RewriterConfig_Toggle::ON
+        } else {
+            RewriterConfig_Toggle::OFF
+        };
+
+        self.proto
+            .mut_graph_options()
+            .mut_rewrite_options()
+            .set_auto_mixed_precision(toggle);
+
+        self
     }
 
     pub fn gpu_count(mut self, n: usize) -> Self {

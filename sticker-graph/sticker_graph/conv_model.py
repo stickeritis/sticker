@@ -195,6 +195,9 @@ class ConvModel(Model):
         # norm a placeholder as well.
         lr = tf.compat.v1.placeholder(tf.float32, [], "lr")
         optimizer = tf.compat.v1.train.AdamOptimizer(lr)
+        if args.auto_mixed_precision:
+            optimizer = tf.compat.v1.train.experimental.enable_mixed_precision_graph_rewrite(optimizer)
+
         gradients, variables = zip(*optimizer.compute_gradients(loss))
         gradients, gradient_norm = tf.clip_by_global_norm(gradients, 1.0)
 
