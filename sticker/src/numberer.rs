@@ -5,7 +5,7 @@ use std::hash::Hash;
 use serde_derive::{Deserialize, Serialize};
 
 /// Numberer for categorical values, such as features or class labels.
-#[derive(Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Numberer<T>
 where
     T: Eq + Hash,

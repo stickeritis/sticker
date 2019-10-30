@@ -17,7 +17,7 @@ use tensorflow::{
 
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error, ConfigProtoBuilder};
-use crate::encoder::{CategoricalEncoder, EncodingProb, SentenceDecoder};
+use crate::encoder::{CategoricalDecoder, EncodingProb, SentenceDecoder};
 use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -246,7 +246,7 @@ where
     D::Encoding: Eq + Hash,
 {
     graph: TaggerGraph,
-    decoder: CategoricalEncoder<D, D::Encoding>,
+    decoder: CategoricalDecoder<D, D::Encoding>,
     session: Session,
     vectorizer: SentVectorizer,
 }
@@ -262,7 +262,7 @@ where
     /// the file specified in `parameters_path`.
     pub fn load_weights<P>(
         graph: TaggerGraph,
-        decoder: CategoricalEncoder<D, D::Encoding>,
+        decoder: CategoricalDecoder<D, D::Encoding>,
         vectorizer: SentVectorizer,
         parameters_path: P,
     ) -> Result<Self, Error>

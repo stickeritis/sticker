@@ -1,6 +1,7 @@
 //! Label encoders.
 
 use std::borrow::{Borrow, Cow};
+use std::cell::RefCell;
 use std::hash::Hash;
 
 use conllx::graph::Sentence;
@@ -92,11 +93,11 @@ pub trait SentenceEncoder {
     type Encoding;
 
     /// Encode the given sentence.
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error>;
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error>;
 }
 
 /// An encoder wrapper that encodes/decodes to a categorical label.
-pub struct CategoricalEncoder<E, V>
+pub struct CategoricalDecoder<E, V>
 where
     V: Eq + Hash,
 {
@@ -104,19 +105,19 @@ where
     numberer: Numberer<V>,
 }
 
-impl<E, V> CategoricalEncoder<E, V>
+impl<E, V> CategoricalDecoder<E, V>
 where
     V: Eq + Hash,
 {
-    pub fn new(encoder: E, numberer: Numberer<V>) -> Self {
-        CategoricalEncoder {
-            inner: encoder,
+    pub fn new(inner_decoder: E, numberer: Numberer<V>) -> Self {
+        CategoricalDecoder {
+            inner: inner_decoder,
             numberer,
         }
     }
 }
 
-impl<D> CategoricalEncoder<D, D::Encoding>
+impl<D> CategoricalDecoder<D, D::Encoding>
 where
     D: SentenceDecoder,
     D::Encoding: Clone + Eq + Hash,
@@ -149,21 +150,7 @@ where
     }
 }
 
-impl<E> SentenceEncoder for CategoricalEncoder<E, E::Encoding>
-where
-    E: SentenceEncoder,
-    E::Encoding: Clone + Eq + Hash,
-{
-    type Encoding = usize;
-
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
-        let encoding = self.inner.encode(sentence)?;
-        let categorical_encoding = encoding.into_iter().map(|e| self.numberer.add(e)).collect();
-        Ok(categorical_encoding)
-    }
-}
-
-impl<D> SentenceDecoder for CategoricalEncoder<D, D::Encoding>
+impl<D> SentenceDecoder for CategoricalDecoder<D, D::Encoding>
 where
     D: SentenceDecoder,
     D::Encoding: Clone + Eq + Hash,
@@ -179,6 +166,44 @@ where
     }
 }
 
+/// An encoder wrapper that encodes/decodes to a categorical label.
+pub struct CategoricalEncoder<E, V>
+where
+    V: Eq + Hash,
+{
+    inner: E,
+    numberer: RefCell<Numberer<V>>,
+}
+
+impl<E, V> CategoricalEncoder<E, V>
+where
+    V: Eq + Hash,
+{
+    pub fn new(inner_encoder: E, numberer: Numberer<V>) -> Self {
+        CategoricalEncoder {
+            inner: inner_encoder,
+            numberer: RefCell::new(numberer),
+        }
+    }
+}
+
+impl<E> SentenceEncoder for CategoricalEncoder<E, E::Encoding>
+where
+    E: SentenceEncoder,
+    E::Encoding: Clone + Eq + Hash,
+{
+    type Encoding = usize;
+
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
+        let encoding = self.inner.encode(sentence)?;
+        let categorical_encoding = encoding
+            .into_iter()
+            .map(|e| self.numberer.borrow_mut().add(e))
+            .collect();
+        Ok(categorical_encoding)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::fs::File;
@@ -188,16 +213,20 @@ mod tests {
     use conllx::io::Reader;
 
     use super::layer::LayerEncoder;
-    use super::{CategoricalEncoder, EncodingProb, SentenceDecoder, SentenceEncoder};
+    use super::{
+        CategoricalDecoder, CategoricalEncoder, EncodingProb, SentenceDecoder, SentenceEncoder,
+    };
     use crate::{Layer, Numberer};
 
     static NON_PROJECTIVE_DATA: &'static str = "testdata/nonprojective.conll";
 
-    fn test_encoding<P, E, C>(path: P, mut encoder_decoder: E)
+    fn test_encoding<P, E, D, C, F>(path: P, encoder: E, encoder_to_decoder: F)
     where
         P: AsRef<Path>,
-        E: SentenceEncoder<Encoding = C> + SentenceDecoder<Encoding = C>,
+        D: SentenceDecoder<Encoding = C>,
+        E: SentenceEncoder<Encoding = C>,
         C: 'static + Clone,
+        F: Fn(&E) -> D,
     {
         let f = File::open(path).unwrap();
         let reader = Reader::new(BufReader::new(f));
@@ -206,7 +235,7 @@ mod tests {
             let sentence = sentence.unwrap();
 
             // Encode
-            let encodings = encoder_decoder
+            let encodings = encoder
                 .encode(&sentence)
                 .unwrap()
                 .into_iter()
@@ -214,10 +243,9 @@ mod tests {
                 .collect::<Vec<_>>();
 
             // Decode
+            let decoder = encoder_to_decoder(&encoder);
             let mut test_sentence = sentence.clone();
-            encoder_decoder
-                .decode(&encodings, &mut test_sentence)
-                .unwrap();
+            decoder.decode(&encodings, &mut test_sentence).unwrap();
 
             assert_eq!(sentence, test_sentence);
         }
@@ -228,6 +256,8 @@ mod tests {
         let numberer = Numberer::new(1);
         let encoder = LayerEncoder::new(Layer::Pos);
         let categorical_encoder = CategoricalEncoder::new(encoder, numberer);
-        test_encoding(NON_PROJECTIVE_DATA, categorical_encoder);
+        test_encoding(NON_PROJECTIVE_DATA, categorical_encoder, |encoder| {
+            CategoricalDecoder::new(encoder.inner.clone(), encoder.numberer.borrow().clone())
+        });
     }
 }

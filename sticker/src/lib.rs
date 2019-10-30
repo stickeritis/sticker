@@ -18,3 +18,5 @@ pub use crate::tag::{Layer, LayerValue, ModelPerformance, Tag, TopK, TopKLabels}
 pub mod tensorflow;
 
 pub mod wrapper;
+
+pub(crate) mod util;

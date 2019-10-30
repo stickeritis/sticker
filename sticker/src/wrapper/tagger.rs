@@ -6,7 +6,7 @@ use failure::{Fallible, ResultExt};
 
 use crate::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use crate::encoder::layer::LayerEncoder;
-use crate::encoder::{CategoricalEncoder, SentenceDecoder};
+use crate::encoder::{CategoricalDecoder, SentenceDecoder};
 use crate::serialization::CborRead;
 use crate::tensorflow::{Tagger as TFTagger, TaggerGraph};
 use crate::wrapper::{Config, EncoderType, LabelerType};
@@ -128,7 +128,7 @@ impl Tagger {
             format!("Cannot load label file '{}': {}", config.labeler.labels, e)
         })?;
 
-        let categorical_decoder = CategoricalEncoder::new(decoder, labels);
+        let categorical_decoder = CategoricalDecoder::new(decoder, labels);
 
         let tagger = TFTagger::load_weights(
             graph,

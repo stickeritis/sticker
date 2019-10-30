@@ -53,7 +53,7 @@ impl SentenceDecoder for LayerEncoder {
 impl SentenceEncoder for LayerEncoder {
     type Encoding = String;
 
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
         let mut encoding = Vec::with_capacity(sentence.len() - 1);
         for token in sentence.iter().filter_map(Node::token) {
             let label = token

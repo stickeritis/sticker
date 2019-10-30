@@ -137,7 +137,7 @@ impl RelativePOSEncoder {
 impl SentenceEncoder for RelativePOSEncoder {
     type Encoding = DependencyEncoding<RelativePOS>;
 
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
         let pos_table = pos_position_table(&sentence);
 
         let mut encoded = Vec::with_capacity(sentence.len());
