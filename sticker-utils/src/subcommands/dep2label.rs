@@ -79,7 +79,7 @@ impl StickerApp for Dep2LabelApp {
     }
 }
 
-fn label_with_encoder<E, R, W>(mut encoder: E, read: R, mut write: W)
+fn label_with_encoder<E, R, W>(encoder: E, read: R, mut write: W)
 where
     E: SentenceEncoder,
     E::Encoding: ToString,

@@ -17,7 +17,7 @@ use tensorflow::{
 
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error, ConfigProtoBuilder};
-use crate::encoder::categorical::CategoricalEncoder;
+use crate::encoder::categorical::ImmutableCategoricalEncoder;
 use crate::encoder::{EncodingProb, SentenceDecoder};
 use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
@@ -266,10 +266,10 @@ impl TaggerGraph {
 pub struct Tagger<D>
 where
     D: Send + SentenceDecoder + Sync,
-    D::Encoding: Eq + Hash,
+    D::Encoding: Clone + Eq + Hash,
 {
     graph: TaggerGraph,
-    decoder: CategoricalEncoder<D, D::Encoding>,
+    decoder: ImmutableCategoricalEncoder<D, D::Encoding>,
     session: Session,
     vectorizer: SentVectorizer,
 }
@@ -285,7 +285,7 @@ where
     /// the file specified in `parameters_path`.
     pub fn load_weights<P>(
         graph: TaggerGraph,
-        decoder: CategoricalEncoder<D, D::Encoding>,
+        decoder: ImmutableCategoricalEncoder<D, D::Encoding>,
         vectorizer: SentVectorizer,
         parameters_path: P,
     ) -> Result<Self, Error>
@@ -325,7 +325,7 @@ where
     fn top_k_numeric_<'a, S>(
         &self,
         sentences: &'a [S],
-    ) -> Fallible<impl 'a + Iterator<Item = Vec<Vec<EncodingProb<'static, usize>>>>>
+    ) -> Fallible<impl 'a + Iterator<Item = Vec<Vec<EncodingProb<usize>>>>>
     where
         S: Borrow<Sentence>,
     {
@@ -361,9 +361,7 @@ where
                     .zip(probs)
                     .chunks(k)
                     .into_iter()
-                    .map(|c| {
-                        c.map(|(&label, &prob)| EncodingProb::new_from_owned(label as usize, prob))
-                    })
+                    .map(|c| c.map(|(&label, &prob)| EncodingProb::new(label as usize, prob)))
                     .map(Vec::from_iter)
                     .collect::<Vec<_>>()
             }))

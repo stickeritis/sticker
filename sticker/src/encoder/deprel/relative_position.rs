@@ -54,7 +54,7 @@ impl RelativePositionEncoder {
 impl SentenceEncoder for RelativePositionEncoder {
     type Encoding = DependencyEncoding<RelativePosition>;
 
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
         let mut encoded = Vec::with_capacity(sentence.len());
         for idx in 0..sentence.len() {
             let form = match &sentence[idx] {
@@ -85,10 +85,9 @@ impl SentenceEncoder for RelativePositionEncoder {
 impl SentenceDecoder for RelativePositionEncoder {
     type Encoding = DependencyEncoding<RelativePosition>;
 
-    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
-        Self::Encoding: 'a,
+        S: AsRef<[EncodingProb<Self::Encoding>]>,
     {
         let token_indices: Vec<_> = (0..sentence.len())
             .filter(|&idx| sentence[idx].is_token())
@@ -155,14 +154,14 @@ mod tests {
 
         let decoder = RelativePositionEncoder;
         let labels = vec![vec![
-            EncodingProb::new_from_owned(
+            EncodingProb::new(
                 DependencyEncoding {
                     label: "ROOT".into(),
                     head: RelativePosition(-2),
                 },
                 1.0,
             ),
-            EncodingProb::new_from_owned(
+            EncodingProb::new(
                 DependencyEncoding {
                     label: "ROOT".into(),
                     head: RelativePosition(-1),

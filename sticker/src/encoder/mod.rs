@@ -1,7 +1,5 @@
 //! Label encoders.
 
-use std::borrow::{Borrow, Cow};
-
 use conllx::graph::Sentence;
 use failure::Error;
 
@@ -12,47 +10,25 @@ pub mod deprel;
 pub mod layer;
 
 /// An encoding with its probability.
-pub struct EncodingProb<'a, E>
-where
-    E: ToOwned,
-{
-    encoding: Cow<'a, E>,
+pub struct EncodingProb<E> {
+    encoding: E,
     prob: f32,
 }
 
-impl<E> EncodingProb<'static, E>
+impl<E> EncodingProb<E>
 where
     E: ToOwned,
 {
     /// Create an encoding with its probability.
     ///
     /// This constructor takes an owned encoding.
-    #[allow(dead_code)]
-    pub(crate) fn new_from_owned(encoding: E::Owned, prob: f32) -> Self {
-        EncodingProb {
-            encoding: Cow::Owned(encoding),
-            prob,
-        }
-    }
-}
-
-impl<'a, E> EncodingProb<'a, E>
-where
-    E: ToOwned,
-{
-    /// Create an encoding with its probability.
-    ///
-    /// This constructor takes a borrowed encoding.
-    pub(crate) fn new(encoding: &'a E, prob: f32) -> Self {
-        EncodingProb {
-            encoding: Cow::Borrowed(encoding),
-            prob,
-        }
+    pub fn new(encoding: E, prob: f32) -> Self {
+        EncodingProb { encoding, prob }
     }
 
     /// Get the encoding.
     pub fn encoding(&self) -> &E {
-        self.encoding.borrow()
+        &self.encoding
     }
 
     /// Get the probability of the encoding.
@@ -61,7 +37,7 @@ where
     }
 }
 
-impl<'a, E> From<EncodingProb<'a, E>> for (String, f32)
+impl<E> From<EncodingProb<E>> for (String, f32)
 where
     E: Clone + ToString,
 {
@@ -77,10 +53,9 @@ where
 pub trait SentenceDecoder {
     type Encoding: ToOwned;
 
-    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
-        Self::Encoding: 'a;
+        S: AsRef<[EncodingProb<Self::Encoding>]>;
 }
 
 /// Trait for sentence encoders.
@@ -91,5 +66,5 @@ pub trait SentenceEncoder {
     type Encoding;
 
     /// Encode the given sentence.
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error>;
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error>;
 }

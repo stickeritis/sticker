@@ -10,7 +10,7 @@ use rand_xorshift::XorShiftRng;
 
 use super::tensor::{LabelTensor, TensorBuilder};
 use super::util::RandomRemoveVec;
-use crate::encoder::categorical::CategoricalEncoder;
+use crate::encoder::categorical::ImmutableCategoricalEncoder;
 use crate::encoder::SentenceEncoder;
 use crate::SentVectorizer;
 
@@ -35,7 +35,7 @@ where
     /// length.
     fn batches(
         self,
-        encoder: &'a mut CategoricalEncoder<E, E::Encoding>,
+        encoder: &'a ImmutableCategoricalEncoder<E, E::Encoding>,
         vectorizer: &'a SentVectorizer,
         batch_size: usize,
         max_len: Option<usize>,
@@ -91,7 +91,7 @@ where
 
     fn batches(
         self,
-        encoder: &'a mut CategoricalEncoder<E, E::Encoding>,
+        encoder: &'a ImmutableCategoricalEncoder<E, E::Encoding>,
         vectorizer: &'a SentVectorizer,
         batch_size: usize,
         max_len: Option<usize>,
@@ -118,7 +118,7 @@ where
     I: Iterator<Item = Result<Sentence, Error>>,
 {
     batch_size: usize,
-    encoder: &'a mut CategoricalEncoder<E, E::Encoding>,
+    encoder: &'a ImmutableCategoricalEncoder<E, E::Encoding>,
     vectorizer: &'a SentVectorizer,
     sentences: I,
 }

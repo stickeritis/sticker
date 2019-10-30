@@ -137,7 +137,7 @@ impl RelativePOSEncoder {
 impl SentenceEncoder for RelativePOSEncoder {
     type Encoding = DependencyEncoding<RelativePOS>;
 
-    fn encode(&mut self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
+    fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
         let pos_table = pos_position_table(&sentence);
 
         let mut encoded = Vec::with_capacity(sentence.len());
@@ -186,10 +186,9 @@ impl SentenceEncoder for RelativePOSEncoder {
 impl SentenceDecoder for RelativePOSEncoder {
     type Encoding = DependencyEncoding<RelativePOS>;
 
-    fn decode<'a, S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
+    fn decode<S>(&self, labels: &[S], sentence: &mut Sentence) -> Result<(), Error>
     where
-        S: AsRef<[EncodingProb<'a, Self::Encoding>]>,
-        Self::Encoding: 'a,
+        S: AsRef<[EncodingProb<Self::Encoding>]>,
     {
         let pos_table = pos_position_table(&sentence);
 
@@ -296,7 +295,7 @@ mod tests {
 
         let decoder = RelativePOSEncoder;
         let labels = vec![vec![
-            EncodingProb::new_from_owned(
+            EncodingProb::new(
                 DependencyEncoding {
                     label: "ROOT".into(),
                     head: RelativePOS {
@@ -306,7 +305,7 @@ mod tests {
                 },
                 1.0,
             ),
-            EncodingProb::new_from_owned(
+            EncodingProb::new(
                 DependencyEncoding {
                     label: "ROOT".into(),
                     head: RelativePOS {
