@@ -10,7 +10,8 @@ use rand_xorshift::XorShiftRng;
 
 use super::tensor::{LabelTensor, TensorBuilder};
 use super::util::RandomRemoveVec;
-use crate::encoder::{CategoricalEncoder, SentenceEncoder};
+use crate::encoder::categorical::CategoricalEncoder;
+use crate::encoder::SentenceEncoder;
 use crate::SentVectorizer;
 
 /// A set of training/validation data.

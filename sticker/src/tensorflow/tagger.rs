@@ -17,7 +17,8 @@ use tensorflow::{
 
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error, ConfigProtoBuilder};
-use crate::encoder::{CategoricalEncoder, EncodingProb, SentenceDecoder};
+use crate::encoder::categorical::CategoricalEncoder;
+use crate::encoder::{EncodingProb, SentenceDecoder};
 use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
 /// Graph metadata
