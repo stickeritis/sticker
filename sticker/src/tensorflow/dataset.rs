@@ -5,6 +5,8 @@ use std::usize;
 use conllx::graph::Sentence;
 use conllx::io::{ReadSentence, Reader};
 use failure::{Error, Fallible};
+use rand::{Rng, SeedableRng};
+use rand_xorshift::XorShiftRng;
 
 use super::tensor::{LabelTensor, TensorBuilder};
 use crate::encoder::{CategoricalEncoder, SentenceEncoder};
@@ -35,6 +37,7 @@ where
         vectorizer: &'a SentVectorizer,
         batch_size: usize,
         max_len: Option<usize>,
+        shuffle_buffer_size: Option<usize>,
     ) -> Fallible<Self::Iter>;
 }
 
@@ -57,13 +60,21 @@ impl<R> ConllxDataSet<R> {
     fn get_sentence_iter<'a>(
         reader: R,
         max_len: Option<usize>,
+        shuffle_buffer_size: Option<usize>,
     ) -> Box<dyn Iterator<Item = Result<Sentence, Error>> + 'a>
     where
         R: ReadSentence + 'a,
     {
-        match max_len {
-            Some(max_len) => Box::new(reader.sentences().filter_by_len(max_len)),
-            None => Box::new(reader.sentences()),
+        match (max_len, shuffle_buffer_size) {
+            (Some(max_len), Some(buffer_size)) => Box::new(
+                reader
+                    .sentences()
+                    .filter_by_len(max_len)
+                    .shuffle(buffer_size),
+            ),
+            (Some(max_len), None) => Box::new(reader.sentences().filter_by_len(max_len)),
+            (None, Some(buffer_size)) => Box::new(reader.sentences().shuffle(buffer_size)),
+            (None, None) => Box::new(reader.sentences()),
         }
     }
 }
@@ -82,6 +93,7 @@ where
         vectorizer: &'a SentVectorizer,
         batch_size: usize,
         max_len: Option<usize>,
+        shuffle_buffer_size: Option<usize>,
     ) -> Fallible<Self::Iter> {
         // Rewind to the beginning of the data (if necessary).
         self.0.seek(SeekFrom::Start(0))?;
@@ -91,7 +103,7 @@ where
         Ok(ConllxIter {
             batch_size,
             encoder,
-            sentences: ConllxDataSet::get_sentence_iter(reader, max_len),
+            sentences: ConllxDataSet::get_sentence_iter(reader, max_len, shuffle_buffer_size),
             vectorizer,
         })
     }
@@ -170,6 +182,7 @@ where
 /// Trait providing adapters for `conllx::io::Sentences`.
 pub trait SentenceIter: Sized {
     fn filter_by_len(self, max_len: usize) -> LengthFilter<Self>;
+    fn shuffle(self, buffer_size: usize) -> Shuffled<Self>;
 }
 
 impl<I> SentenceIter for I
@@ -180,6 +193,15 @@ where
         LengthFilter {
             inner: self,
             max_len,
+        }
+    }
+
+    fn shuffle(self, buffer_size: usize) -> Shuffled<Self> {
+        Shuffled {
+            inner: self,
+            buffer: Vec::with_capacity(buffer_size),
+            buffer_size,
+            rng: XorShiftRng::from_entropy(),
         }
     }
 }
@@ -207,5 +229,60 @@ where
             return Some(sent);
         }
         None
+    }
+}
+
+/// An Iterator adapter performing local shuffling.
+///
+/// Fills a buffer with size `buffer_size` on the first call. Subsequent
+/// calls swap the next incoming item with a random element from the
+/// buffer and return the random element.
+pub struct Shuffled<I> {
+    inner: I,
+    buffer: Vec<Sentence>,
+    buffer_size: usize,
+    rng: XorShiftRng,
+}
+
+impl<I> Iterator for Shuffled<I>
+where
+    I: Iterator<Item = Result<Sentence, Error>>,
+{
+    type Item = Result<Sentence, Error>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.buffer.is_empty() {
+            // fill the buffer
+            while let Some(sent) = self.inner.next() {
+                match sent {
+                    Ok(sent) => self.buffer.push(sent),
+                    Err(err) => return Some(Err(err)),
+                }
+
+                if self.buffer.len() == self.buffer_size {
+                    break;
+                }
+            }
+        }
+
+        let sent = match self.inner.next() {
+            Some(sent) => {
+                match sent {
+                    Ok(sent) => self.buffer.push(sent),
+                    Err(err) => return Some(Err(err)),
+                }
+                let buffer_len = self.buffer.len();
+                self.buffer.swap_remove(self.rng.gen_range(0, buffer_len))
+            }
+            None => {
+                // if the buffer is empty and `inner` is exhausted, we return None.
+                if self.buffer.is_empty() {
+                    return None;
+                }
+                let buffer_len = self.buffer.len();
+                self.buffer.swap_remove(self.rng.gen_range(0, buffer_len))
+            }
+        };
+        Some(Ok(sent))
     }
 }

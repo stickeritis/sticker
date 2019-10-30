@@ -24,6 +24,7 @@ static EPOCHS: &str = "EPOCHS";
 static INITIAL_LR: &str = "INITIAL_LR";
 static WARMUP: &str = "WARMUP";
 static MAX_LEN: &str = "MAX_LEN";
+static SHUFFLE: &str = "SHUFFLE";
 static CONTINUE: &str = "CONTINUE";
 static SAVE_BATCH: &str = "SAVE_BATCH";
 static TRAIN_DATA: &str = "TRAIN_DATA";
@@ -64,6 +65,7 @@ pub struct PretrainApp {
     initial_lr: NotNan<f32>,
     warmup_steps: usize,
     max_len: Option<usize>,
+    shuffle_buffer_size: Option<usize>,
     parameters: Option<String>,
     saver: PretrainSaver,
     train_data: String,
@@ -208,7 +210,13 @@ impl PretrainApp {
         let mut loss = 0f32;
         let mut internal_global_step = global_step;
         for batch in dataset
-            .batches(encoder, vectorizer, self.batch_size, self.max_len)
+            .batches(
+                encoder,
+                vectorizer,
+                self.batch_size,
+                self.max_len,
+                self.shuffle_buffer_size,
+            )
             .or_exit("Cannot read batches", 1)
         {
             let tensors = batch.or_exit("Cannot read batch", 1).into_parts();
@@ -315,6 +323,13 @@ impl StickerApp for PretrainApp {
                     .help("Ignore sentences longer than N tokens"),
             )
             .arg(
+                Arg::with_name(SHUFFLE)
+                    .long("shuffle_buffer")
+                    .value_name("N")
+                    .help("Size of the buffer used for shuffling.")
+                    .takes_value(true),
+            )
+            .arg(
                 Arg::with_name(SAVE_BATCH)
                     .long("save-batch")
                     .takes_value(true)
@@ -364,10 +379,12 @@ impl StickerApp for PretrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse warmup", 1);
-
         let max_len = matches
             .value_of(MAX_LEN)
             .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1));
+        let shuffle_buffer_size = matches
+            .value_of(SHUFFLE)
+            .map(|v| v.parse().or_exit("Cannot parse shuffle buffer size.", 1));
         let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
         let saver = matches
             .value_of(SAVE_BATCH)
@@ -392,6 +409,7 @@ impl StickerApp for PretrainApp {
             initial_lr,
             warmup_steps,
             max_len,
+            shuffle_buffer_size,
             parameters,
             saver,
             train_data,
