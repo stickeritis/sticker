@@ -8,7 +8,7 @@ use failure::{Error, Fallible};
 use indicatif::ProgressStyle;
 use ordered_float::NotNan;
 use stdinout::OrExit;
-use sticker::encoder::categorical::CategoricalEncoder;
+use sticker::encoder::categorical::ImmutableCategoricalEncoder;
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::SentenceEncoder;
@@ -113,7 +113,7 @@ impl PretrainApp {
             1,
         );
 
-        let mut categorical_encoder = CategoricalEncoder::new(encoder, labels);
+        let categorical_encoder = ImmutableCategoricalEncoder::new(encoder, labels);
 
         let embeddings = config
             .input
@@ -133,7 +133,7 @@ impl PretrainApp {
         for epoch in 0..self.epochs {
             let (loss, acc, global_step_after_epoch) = self.run_epoch(
                 &mut saver,
-                &mut categorical_encoder,
+                &categorical_encoder,
                 &vectorizer,
                 &trainer,
                 &mut train_file,
@@ -147,7 +147,7 @@ impl PretrainApp {
 
             let (loss, acc, _) = self.run_epoch(
                 &mut saver,
-                &mut categorical_encoder,
+                &categorical_encoder,
                 &vectorizer,
                 &trainer,
                 &mut validation_file,
@@ -181,7 +181,7 @@ impl PretrainApp {
     fn run_epoch<E>(
         &self,
         saver: &mut PretrainSaver,
-        encoder: &mut CategoricalEncoder<E, E::Encoding>,
+        encoder: &ImmutableCategoricalEncoder<E, E::Encoding>,
         vectorizer: &SentVectorizer,
         trainer: &TaggerTrainer,
         file: &mut File,

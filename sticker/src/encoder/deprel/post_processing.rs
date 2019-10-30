@@ -14,7 +14,7 @@ static ROOT_RELATION: &str = "ROOT";
 pub fn attach_orphans<'a, S, H>(labels: &[S], sentence: &mut Sentence, head_idx: usize)
 where
     H: 'a + Clone,
-    S: AsRef<[EncodingProb<'a, DependencyEncoding<H>>]>,
+    S: AsRef<[EncodingProb<DependencyEncoding<H>>]>,
 {
     let token_indices: Vec<_> = (0..sentence.len())
         .filter(|&idx| sentence[idx].is_token())
@@ -80,7 +80,7 @@ pub fn break_cycles(sent: &mut Sentence, root_idx: usize) {
 fn find_root_candidate<'a, S, H, F>(labels: &[S], decode_fun: F) -> Option<(DepTriple<String>, f32)>
 where
     H: 'a + Clone,
-    S: AsRef<[EncodingProb<'a, DependencyEncoding<H>>]>,
+    S: AsRef<[EncodingProb<DependencyEncoding<H>>]>,
     F: Fn(usize, &DependencyEncoding<H>) -> Option<DepTriple<String>>,
 {
     labels
@@ -113,7 +113,7 @@ pub fn find_or_create_root<'a, S, H, F>(
 ) -> usize
 where
     H: 'a + Clone,
-    S: AsRef<[EncodingProb<'a, DependencyEncoding<H>>]>,
+    S: AsRef<[EncodingProb<DependencyEncoding<H>>]>,
     F: Fn(usize, &DependencyEncoding<H>) -> Option<DepTriple<String>>,
 {
     // If the sentence contains a token with root attachment, return
@@ -239,7 +239,7 @@ mod tests {
             .encode(&test_graph())
             .unwrap()
             .into_iter()
-            .map(|e| [EncodingProb::new_from_owned(e, 1.)])
+            .map(|e| [EncodingProb::new(e, 1.)])
             .collect();
 
         attach_orphans(&encodings, &mut sent, 3);
@@ -252,7 +252,7 @@ mod tests {
         let mut sent = test_graph_no_root();
 
         let encodings: Vec<Vec<EncodingProb<DependencyEncoding<RelativePOS>>>> = vec![
-            vec![EncodingProb::new_from_owned(
+            vec![EncodingProb::new(
                 DependencyEncoding {
                     label: ROOT_RELATION.to_owned(),
                     head: RelativePOS::new(ROOT_RELATION, -1),
@@ -261,14 +261,14 @@ mod tests {
             )],
             vec![],
             vec![
-                EncodingProb::new_from_owned(
+                EncodingProb::new(
                     DependencyEncoding {
                         label: "distractor".to_owned(),
                         head: RelativePOS::new(ROOT_RELATION, -1),
                     },
                     0.6,
                 ),
-                EncodingProb::new_from_owned(
+                EncodingProb::new(
                     DependencyEncoding {
                         label: ROOT_RELATION.to_owned(),
                         head: RelativePOS::new(ROOT_RELATION, -1),
@@ -276,7 +276,7 @@ mod tests {
                     0.4,
                 ),
             ],
-            vec![EncodingProb::new_from_owned(
+            vec![EncodingProb::new(
                 DependencyEncoding {
                     label: ROOT_RELATION.to_owned(),
                     head: RelativePOS::new(ROOT_RELATION, -1),

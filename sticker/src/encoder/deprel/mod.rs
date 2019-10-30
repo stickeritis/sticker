@@ -56,7 +56,7 @@ mod tests {
         copy
     }
 
-    fn test_encoding<P, E, C>(path: P, mut encoder_decoder: E)
+    fn test_encoding<P, E, C>(path: P, encoder_decoder: E)
     where
         P: AsRef<Path>,
         E: SentenceEncoder<Encoding = C> + SentenceDecoder<Encoding = C>,
@@ -73,7 +73,7 @@ mod tests {
                 .encode(&sentence)
                 .unwrap()
                 .into_iter()
-                .map(|e| [EncodingProb::new_from_owned(e, 1.)])
+                .map(|e| [EncodingProb::new(e, 1.)])
                 .collect::<Vec<_>>();
 
             // Decode
