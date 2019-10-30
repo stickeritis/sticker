@@ -4,9 +4,10 @@ use std::hash::Hash;
 use conllx::graph::Sentence;
 use failure::{Fallible, ResultExt};
 
+use crate::encoder::categorical::CategoricalEncoder;
 use crate::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use crate::encoder::layer::LayerEncoder;
-use crate::encoder::{CategoricalEncoder, SentenceDecoder};
+use crate::encoder::SentenceDecoder;
 use crate::serialization::CborRead;
 use crate::tensorflow::{Tagger as TFTagger, TaggerGraph};
 use crate::wrapper::{Config, EncoderType, LabelerType};
