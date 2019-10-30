@@ -44,7 +44,7 @@ pub struct TrainApp {
     batch_size: usize,
     config: String,
     lr_schedule: LrSchedule,
-    max_len: usize,
+    max_len: Option<usize>,
     parameters: Option<String>,
     patience: usize,
     saver: BestEpochSaver<f32>,
@@ -289,6 +289,7 @@ impl StickerApp for TrainApp {
                 Arg::with_name(MAX_LEN)
                     .long("maxlen")
                     .value_name("N")
+                    .takes_value(true)
                     .help("Ignore sentences longer than N tokens"),
             )
             .arg(
@@ -343,8 +344,7 @@ impl StickerApp for TrainApp {
             .or_exit("Cannot parse learning rate scale", 1);
         let max_len = matches
             .value_of(MAX_LEN)
-            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1))
-            .unwrap_or(usize::MAX);
+            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1));
         let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
         let patience = matches
             .value_of(PATIENCE)
