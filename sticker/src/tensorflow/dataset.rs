@@ -34,7 +34,7 @@ where
         encoder: &'a mut CategoricalEncoder<E, E::Encoding>,
         vectorizer: &'a SentVectorizer,
         batch_size: usize,
-        max_len: usize,
+        max_len: Option<usize>,
     ) -> Fallible<Self::Iter>;
 }
 
@@ -56,15 +56,14 @@ impl<R> ConllxDataSet<R> {
     /// If `max_len` == `usize::MAX`, no filtering is performed.
     fn get_sentence_iter<'a>(
         reader: R,
-        max_len: usize,
+        max_len: Option<usize>,
     ) -> Box<dyn Iterator<Item = Result<Sentence, Error>> + 'a>
     where
         R: ReadSentence + 'a,
     {
-        if max_len < usize::MAX {
-            Box::new(reader.sentences().filter_by_len(max_len))
-        } else {
-            Box::new(reader.sentences())
+        match max_len {
+            Some(max_len) => Box::new(reader.sentences().filter_by_len(max_len)),
+            None => Box::new(reader.sentences()),
         }
     }
 }
@@ -82,7 +81,7 @@ where
         encoder: &'a mut CategoricalEncoder<E, E::Encoding>,
         vectorizer: &'a SentVectorizer,
         batch_size: usize,
-        max_len: usize,
+        max_len: Option<usize>,
     ) -> Fallible<Self::Iter> {
         // Rewind to the beginning of the data (if necessary).
         self.0.seek(SeekFrom::Start(0))?;

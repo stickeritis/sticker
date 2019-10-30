@@ -63,7 +63,7 @@ pub struct PretrainApp {
     epochs: usize,
     initial_lr: NotNan<f32>,
     warmup_steps: usize,
-    max_len: usize,
+    max_len: Option<usize>,
     parameters: Option<String>,
     saver: PretrainSaver,
     train_data: String,
@@ -311,6 +311,7 @@ impl StickerApp for PretrainApp {
                 Arg::with_name(MAX_LEN)
                     .long("maxlen")
                     .value_name("N")
+                    .takes_value(true)
                     .help("Ignore sentences longer than N tokens"),
             )
             .arg(
@@ -366,8 +367,7 @@ impl StickerApp for PretrainApp {
 
         let max_len = matches
             .value_of(MAX_LEN)
-            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1))
-            .unwrap_or(usize::MAX);
+            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1));
         let parameters = matches.value_of(CONTINUE).map(ToOwned::to_owned);
         let saver = matches
             .value_of(SAVE_BATCH)
