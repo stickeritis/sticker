@@ -5,10 +5,11 @@ use std::usize;
 use conllx::graph::Sentence;
 use conllx::io::{ReadSentence, Reader};
 use failure::{Error, Fallible};
-use rand::{Rng, SeedableRng};
+use rand::SeedableRng;
 use rand_xorshift::XorShiftRng;
 
 use super::tensor::{LabelTensor, TensorBuilder};
+use super::util::RandomRemoveVec;
 use crate::encoder::{CategoricalEncoder, SentenceEncoder};
 use crate::SentVectorizer;
 
@@ -199,9 +200,8 @@ where
     fn shuffle(self, buffer_size: usize) -> Shuffled<Self> {
         Shuffled {
             inner: self,
-            buffer: Vec::with_capacity(buffer_size),
+            buffer: RandomRemoveVec::with_capacity(buffer_size, XorShiftRng::from_entropy()),
             buffer_size,
-            rng: XorShiftRng::from_entropy(),
         }
     }
 }
@@ -239,9 +239,8 @@ where
 /// buffer and return the random element.
 pub struct Shuffled<I> {
     inner: I,
-    buffer: Vec<Sentence>,
+    buffer: RandomRemoveVec<Sentence, XorShiftRng>,
     buffer_size: usize,
-    rng: XorShiftRng,
 }
 
 impl<I> Iterator for Shuffled<I>
@@ -252,7 +251,6 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.buffer.is_empty() {
-            // fill the buffer
             while let Some(sent) = self.inner.next() {
                 match sent {
                     Ok(sent) => self.buffer.push(sent),
@@ -265,24 +263,12 @@ where
             }
         }
 
-        let sent = match self.inner.next() {
-            Some(sent) => {
-                match sent {
-                    Ok(sent) => self.buffer.push(sent),
-                    Err(err) => return Some(Err(err)),
-                }
-                let buffer_len = self.buffer.len();
-                self.buffer.swap_remove(self.rng.gen_range(0, buffer_len))
-            }
-            None => {
-                // if the buffer is empty and `inner` is exhausted, we return None.
-                if self.buffer.is_empty() {
-                    return None;
-                }
-                let buffer_len = self.buffer.len();
-                self.buffer.swap_remove(self.rng.gen_range(0, buffer_len))
-            }
-        };
-        Some(Ok(sent))
+        match self.inner.next() {
+            Some(sent) => match sent {
+                Ok(sent) => Some(Ok(self.buffer.push_and_remove_random(sent))),
+                Err(err) => Some(Err(err)),
+            },
+            None => self.buffer.remove_random().map(Result::Ok),
+        }
     }
 }
