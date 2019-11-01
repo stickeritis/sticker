@@ -13,5 +13,6 @@ mod trainer;
 pub use self::trainer::TaggerTrainer;
 
 mod tensor;
+pub use self::tensor::{LabelTensor, TensorBuilder};
 
 mod util;

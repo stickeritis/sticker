@@ -20,6 +20,7 @@ where
 {
     pub fn new(mut read: R) -> io::Result<Self> {
         let len = read.seek(SeekFrom::End(0))? + 1;
+        read.seek(SeekFrom::Start(0))?;
         let progress_bar = ProgressBar::new(len);
         progress_bar
             .set_style(ProgressStyle::default_bar().template("{bar} {bytes}/{total_bytes}"));

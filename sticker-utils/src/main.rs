@@ -13,6 +13,8 @@ pub mod save;
 pub mod traits;
 use traits::StickerApp;
 
+pub mod util;
+
 static DEFAULT_CLAP_SETTINGS: &[AppSettings] = &[
     AppSettings::DontCollapseArgsInUsage,
     AppSettings::UnifiedHelpMessage,
