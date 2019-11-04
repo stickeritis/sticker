@@ -9,11 +9,11 @@ setup(name='sticker-graph',
       license='BlueOak-1.0.0',
       tests_require=[
           'numpy',
-          'tensorflow == 1.13.1',
+          'tensorflow == 1.15.0',
           'toml',
       ],
       install_requires=[
-          'tensorflow == 1.13.1',
+          'tensorflow == 1.15.0',
           'toml',
       ],
       packages=['sticker_graph'],
