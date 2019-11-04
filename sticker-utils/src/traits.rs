@@ -16,6 +16,7 @@ pub trait StickerApp {
 pub trait StickerPipelineApp: StickerApp {
     const BATCH_SIZE: &'static str = "BATCH_SIZE";
     const CONFIGS: &'static str = "CONFIGS";
+    const MAX_LEN: &'static str = "MAX_LEN";
     const READ_AHEAD: &'static str = "READ_AHEAD";
 
     fn pipeline_app<'a, 'b>(name: &str) -> App<'a, 'b> {
@@ -33,6 +34,13 @@ pub trait StickerPipelineApp: StickerApp {
                     .help("Batch size")
                     .long("batchsize")
                     .default_value("256"),
+            )
+            .arg(
+                Arg::with_name(Self::MAX_LEN)
+                    .long("maxlen")
+                    .value_name("N")
+                    .takes_value(true)
+                    .help("Ignore sentences longer than N tokens"),
             )
             .arg(
                 Arg::with_name(Self::READ_AHEAD)
