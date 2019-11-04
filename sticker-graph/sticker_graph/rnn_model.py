@@ -14,13 +14,12 @@ class RNNModel(Model):
 
         self.setup_placeholders()
 
-        hidden_states, _, _ = bidi_rnn_layers(
+        hidden_states = bidi_rnn_layers(
             self.is_training,
             self.inputs,
             num_layers=args.rnn_layers,
             output_size=args.hidden_size,
             output_keep_prob=args.keep_prob,
-            seq_lens=self._seq_lens,
             gru=args.gru,
             residual_connections=args.residual)
 
