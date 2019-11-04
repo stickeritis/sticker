@@ -199,11 +199,16 @@ class Model:
         byte_lens = tf.reshape(subword_lens, [-1])
 
         with tf.compat.v1.variable_scope("byte_rnn"):
-            _, fw, bw = bidi_rnn_layers(self.is_training, byte_reprs, num_layers=self.args.subword_layers, output_size=self.args.subword_hidden_size,
-                                        output_keep_prob=self.args.subword_keep_prob, seq_lens=byte_lens, gru=self.args.subword_gru, residual_connections=self.args.subword_residual)
-
-        # Concat forward/backward states.
-        subword_reprs = tf.concat([fw[-1].h, bw[-1].h], axis=-1)
+            subword_reprs = bidi_rnn_layers(
+                self.is_training,
+                byte_reprs,
+                num_layers=self.args.subword_layers,
+                output_size=self.args.subword_hidden_size,
+                output_keep_prob=self.args.subword_keep_prob,
+                seq_lens=byte_lens,
+                gru=self.args.subword_gru,
+                residual_connections=self.args.subword_residual,
+                return_sequences=False)
 
         return tf.reshape(subword_reprs, [bytes_shape[0], bytes_shape[1],
                                           subword_reprs.shape[-1]])

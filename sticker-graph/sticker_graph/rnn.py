@@ -1,25 +1,6 @@
 import tensorflow as tf
 
-import sticker_graph.vendored
-
-
-def dropout_wrapper(
-        cell,
-        is_training,
-        output_keep_prob=1.0,
-        state_keep_prob=1.0):
-    output_keep_prob = tf.cond(
-        pred=is_training,
-        true_fn=lambda: tf.constant(output_keep_prob),
-        false_fn=lambda: tf.constant(1.0))
-    state_keep_prob = tf.cond(
-        pred=is_training,
-        true_fn=lambda: tf.constant(state_keep_prob),
-        false_fn=lambda: tf.constant(1.0))
-    return tf.compat.v1.nn.rnn_cell.DropoutWrapper(
-        cell,
-        output_keep_prob=output_keep_prob,
-        state_keep_prob=state_keep_prob)
+from sticker_graph.keras_vendored import GRU, LSTM
 
 
 def bidi_rnn_layers(
@@ -28,32 +9,48 @@ def bidi_rnn_layers(
         num_layers=1,
         output_size=50,
         output_keep_prob=1.0,
-        state_keep_prob=1.0,
-        seq_lens=None,
         gru=False,
-        residual_connections=False):
+        residual_connections=False,
+        return_sequences=True,
+        seq_lens=None):
     if gru:
-        cell = tf.compat.v1.nn.rnn_cell.GRUCell
+        rnn_layer = GRU
     else:
-        cell = tf.compat.v1.nn.rnn_cell.LSTMCell
+        rnn_layer = LSTM
 
-    fw_cells = [
-        dropout_wrapper(
-            cell=cell(output_size),
-            is_training=is_training,
-            state_keep_prob=state_keep_prob,
-            output_keep_prob=output_keep_prob) for i in range(num_layers)]
+    # Compute mask
+    mask = None
+    if seq_lens is not None:
+        mask = tf.sequence_mask(
+            seq_lens, maxlen=tf.shape(
+                inputs)[1])
 
-    bw_cells = [
-        dropout_wrapper(
-            cell=cell(output_size),
-            is_training=is_training,
-            state_keep_prob=state_keep_prob,
-            output_keep_prob=output_keep_prob) for i in range(num_layers)]
-    return sticker_graph.vendored.stack_bidirectional_dynamic_rnn(
-        fw_cells,
-        bw_cells,
-        inputs,
-        dtype=tf.float32,
-        sequence_length=seq_lens,
-        residual_connections=residual_connections)
+    layer = inputs
+    for i in range(num_layers):
+        # Keep a reference to the previous layer for residual connections.
+        prev_layer = layer
+
+        layer_return_sequences = True
+        if i == num_layers - 1:
+            layer_return_sequences = return_sequences
+
+        # Bidirectional RNN + state output dropout.
+        layer = tf.compat.v2.keras.layers.Bidirectional(
+            rnn_layer(
+                output_size,
+                return_sequences=layer_return_sequences))(
+            layer,
+            mask=mask)
+        layer = tf.compat.v2.keras.layers.Dropout(
+            1.0 -
+            output_keep_prob)(
+            layer,
+            training=is_training)
+
+        # Add a residual connection if requested. A residual connection
+        # is not added for the first layer, since input/output sizes
+        # may mismatch.
+        if i != 0 and residual_connections:
+            layer = layer + prev_layer
+
+    return layer

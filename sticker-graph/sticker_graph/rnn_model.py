@@ -14,7 +14,7 @@ class RNNModel(Model):
 
         self.setup_placeholders()
 
-        hidden_states, _, _ = bidi_rnn_layers(
+        hidden_states = bidi_rnn_layers(
             self.is_training,
             self.inputs,
             num_layers=args.rnn_layers,
