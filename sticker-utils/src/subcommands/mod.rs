@@ -10,6 +10,9 @@ pub use prepare::PrepareApp;
 mod pretrain;
 pub use pretrain::PretrainApp;
 
+mod print_labels;
+pub use print_labels::PrintLabelsApp;
+
 mod server;
 pub use server::ServerApp;
 
