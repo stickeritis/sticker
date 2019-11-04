@@ -16,6 +16,7 @@ pub struct TagApp {
     batch_size: usize,
     configs: Vec<String>,
     input: Option<String>,
+    max_len: Option<usize>,
     output: Option<String>,
     read_ahead: usize,
 }
@@ -28,7 +29,13 @@ impl TagApp {
     {
         let mut speed = TaggerSpeed::new();
 
-        let mut sent_proc = SentProcessor::new(&pipeline, write, self.batch_size, self.read_ahead);
+        let mut sent_proc = SentProcessor::new(
+            &pipeline,
+            write,
+            self.batch_size,
+            self.max_len,
+            self.read_ahead,
+        );
 
         for sentence in read.sentences() {
             let sentence = sentence.or_exit("Cannot parse sentence", 1);
@@ -73,6 +80,9 @@ impl StickerApp for TagApp {
             .map(ToOwned::to_owned)
             .collect();
         let input = matches.value_of(INPUT).map(ToOwned::to_owned);
+        let max_len = matches
+            .value_of(Self::MAX_LEN)
+            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1));
         let output = matches.value_of(OUTPUT).map(ToOwned::to_owned);
         let read_ahead = matches
             .value_of(Self::READ_AHEAD)
@@ -84,6 +94,7 @@ impl StickerApp for TagApp {
             batch_size,
             configs,
             input,
+            max_len,
             output,
             read_ahead,
         }

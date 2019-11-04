@@ -21,6 +21,7 @@ pub struct ServerApp {
     batch_size: usize,
     configs: Vec<String>,
     addr: String,
+    max_len: Option<usize>,
     n_threads: usize,
     read_ahead: usize,
 }
@@ -74,6 +75,9 @@ impl StickerApp for ServerApp {
             .map(ToOwned::to_owned)
             .collect();
         let addr = matches.value_of(ADDR).unwrap().into();
+        let max_len = matches
+            .value_of(Self::MAX_LEN)
+            .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1));
         let n_threads = matches
             .value_of(THREADS)
             .map(|v| v.parse().or_exit("Cannot parse number of threads", 1))
@@ -88,6 +92,7 @@ impl StickerApp for ServerApp {
             batch_size,
             addr,
             configs,
+            max_len,
             n_threads,
             read_ahead,
         }
@@ -143,7 +148,13 @@ fn handle_client(app: ServerApp, tagger: Arc<Pipeline>, mut stream: TcpStream) {
 
     let mut speed = TaggerSpeed::new();
 
-    let mut sent_proc = SentProcessor::new(&*tagger, writer, app.batch_size, app.read_ahead);
+    let mut sent_proc = SentProcessor::new(
+        &*tagger,
+        writer,
+        app.batch_size,
+        app.max_len,
+        app.read_ahead,
+    );
 
     for sentence in reader.sentences() {
         let sentence = match sentence {

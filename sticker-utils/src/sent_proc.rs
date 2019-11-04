@@ -13,6 +13,7 @@ where
     pipeline: &'a Pipeline,
     writer: W,
     batch_size: usize,
+    max_len: Option<usize>,
     read_ahead: usize,
     buffer: Vec<Sentence>,
 }
@@ -21,7 +22,13 @@ impl<'a, W> SentProcessor<'a, W>
 where
     W: WriteSentence,
 {
-    pub fn new(pipeline: &'a Pipeline, writer: W, batch_size: usize, read_ahead: usize) -> Self {
+    pub fn new(
+        pipeline: &'a Pipeline,
+        writer: W,
+        batch_size: usize,
+        max_len: Option<usize>,
+        read_ahead: usize,
+    ) -> Self {
         assert!(batch_size > 0, "Batch size should at least be 1.");
         assert!(read_ahead > 0, "Read ahead should at least be 1.");
 
@@ -29,12 +36,21 @@ where
             pipeline,
             writer,
             batch_size,
+            max_len,
             read_ahead,
             buffer: Vec::new(),
         }
     }
 
     pub fn process(&mut self, sent: Sentence) -> Result<(), Error> {
+        if let Some(max_len) = self.max_len {
+            // sent.len() includes the root node, whereas max_len is
+            // the actual sentence length without the root node.
+            if (sent.len() - 1) > max_len {
+                return Ok(());
+            }
+        }
+
         self.buffer.push(sent);
 
         if self.buffer.len() == self.batch_size * self.read_ahead {
