@@ -26,6 +26,7 @@ fn main() {
         subcommands::GraphMetadataApp::app(),
         subcommands::PrepareApp::app(),
         subcommands::PretrainApp::app(),
+        subcommands::PrintLabelsApp::app(),
         subcommands::ServerApp::app(),
         subcommands::TagApp::app(),
         subcommands::TrainApp::app(),
@@ -65,6 +66,10 @@ fn main() {
         }
         "pretrain" => {
             subcommands::PretrainApp::parse(matches.subcommand_matches("pretrain").unwrap()).run()
+        }
+        "print-labels" => {
+            subcommands::PrintLabelsApp::parse(matches.subcommand_matches("print-labels").unwrap())
+                .run()
         }
         "server" => {
             subcommands::ServerApp::parse(matches.subcommand_matches("server").unwrap()).run()
