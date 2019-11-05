@@ -537,10 +537,6 @@ def cudnn_gru(inputs, init_h, kernel, recurrent_kernel, bias, mask, time_major,
         rnn_mode='gru',
         sequence_lengths=sequence_length,
         time_major=time_major)
-    if go_backwards:
-      outputs = array_ops.reverse_sequence_v2(
-          outputs, sequence_length, seq_axis=seq_axis, batch_axis=batch_axis)
-      outputs = array_ops.reverse(outputs, axis=[seq_axis])
   else:
     if go_backwards:
       # Reverse axis 0 since the input is already convert to time major.
@@ -1181,10 +1177,6 @@ def cudnn_lstm(inputs, init_h, init_c, kernel, recurrent_kernel, bias, mask,
         rnn_mode='lstm',
         sequence_lengths=sequence_length,
         time_major=time_major)
-    if go_backwards:
-      outputs = array_ops.reverse_sequence_v2(
-          outputs, sequence_length, seq_axis=seq_axis, batch_axis=batch_axis)
-      outputs = array_ops.reverse(outputs, axis=[seq_axis])
   else:
     # # Fill the array with shape [batch] with value of max timesteps.
     # sequence_length = array_ops.fill([array_ops.shape(inputs)[1]],
