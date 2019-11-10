@@ -311,11 +311,7 @@ where
     fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
         let mut session_opts = SessionOptions::new();
         session_opts
-            .set_config(
-                &graph
-                    .model_config
-                    .to_protobuf(graph.has_auto_mixed_precision()?)?,
-            )
+            .set_config(&graph.model_config.to_protobuf(false)?)
             .map_err(status_to_error)?;
 
         Session::new(&session_opts, &graph.graph).map_err(status_to_error)
