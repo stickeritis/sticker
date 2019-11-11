@@ -7,10 +7,7 @@ let
     rev = "4464a255f5e0adca710f23318ba861bbfa408f8f";
     sha256 = "0pg69q8dyybpa62clfa2krp6pnshali2nsbkkpnahcsjf9zq0nap";
   }) {};
-in stdenv.mkDerivation rec {
-  name = "sticker-env";
-  env = buildEnv { name = name; paths = buildInputs; };
-
+in mkShell {
   nativeBuildInputs = [
     pkgconfig
     latest.rustChannels.stable.rust
