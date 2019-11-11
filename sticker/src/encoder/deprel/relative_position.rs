@@ -1,4 +1,4 @@
-use conllx::graph::{DepTriple, Node, Sentence};
+use conllx::graph::{DepTriple, Sentence};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
@@ -56,21 +56,14 @@ impl SentenceEncoder for RelativePositionEncoder {
 
     fn encode(&self, sentence: &Sentence) -> Result<Vec<Self::Encoding>, Error> {
         let mut encoded = Vec::with_capacity(sentence.len());
-        for idx in 0..sentence.len() {
-            let form = match &sentence[idx] {
-                Node::Root => continue,
-                Node::Token(token) => token.form(),
-            };
-
+        for idx in 1..sentence.len() {
             let triple = sentence
                 .dep_graph()
                 .head(idx)
-                .ok_or(EncodeError::MissingHead {
-                    form: form.to_owned(),
-                })?;
-            let relation = triple.relation().ok_or(EncodeError::MissingRelation {
-                form: form.to_owned(),
-            })?;
+                .ok_or_else(|| EncodeError::missing_head(idx, sentence))?;
+            let relation = triple
+                .relation()
+                .ok_or_else(|| EncodeError::missing_relation(idx, sentence))?;
 
             encoded.push(DependencyEncoding {
                 label: relation.to_owned(),
