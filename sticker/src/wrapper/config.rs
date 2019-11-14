@@ -61,6 +61,14 @@ impl TomlRead for Config {
             eprintln!("The model.batch_size option is deprecated and not used anymore");
         }
 
+        if config.model.intra_op_parallelism_threads.is_some() {
+            eprintln!("The model.intra_op_parallelism option is deprecated and not used anymore");
+        }
+
+        if config.model.inter_op_parallelism_threads.is_some() {
+            eprintln!("The model.inter_op_parallelism option is deprecated and not used anymore");
+        }
+
         if config.labeler.read_ahead.is_some() {
             eprintln!("The labeler.read_ahead option is deprecated and not used anymore");
         }
@@ -234,8 +242,8 @@ mod tests {
                 gpu_allow_growth: true,
                 graph: "sticker.graph".to_owned(),
                 parameters: "sticker.model".to_owned(),
-                intra_op_parallelism_threads: 4,
-                inter_op_parallelism_threads: 4,
+                intra_op_parallelism_threads: Some(4),
+                inter_op_parallelism_threads: Some(4),
             }
         };
     }

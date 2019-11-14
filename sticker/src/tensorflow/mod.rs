@@ -7,7 +7,7 @@ pub use self::lr::{
 };
 
 mod tagger;
-pub use self::tagger::{ModelConfig, Tagger, TaggerGraph};
+pub use self::tagger::{ModelConfig, RuntimeConfig, Tagger, TaggerGraph};
 
 mod trainer;
 pub use self::trainer::TaggerTrainer;

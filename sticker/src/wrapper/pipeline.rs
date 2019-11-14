@@ -6,6 +6,7 @@ use conllx::graph::Sentence;
 use failure::{Fallible, ResultExt};
 
 use super::{Config, Tagger, TomlRead};
+use crate::tensorflow::RuntimeConfig;
 
 pub struct Pipeline {
     taggers: Vec<Tagger>,
@@ -22,11 +23,14 @@ impl Pipeline {
     /// Create a pipeline from tagger configurations.
     ///
     /// The pipeline will apply the taggers in the given order.
-    pub fn from_configs(configs: &[impl Borrow<Config>]) -> Fallible<Self> {
+    pub fn from_configs(
+        configs: &[impl Borrow<Config>],
+        runtime_config: &RuntimeConfig,
+    ) -> Fallible<Self> {
         let taggers = configs
             .iter()
             .map(Borrow::borrow)
-            .map(Tagger::new)
+            .map(|config| Tagger::new(config, runtime_config))
             .collect::<Fallible<Vec<_>>>()?;
         Ok(Pipeline { taggers })
     }
@@ -34,7 +38,10 @@ impl Pipeline {
     /// Create a pipeline from tagger configuration filenames.
     ///
     /// The pipeline will apply the taggers in the given order.
-    pub fn from_config_filenames(filenames: &[impl AsRef<Path>]) -> Fallible<Self> {
+    pub fn from_config_filenames(
+        filenames: &[impl AsRef<Path>],
+        runtime_config: &RuntimeConfig,
+    ) -> Fallible<Self> {
         let mut configs = Vec::with_capacity(filenames.len());
 
         for filename in filenames {
@@ -56,7 +63,7 @@ impl Pipeline {
             configs.push(config);
         }
 
-        Self::from_configs(&configs)
+        Self::from_configs(&configs, runtime_config)
     }
 
     /// Tag sentences with the pipeline.

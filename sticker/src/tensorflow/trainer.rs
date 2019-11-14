@@ -5,7 +5,7 @@ use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
 use tensorflow::{Session, SessionOptions, SessionRunArgs, Tensor};
 
-use super::tagger::TaggerGraph;
+use super::tagger::{RuntimeConfig, TaggerGraph};
 use super::util::{prepare_path, status_to_error};
 use crate::ModelPerformance;
 
@@ -21,7 +21,11 @@ impl TaggerTrainer {
     ///
     /// This constructor will load the model parameters (such as weights) from
     /// the file specified in `parameters_path`.
-    pub fn load_weights<P>(graph: TaggerGraph, parameters_path: P) -> Fallible<Self>
+    pub fn load_weights<P>(
+        graph: TaggerGraph,
+        runtime_config: &RuntimeConfig,
+        parameters_path: P,
+    ) -> Fallible<Self>
     where
         P: AsRef<Path>,
     {
@@ -30,7 +34,7 @@ impl TaggerTrainer {
         let mut args = SessionRunArgs::new();
         args.add_feed(&graph.save_path_op, 0, &path_tensor);
         args.add_target(&graph.restore_op);
-        let session = Self::new_session(&graph)?;
+        let session = Self::new_session(&graph, runtime_config)?;
         session.run(&mut args).map_err(status_to_error)?;
 
         Ok(TaggerTrainer {
@@ -41,11 +45,14 @@ impl TaggerTrainer {
     }
 
     /// Create a new session with randomized weights.
-    pub fn random_weights(graph: TaggerGraph) -> Result<Self, Error> {
+    pub fn random_weights(
+        graph: TaggerGraph,
+        runtime_config: &RuntimeConfig,
+    ) -> Result<Self, Error> {
         // Initialize parameters.
         let mut args = SessionRunArgs::new();
         args.add_target(&graph.init_op);
-        let session = Self::new_session(&graph)?;
+        let session = Self::new_session(&graph, runtime_config)?;
         session
             .run(&mut args)
             .expect("Cannot initialize parameters");
@@ -57,13 +64,13 @@ impl TaggerTrainer {
         })
     }
 
-    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
+    fn new_session(graph: &TaggerGraph, runtime_config: &RuntimeConfig) -> Result<Session, Error> {
         let mut session_opts = SessionOptions::new();
         session_opts
             .set_config(
                 &graph
                     .model_config
-                    .to_protobuf(graph.has_auto_mixed_precision()?)?,
+                    .to_protobuf(graph.has_auto_mixed_precision()?, runtime_config)?,
             )
             .map_err(status_to_error)?;
 
