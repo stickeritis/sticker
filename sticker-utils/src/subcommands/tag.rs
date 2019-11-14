@@ -3,6 +3,7 @@ use std::io::BufWriter;
 use clap::{App, Arg, ArgMatches};
 use conllx::io::{ReadSentence, Reader, WriteSentence, Writer};
 use stdinout::{Input, OrExit, Output};
+use sticker::tensorflow::RuntimeConfig;
 use sticker::wrapper::Pipeline;
 
 use crate::progress::TaggerSpeed;
@@ -11,11 +12,14 @@ use crate::traits::{StickerApp, StickerPipelineApp};
 
 static INPUT: &str = "INPUT";
 static OUTPUT: &str = "OUTPUT";
+static INTER_OP_THREADS: &str = "INTER_OP_THREADS";
+static INTRA_OP_THREADS: &str = "INTRA_OP_THREADS";
 
 pub struct TagApp {
     batch_size: usize,
     configs: Vec<String>,
     input: Option<String>,
+    runtime_config: RuntimeConfig,
     max_len: Option<usize>,
     output: Option<String>,
     read_ahead: usize,
@@ -66,6 +70,18 @@ impl StickerApp for TagApp {
                     .long("output")
                     .takes_value(true),
             )
+            .arg(
+                Arg::with_name(INTER_OP_THREADS)
+                    .help("Inter op parallelism threads")
+                    .long("inter-op-threads")
+                    .default_value("4"),
+            )
+            .arg(
+                Arg::with_name(INTRA_OP_THREADS)
+                    .help("Intra op parallelism threads")
+                    .long("intra-op-threads")
+                    .default_value("4"),
+            )
     }
 
     fn parse(matches: &ArgMatches) -> Self {
@@ -80,6 +96,16 @@ impl StickerApp for TagApp {
             .map(ToOwned::to_owned)
             .collect();
         let input = matches.value_of(INPUT).map(ToOwned::to_owned);
+        let inter_op_threads = matches
+            .value_of(INTER_OP_THREADS)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot number of inter op threads", 1);
+        let intra_op_threads = matches
+            .value_of(INTRA_OP_THREADS)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot number of intra op threads", 1);
         let max_len = matches
             .value_of(Self::MAX_LEN)
             .map(|v| v.parse().or_exit("Cannot parse maximum sentence length", 1));
@@ -94,6 +120,10 @@ impl StickerApp for TagApp {
             batch_size,
             configs,
             input,
+            runtime_config: RuntimeConfig {
+                inter_op_threads,
+                intra_op_threads,
+            },
             max_len,
             output,
             read_ahead,
@@ -101,7 +131,7 @@ impl StickerApp for TagApp {
     }
 
     fn run(&self) {
-        let pipeline = Pipeline::from_config_filenames(&self.configs)
+        let pipeline = Pipeline::from_config_filenames(&self.configs, &self.runtime_config)
             .or_exit("Cannot construct tagging pipeline", 1);
 
         let input = Input::from(self.input.as_ref());

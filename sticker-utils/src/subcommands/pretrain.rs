@@ -15,7 +15,7 @@ use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborRead;
 use sticker::tensorflow::{
-    ConllxDataSet, DataSet, LabelTensor, TaggerGraph, TaggerTrainer, TensorBuilder,
+    ConllxDataSet, DataSet, LabelTensor, RuntimeConfig, TaggerGraph, TaggerTrainer, TensorBuilder,
 };
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
@@ -46,6 +46,7 @@ pub struct PretrainApp {
     max_len: Option<usize>,
     shuffle_buffer_size: Option<usize>,
     parameters: Option<String>,
+    runtime_config: RuntimeConfig,
     train_data: String,
     train_duration: TrainDuration,
     validation_data: String,
@@ -58,8 +59,10 @@ impl PretrainApp {
         let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
 
         let mut trainer = match self.parameters {
-            Some(ref parameters) => TaggerTrainer::load_weights(graph, parameters),
-            None => TaggerTrainer::random_weights(graph),
+            Some(ref parameters) => {
+                TaggerTrainer::load_weights(graph, &self.runtime_config, parameters)
+            }
+            None => TaggerTrainer::random_weights(graph, &self.runtime_config),
         }?;
         match &self.logdir {
             Some(logdir) => {
@@ -397,6 +400,16 @@ impl StickerApp for PretrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse initial learning rate", 1);
+        let inter_op_threads = matches
+            .value_of(Self::INTER_OP_THREADS)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot number of inter op threads", 1);
+        let intra_op_threads = matches
+            .value_of(Self::INTRA_OP_THREADS)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot number of intra op threads", 1);
         let warmup_steps = matches
             .value_of(WARMUP)
             .unwrap()
@@ -443,6 +456,10 @@ impl StickerApp for PretrainApp {
             max_len,
             shuffle_buffer_size,
             parameters,
+            runtime_config: RuntimeConfig {
+                inter_op_threads,
+                intra_op_threads,
+            },
             train_data,
             train_duration,
             validation_data,

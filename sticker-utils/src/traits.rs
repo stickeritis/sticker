@@ -54,6 +54,8 @@ pub trait StickerPipelineApp: StickerApp {
 pub trait StickerTrainApp: StickerApp {
     const BATCH_SIZE: &'static str = "BATCH_SIZE";
     const CONFIG: &'static str = "CONFIG";
+    const INTER_OP_THREADS: &'static str = "INTER_OP_THREADS";
+    const INTRA_OP_THREADS: &'static str = "INTRA_OP_THREADS";
 
     fn train_app<'a, 'b>(name: &str) -> App<'a, 'b> {
         App::new(name)
@@ -70,6 +72,18 @@ pub trait StickerTrainApp: StickerApp {
                     .help("Batch size")
                     .long("batchsize")
                     .default_value("256"),
+            )
+            .arg(
+                Arg::with_name(Self::INTER_OP_THREADS)
+                    .help("Inter op parallelism threads")
+                    .long("inter-op-threads")
+                    .default_value("4"),
+            )
+            .arg(
+                Arg::with_name(Self::INTRA_OP_THREADS)
+                    .help("Intra op parallelism threads")
+                    .long("intra-op-threads")
+                    .default_value("4"),
             )
     }
 }

@@ -14,7 +14,8 @@ use sticker::encoder::layer::LayerEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborRead;
 use sticker::tensorflow::{
-    ConllxDataSet, DataSet, LearningRateSchedule, PlateauLearningRate, TaggerGraph, TaggerTrainer,
+    ConllxDataSet, DataSet, LearningRateSchedule, PlateauLearningRate, RuntimeConfig, TaggerGraph,
+    TaggerTrainer,
 };
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
 use sticker::{Numberer, SentVectorizer};
@@ -50,6 +51,7 @@ pub struct TrainApp {
     shuffle_buffer_size: Option<usize>,
     parameters: Option<String>,
     patience: usize,
+    runtime_config: RuntimeConfig,
     saver: BestEpochSaver<f32>,
     train_data: String,
     validation_data: String,
@@ -348,6 +350,16 @@ impl StickerApp for TrainApp {
             .unwrap()
             .parse()
             .or_exit("Cannot parse initial learning rate", 1);
+        let inter_op_threads = matches
+            .value_of(Self::INTER_OP_THREADS)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot number of inter op threads", 1);
+        let intra_op_threads = matches
+            .value_of(Self::INTRA_OP_THREADS)
+            .unwrap()
+            .parse()
+            .or_exit("Cannot number of intra op threads", 1);
         let lr_patience = matches
             .value_of(LR_PATIENCE)
             .unwrap()
@@ -392,6 +404,10 @@ impl StickerApp for TrainApp {
                 warmup_steps,
             },
             max_len,
+            runtime_config: RuntimeConfig {
+                inter_op_threads,
+                intra_op_threads,
+            },
             shuffle_buffer_size,
             saver,
             train_data,
@@ -452,8 +468,8 @@ fn create_trainer(config: &Config, app: &TrainApp) -> Fallible<TaggerTrainer> {
     let graph = TaggerGraph::load_graph(graph_read, &config.model)?;
 
     let mut trainer = match app.parameters {
-        Some(ref parameters) => TaggerTrainer::load_weights(graph, parameters),
-        None => TaggerTrainer::random_weights(graph),
+        Some(ref parameters) => TaggerTrainer::load_weights(graph, &app.runtime_config, parameters),
+        None => TaggerTrainer::random_weights(graph, &app.runtime_config),
     }?;
     match &app.logdir {
         Some(logdir) => {

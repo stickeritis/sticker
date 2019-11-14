@@ -9,7 +9,7 @@ use crate::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use crate::encoder::layer::LayerEncoder;
 use crate::encoder::SentenceDecoder;
 use crate::serialization::CborRead;
-use crate::tensorflow::{Tagger as TFTagger, TaggerGraph};
+use crate::tensorflow::{RuntimeConfig, Tagger as TFTagger, TaggerGraph};
 use crate::wrapper::{Config, EncoderType, LabelerType};
 use crate::{Numberer, SentVectorizer, Tag, TopK, TopKLabels};
 
@@ -83,7 +83,7 @@ pub struct Tagger {
 
 impl Tagger {
     /// Create a tagger from the given configuration.
-    pub fn new(config: &Config) -> Fallible<Self> {
+    pub fn new(config: &Config, runtime_config: &RuntimeConfig) -> Fallible<Self> {
         let embeddings = config
             .input
             .embeddings
@@ -102,20 +102,33 @@ impl Tagger {
             .with_context(|e| format!("Cannot load computation graph: {}", e))?;
 
         match config.labeler.labeler_type {
-            LabelerType::Sequence(ref layer) => {
-                Self::new_with_decoder(&config, vectorizer, graph, LayerEncoder::new(layer.clone()))
-            }
-            LabelerType::Parser(EncoderType::RelativePOS) => {
-                Self::new_with_decoder(&config, vectorizer, graph, RelativePOSEncoder)
-            }
-            LabelerType::Parser(EncoderType::RelativePosition) => {
-                Self::new_with_decoder(&config, vectorizer, graph, RelativePositionEncoder)
-            }
+            LabelerType::Sequence(ref layer) => Self::new_with_decoder(
+                &config,
+                runtime_config,
+                vectorizer,
+                graph,
+                LayerEncoder::new(layer.clone()),
+            ),
+            LabelerType::Parser(EncoderType::RelativePOS) => Self::new_with_decoder(
+                &config,
+                runtime_config,
+                vectorizer,
+                graph,
+                RelativePOSEncoder,
+            ),
+            LabelerType::Parser(EncoderType::RelativePosition) => Self::new_with_decoder(
+                &config,
+                runtime_config,
+                vectorizer,
+                graph,
+                RelativePositionEncoder,
+            ),
         }
     }
 
     fn new_with_decoder<D>(
         config: &Config,
+        runtime_config: &RuntimeConfig,
         vectorizer: SentVectorizer,
         graph: TaggerGraph,
         decoder: D,
@@ -133,6 +146,7 @@ impl Tagger {
 
         let tagger = TFTagger::load_weights(
             graph,
+            runtime_config,
             categorical_decoder,
             vectorizer,
             &config.model.parameters,

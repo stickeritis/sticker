@@ -46,21 +46,44 @@ pub struct ModelConfig {
 
     /// Thread pool size for parallel processing within a computation
     /// graph op.
-    pub intra_op_parallelism_threads: usize,
+    pub intra_op_parallelism_threads: Option<usize>,
 
     /// Thread pool size for parallel processing of independent computation
     /// graph ops.
-    pub inter_op_parallelism_threads: usize,
+    pub inter_op_parallelism_threads: Option<usize>,
 
     /// The filename of the trained graph parameters.
     pub parameters: String,
 }
 
+/// Tensorflow runtime configuration.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeConfig {
+    /// Number of inter op parallelism threads.
+    pub inter_op_threads: usize,
+
+    /// Number of intra op parallelism threads.
+    pub intra_op_threads: usize,
+}
+
+impl Default for RuntimeConfig {
+    fn default() -> Self {
+        RuntimeConfig {
+            inter_op_threads: 4,
+            intra_op_threads: 4,
+        }
+    }
+}
+
 impl ModelConfig {
-    pub fn to_protobuf(&self, auto_mixed_precision: bool) -> Result<Vec<u8>, Error> {
+    pub fn to_protobuf(
+        &self,
+        auto_mixed_precision: bool,
+        runtime_config: &RuntimeConfig,
+    ) -> Result<Vec<u8>, Error> {
         ConfigProtoBuilder::default()
-            .inter_op_parallelism_threads(self.inter_op_parallelism_threads)
-            .intra_op_parallelism_threads(self.intra_op_parallelism_threads)
+            .inter_op_parallelism_threads(runtime_config.inter_op_threads)
+            .intra_op_parallelism_threads(runtime_config.intra_op_threads)
             .gpu_allow_growth(self.gpu_allow_growth)
             .auto_mixed_precision(auto_mixed_precision)
             .protobuf()
@@ -73,8 +96,8 @@ impl Default for ModelConfig {
             batch_size: None,
             gpu_allow_growth: true,
             graph: String::new(),
-            inter_op_parallelism_threads: 1,
-            intra_op_parallelism_threads: 1,
+            inter_op_parallelism_threads: None,
+            intra_op_parallelism_threads: None,
             parameters: String::new(),
         }
     }
@@ -285,6 +308,7 @@ where
     /// the file specified in `parameters_path`.
     pub fn load_weights<P>(
         graph: TaggerGraph,
+        runtime_config: &RuntimeConfig,
         decoder: ImmutableCategoricalEncoder<D, D::Encoding>,
         vectorizer: SentVectorizer,
         parameters_path: P,
@@ -297,7 +321,7 @@ where
         let mut args = SessionRunArgs::new();
         args.add_feed(&graph.save_path_op, 0, &path_tensor);
         args.add_target(&graph.restore_op);
-        let session = Self::new_session(&graph)?;
+        let session = Self::new_session(&graph, runtime_config)?;
         session.run(&mut args).map_err(status_to_error)?;
 
         Ok(Tagger {
@@ -308,10 +332,10 @@ where
         })
     }
 
-    fn new_session(graph: &TaggerGraph) -> Result<Session, Error> {
+    fn new_session(graph: &TaggerGraph, runtime_config: &RuntimeConfig) -> Result<Session, Error> {
         let mut session_opts = SessionOptions::new();
         session_opts
-            .set_config(&graph.model_config.to_protobuf(false)?)
+            .set_config(&graph.model_config.to_protobuf(false, runtime_config)?)
             .map_err(status_to_error)?;
 
         Session::new(&session_opts, &graph.graph).map_err(status_to_error)

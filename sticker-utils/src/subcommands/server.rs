@@ -6,6 +6,7 @@ use std::sync::Arc;
 use clap::{App, Arg, ArgMatches};
 use conllx::io::{ReadSentence, Reader, Writer};
 use stdinout::OrExit;
+use sticker::tensorflow::RuntimeConfig;
 use sticker::wrapper::{Config, Pipeline, TomlRead};
 use threadpool::ThreadPool;
 
@@ -109,15 +110,17 @@ impl StickerApp for ServerApp {
                 .relativize_paths(filename)
                 .or_exit("Cannot relativize paths in configuration", 1);
 
-            // Parallel processing is useless without the same parallelism in Tensorflow.
-            config.model.inter_op_parallelism_threads = self.n_threads;
-            config.model.intra_op_parallelism_threads = self.n_threads;
-
             configs.push(config);
         }
 
-        let pipeline =
-            Pipeline::from_configs(&configs).or_exit("Cannot construct tagging pipeline", 1);
+        // Parallel processing is useless without the same parallelism in Tensorflow.
+        let runtime_config = RuntimeConfig {
+            inter_op_threads: self.n_threads,
+            intra_op_threads: self.n_threads,
+        };
+
+        let pipeline = Pipeline::from_configs(&configs, &runtime_config)
+            .or_exit("Cannot construct tagging pipeline", 1);
 
         let pool = ThreadPool::new(self.n_threads);
 
