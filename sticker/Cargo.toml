@@ -13,6 +13,7 @@ license-file = "../LICENSE.md"
 
 [dependencies]
 conllx = "0.12.1"
+edit_tree = { git = "https://github.com/twuebi/edit_tree.git", rev = "be5ceb03711ea3cc93ea1df2224c2fa50bf65695" }
 failure = "0.1"
 finalfusion = "0.10.1"
 itertools = "0.8"

@@ -12,6 +12,7 @@ use toml;
 
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
+use sticker::encoder::lemma::EditTreeEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborWrite;
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
@@ -88,6 +89,13 @@ impl StickerApp for PrepareApp {
         let vectorizer = SentVectorizer::new(embeddings, config.input.subwords);
 
         match config.labeler.labeler_type {
+            LabelerType::Lemma => prepare_with_encoder(
+                &config,
+                vectorizer,
+                EditTreeEncoder,
+                treebank_reader,
+                shapes_write,
+            ),
             LabelerType::Sequence(ref layer) => prepare_with_encoder(
                 &config,
                 vectorizer,

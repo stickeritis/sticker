@@ -7,6 +7,7 @@ use failure::{Fallible, ResultExt};
 use crate::encoder::categorical::CategoricalEncoder;
 use crate::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use crate::encoder::layer::LayerEncoder;
+use crate::encoder::lemma::EditTreeEncoder;
 use crate::encoder::SentenceDecoder;
 use crate::serialization::CborRead;
 use crate::tensorflow::{RuntimeConfig, Tagger as TFTagger, TaggerGraph};
@@ -102,6 +103,9 @@ impl Tagger {
             .with_context(|e| format!("Cannot load computation graph: {}", e))?;
 
         match config.labeler.labeler_type {
+            LabelerType::Lemma => {
+                Self::new_with_decoder(&config, runtime_config, vectorizer, graph, EditTreeEncoder)
+            }
             LabelerType::Sequence(ref layer) => Self::new_with_decoder(
                 &config,
                 runtime_config,

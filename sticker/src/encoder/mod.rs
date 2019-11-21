@@ -9,6 +9,8 @@ pub mod deprel;
 
 pub mod layer;
 
+pub mod lemma;
+
 /// An encoding with its probability.
 pub struct EncodingProb<E> {
     encoding: E,

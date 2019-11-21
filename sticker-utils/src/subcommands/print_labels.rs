@@ -6,6 +6,7 @@ use failure::Fallible;
 use stdinout::OrExit;
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
+use sticker::encoder::lemma::EditTreeEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborRead;
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
@@ -69,6 +70,7 @@ impl StickerApp for PrintLabelsApp {
             .or_exit("Cannot relativize paths in configuration", 1);
 
         match config.labeler.labeler_type {
+            LabelerType::Lemma => self.print_labels_with_encoder::<EditTreeEncoder>(&config),
             LabelerType::Sequence(_) => self.print_labels_with_encoder::<LayerEncoder>(&config),
             LabelerType::Parser(EncoderType::RelativePOS) => {
                 self.print_labels_with_encoder::<RelativePOSEncoder>(&config)

@@ -169,6 +169,7 @@ impl Labeler {
 #[serde(rename_all = "lowercase")]
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum LabelerType {
+    Lemma,
     Parser(EncoderType),
     Sequence(Layer),
 }

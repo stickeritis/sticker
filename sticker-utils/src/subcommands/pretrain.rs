@@ -12,6 +12,7 @@ use stdinout::OrExit;
 use sticker::encoder::categorical::ImmutableCategoricalEncoder;
 use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker::encoder::layer::LayerEncoder;
+use sticker::encoder::lemma::EditTreeEncoder;
 use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborRead;
 use sticker::tensorflow::{
@@ -488,6 +489,13 @@ impl StickerApp for PretrainApp {
             .or_exit("Cannot construct trainer", 1);
 
         match config.labeler.labeler_type {
+            LabelerType::Lemma => self.train_model_with_encoder::<EditTreeEncoder>(
+                &config,
+                trainer,
+                EditTreeEncoder,
+                train_file,
+                validation_file,
+            ),
             LabelerType::Sequence(ref layer) => self.train_model_with_encoder::<LayerEncoder>(
                 &config,
                 trainer,

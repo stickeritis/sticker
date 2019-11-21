@@ -3,6 +3,7 @@
 use std::io::{Read, Write};
 
 use crate::encoder::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
+use crate::encoder::lemma::EditTree;
 use crate::Numberer;
 use failure::Error;
 
@@ -33,6 +34,7 @@ macro_rules! cbor_read {
 
 cbor_read!(Numberer<DependencyEncoding<RelativePOS>>);
 cbor_read!(Numberer<DependencyEncoding<RelativePosition>>);
+cbor_read!(Numberer<EditTree>);
 cbor_read!(Numberer<String>);
 
 pub trait CborWrite {
@@ -58,4 +60,5 @@ macro_rules! cbor_write {
 
 cbor_write!(Numberer<DependencyEncoding<RelativePOS>>);
 cbor_write!(Numberer<DependencyEncoding<RelativePosition>>);
+cbor_write!(Numberer<EditTree>);
 cbor_write!(Numberer<String>);
