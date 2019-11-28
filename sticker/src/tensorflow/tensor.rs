@@ -80,7 +80,7 @@ impl<L> TensorBuilder<L> {
             Array2::from_shape_vec([input_timesteps, token_repr_size], input_vector.sequence)
                 .unwrap();
 
-        let subwords = input_vector.subwords.map(Array1::from_vec);
+        let subwords = input_vector.subwords.map(Array1::from);
 
         let timesteps = min(self.inputs.view().shape()[1], input.shape()[0]);
 
