@@ -1,11 +1,9 @@
 use conllx::graph::{Node, Sentence};
 use failure::{format_err, Error};
 use finalfusion::{
-    chunks::storage::{CowArray, CowArray1, StorageWrap},
-    chunks::vocab::VocabWrap,
-    embeddings::Embeddings as FiFuEmbeddings,
+    embeddings::Embeddings as FiFuEmbeddings, storage::StorageWrap, vocab::VocabWrap,
 };
-use ndarray::{Array1, Axis};
+use ndarray::{Array1, Axis, CowArray, Ix1};
 
 pub struct Embeddings {
     embeddings: FiFuEmbeddings<VocabWrap, StorageWrap>,
@@ -17,10 +15,10 @@ impl Embeddings {
         self.embeddings.dims()
     }
 
-    pub fn embedding(&self, word: &str) -> CowArray1<f32> {
+    pub fn embedding(&self, word: &str) -> CowArray<f32, Ix1> {
         self.embeddings
             .embedding(word)
-            .unwrap_or_else(|| CowArray::Borrowed(self.unknown.view()))
+            .unwrap_or_else(|| self.unknown.view().into())
     }
 }
 
@@ -61,7 +59,7 @@ impl From<FiFuEmbeddings<VocabWrap, StorageWrap>> for Embeddings {
                 let mut unknown = Array1::zeros(embeddings.dims());
 
                 for (_, embed) in &embeddings {
-                    unknown += &embed.as_view();
+                    unknown += &embed.view();
                 }
 
                 unknown
@@ -185,7 +183,7 @@ impl SentVectorizer {
                     .layer_embeddings
                     .token_embeddings
                     .embedding(form)
-                    .as_view()
+                    .view()
                     .as_slice()
                     .expect("Non-contiguous embedding"),
             );
@@ -198,7 +196,7 @@ impl SentVectorizer {
                 input.extend_from_slice(
                     tag_embeddings
                         .embedding(pos_tag)
-                        .as_view()
+                        .view()
                         .as_slice()
                         .expect("Non-contiguous embedding"),
                 );
