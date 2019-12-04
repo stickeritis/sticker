@@ -2,9 +2,9 @@
 
 use std::io::{Read, Write};
 
-use crate::encoder::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
-use crate::Numberer;
 use failure::Error;
+use numberer::Numberer;
+use sticker_encoders::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
 
 use serde_cbor;
 

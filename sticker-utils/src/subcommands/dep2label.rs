@@ -7,9 +7,8 @@ use conllx::graph::Node;
 use conllx::io::{ReadSentence, WriteSentence};
 use conllx::token::Features;
 use stdinout::{Input, OrExit, Output};
-
-use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::encoder::SentenceEncoder;
+use sticker_encoders::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker_encoders::SentenceEncoder;
 
 use crate::traits::StickerApp;
 

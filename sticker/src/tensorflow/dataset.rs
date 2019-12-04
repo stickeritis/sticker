@@ -7,11 +7,11 @@ use conllx::io::{ReadSentence, Reader};
 use failure::{Error, Fallible};
 use rand::SeedableRng;
 use rand_xorshift::XorShiftRng;
+use sticker_encoders::categorical::ImmutableCategoricalEncoder;
+use sticker_encoders::SentenceEncoder;
 
 use super::tensor::{LabelTensor, TensorBuilder};
 use super::util::RandomRemoveVec;
-use crate::encoder::categorical::ImmutableCategoricalEncoder;
-use crate::encoder::SentenceEncoder;
 use crate::SentVectorizer;
 
 /// A set of training/validation data.

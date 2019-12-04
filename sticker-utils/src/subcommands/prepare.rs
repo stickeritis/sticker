@@ -6,16 +6,17 @@ use std::path::Path;
 use clap::{App, Arg, ArgMatches};
 use conllx::io::{ReadSentence, Reader};
 use failure::Error;
+use numberer::Numberer;
 use serde_derive::Serialize;
 use stdinout::{Input, OrExit, Output};
+use sticker_encoders::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker_encoders::layer::LayerEncoder;
+use sticker_encoders::SentenceEncoder;
 use toml;
 
-use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::encoder::layer::LayerEncoder;
-use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborWrite;
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
-use sticker::{Collector, Embeddings, NoopCollector, Numberer, SentVectorizer};
+use sticker::{Collector, Embeddings, NoopCollector, SentVectorizer};
 
 use crate::traits::{StickerApp, StickerTrainApp};
 
