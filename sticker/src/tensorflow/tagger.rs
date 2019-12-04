@@ -11,14 +11,14 @@ use itertools::Itertools;
 use ndarray::{Ix1, Ix2, Ix3};
 use ndarray_tensorflow::NdTensor;
 use serde_derive::{Deserialize, Serialize};
+use sticker_encoders::categorical::ImmutableCategoricalEncoder;
+use sticker_encoders::{EncodingProb, SentenceDecoder};
 use tensorflow::{
     Graph, ImportGraphDefOptions, Operation, Session, SessionOptions, SessionRunArgs, Tensor,
 };
 
 use super::tensor::{NoLabels, TensorBuilder};
 use super::util::{prepare_path, status_to_error, ConfigProtoBuilder};
-use crate::encoder::categorical::ImmutableCategoricalEncoder;
-use crate::encoder::{EncodingProb, SentenceDecoder};
 use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
 /// Graph metadata

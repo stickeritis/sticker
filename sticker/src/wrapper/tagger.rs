@@ -3,15 +3,16 @@ use std::hash::Hash;
 
 use conllx::graph::Sentence;
 use failure::{Fallible, ResultExt};
+use numberer::Numberer;
+use sticker_encoders::categorical::CategoricalEncoder;
+use sticker_encoders::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker_encoders::layer::LayerEncoder;
+use sticker_encoders::SentenceDecoder;
 
-use crate::encoder::categorical::CategoricalEncoder;
-use crate::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
-use crate::encoder::layer::LayerEncoder;
-use crate::encoder::SentenceDecoder;
 use crate::serialization::CborRead;
 use crate::tensorflow::{RuntimeConfig, Tagger as TFTagger, TaggerGraph};
 use crate::wrapper::{Config, EncoderType, LabelerType};
-use crate::{Numberer, SentVectorizer, Tag, TopK, TopKLabels};
+use crate::{SentVectorizer, Tag, TopK, TopKLabels};
 
 /// The `Tag` trait is not object-safe, since the `tag_sentences`
 /// method has a type parameter to accept a slice of mutably

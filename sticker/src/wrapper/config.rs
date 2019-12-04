@@ -6,12 +6,14 @@ use std::path::Path;
 use failure::{format_err, Error};
 use finalfusion::embeddings::Embeddings as FiFuEmbeddings;
 use finalfusion::prelude::*;
+use numberer::Numberer;
 use serde_derive::{Deserialize, Serialize};
+use sticker_encoders::layer::Layer;
 use toml;
 
 use crate::serialization::CborRead;
 use crate::tensorflow::ModelConfig;
-use crate::{Layer, LayerEmbeddings, Numberer};
+use crate::LayerEmbeddings;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -207,11 +209,11 @@ fn relativize_path(config_path: &Path, filename: &str) -> Result<String, Error> 
 
 #[cfg(test)]
 mod tests {
+    use lazy_static::lazy_static;
     use std::fs::File;
+    use sticker_encoders::layer::Layer;
 
     use crate::tensorflow::ModelConfig;
-    use crate::Layer;
-    use lazy_static::lazy_static;
 
     use super::{
         Config, Embedding, EmbeddingAlloc, Embeddings, Input, Labeler, LabelerType, TomlRead,

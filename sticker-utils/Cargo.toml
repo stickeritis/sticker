@@ -21,11 +21,13 @@ conllx = "0.12.1"
 failure = "0.1"
 indicatif = "0.11"
 itertools = "0.8"
+numberer = "0.1"
 ordered-float = { version = "1", features = ["serde"] }
 serde = "1"
 serde_derive = "1"
 stdinout = "0.4"
 threadpool = "1"
 sticker = { path = "../sticker", version = "0.10.0" }
+sticker-encoders = "0.1"
 tensorflow = "0.13"
 toml = "0.5"

@@ -3,13 +3,13 @@ use std::hash::Hash;
 
 use clap::{App, Arg, ArgMatches};
 use failure::Fallible;
+use numberer::Numberer;
 use stdinout::OrExit;
-use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::encoder::layer::LayerEncoder;
-use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborRead;
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
-use sticker::Numberer;
+use sticker_encoders::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker_encoders::layer::LayerEncoder;
+use sticker_encoders::SentenceEncoder;
 
 use crate::traits::StickerApp;
 

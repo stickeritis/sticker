@@ -7,18 +7,19 @@ use clap::{App, Arg, ArgMatches};
 use failure::{Error, Fallible, ResultExt};
 use indicatif::{ProgressBar, ProgressStyle};
 use itertools::Itertools;
+use numberer::Numberer;
 use ordered_float::NotNan;
 use stdinout::OrExit;
-use sticker::encoder::categorical::ImmutableCategoricalEncoder;
-use sticker::encoder::deprel::{RelativePOSEncoder, RelativePositionEncoder};
-use sticker::encoder::layer::LayerEncoder;
-use sticker::encoder::SentenceEncoder;
 use sticker::serialization::CborRead;
 use sticker::tensorflow::{
     ConllxDataSet, DataSet, LabelTensor, RuntimeConfig, TaggerGraph, TaggerTrainer, TensorBuilder,
 };
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
-use sticker::{Numberer, SentVectorizer};
+use sticker::SentVectorizer;
+use sticker_encoders::categorical::ImmutableCategoricalEncoder;
+use sticker_encoders::deprel::{RelativePOSEncoder, RelativePositionEncoder};
+use sticker_encoders::layer::LayerEncoder;
+use sticker_encoders::SentenceEncoder;
 
 use crate::progress::ReadProgress;
 use crate::traits::{StickerApp, StickerTrainApp};
