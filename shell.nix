@@ -1,16 +1,15 @@
-with import <nixpkgs> {};
+# We pin nixpkgs to improve reproducability. We don't pin Rust to a
+# specific version, but use the latest stable release.
 
 let
-  danieldk = pkgs.callPackage (fetchFromGitHub {
-    owner = "danieldk";
-    repo = "nix-packages";
-    rev = "4464a255f5e0adca710f23318ba861bbfa408f8f";
-    sha256 = "0pg69q8dyybpa62clfa2krp6pnshali2nsbkkpnahcsjf9zq0nap";
-  }) {};
-in mkShell {
+  sources = import ./nix/sources.nix;
+  nixpkgs = import sources.nixpkgs {};
+  danieldk = nixpkgs.callPackage sources.danieldk {};
+  mozilla = nixpkgs.callPackage "${sources.mozilla}/package-set.nix" {};
+in with nixpkgs; mkShell {
   nativeBuildInputs = [
     pkgconfig
-    latest.rustChannels.stable.rust
+    mozilla.latest.rustChannels.stable.rust
     python3Packages.pytest
   ];
 
@@ -21,7 +20,9 @@ in mkShell {
   ] ++ lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.Security;
 
   propagatedBuildInputs = [
-    python3Packages.tensorflow-bin
-    python3Packages.toml
+    (python3.withPackages (ps: with ps; [
+      tensorflow-bin
+      toml
+    ]))
   ];
 }
