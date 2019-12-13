@@ -46,5 +46,17 @@
         "type": "tarball",
         "url": "https://github.com/NixOS/nixpkgs-channels/archive/45ea60922036b7be302b95d107595f6eb5cd0675.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "sticker": {
+        "branch": "master",
+        "description": "Nix package set for sticker, models, and bindings",
+        "homepage": null,
+        "owner": "stickeritis",
+        "repo": "nix-packages",
+        "rev": "531fe8dec6efa705286775e541e85c54de802b21",
+        "sha256": "0s82cd2wrppm0p1m4dn1pmghbk5i5k6w69b0n3nh5j0y4r36crxc",
+        "type": "tarball",
+        "url": "https://github.com/stickeritis/nix-packages/archive/531fe8dec6efa705286775e541e85c54de802b21.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

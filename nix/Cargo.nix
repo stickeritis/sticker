@@ -23,23 +23,23 @@ rec {
   # workspaceMembers."${crateName}".build.override { features = [ "default" "feature1" ... ]; }.
   workspaceMembers = {
     "sticker" = {
-      packageId = "sticker 0.9.0 (path+file:///home/daniel/git/sticker/sticker)";
+      packageId = "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)";
       build = buildRustCrateWithFeatures {
-        packageId = "sticker 0.9.0 (path+file:///home/daniel/git/sticker/sticker)";
+        packageId = "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)";
         features = rootFeatures;
       };
     };
     "sticker-tf-proto" = {
-      packageId = "sticker-tf-proto 0.7.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
+      packageId = "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
       build = buildRustCrateWithFeatures {
-        packageId = "sticker-tf-proto 0.7.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
+        packageId = "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
         features = rootFeatures;
       };
     };
     "sticker-utils" = {
-      packageId = "sticker-utils 0.9.0 (path+file:///home/daniel/git/sticker/sticker-utils)";
+      packageId = "sticker-utils 0.10.0 (path+file:///home/daniel/git/sticker/sticker-utils)";
       build = buildRustCrateWithFeatures {
-        packageId = "sticker-utils 0.9.0 (path+file:///home/daniel/git/sticker/sticker-utils)";
+        packageId = "sticker-utils 0.10.0 (path+file:///home/daniel/git/sticker/sticker-utils)";
         features = rootFeatures;
       };
     };
@@ -134,6 +134,26 @@ rec {
         };
         features = {
         };
+      };
+    "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "approx";
+        version = "0.3.2";
+        edition = "2015";
+        sha256 = "1sziapqxz6qk1m3bv4pay1bfqv887pf6045qfg913ip4jmyv8fcb";
+        authors = [
+          "Brendan Zabarauskas <bjzaba@yahoo.com.au>"
+        ];
+        dependencies = {
+          "num-traits" = {
+            packageId = "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          };
+        };
+        features = {
+          "default" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
       };
     "arrayvec 0.4.11 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
@@ -704,6 +724,28 @@ rec {
         };
         resolvedDefaultFeatures = [ "openssl-sys" "ssl" ];
       };
+    "edit_tree 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "edit_tree";
+        version = "0.1.1";
+        edition = "2018";
+        sha256 = "1zp6k9bqd3c39klcnn9a4x9qdvcv86s27106qq73adxaakyrfpgq";
+        authors = [
+          "Tobias Pütz <tobias.puetz@uni-tuebingen.de>"
+        ];
+        dependencies = {
+          "failure" = "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
+          "lazy_static" = "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "seqalign" = "seqalign 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "serde" = {
+            packageId = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
+            features = [ "derive" ];
+          };
+          "serde_json" = "serde_json 1.0.43 (registry+https://github.com/rust-lang/crates.io-index)";
+        };
+        features = {
+        };
+      };
     "either 1.5.3 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "either";
@@ -804,25 +846,26 @@ rec {
         features = {
         };
       };
-    "finalfusion 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)"
+    "finalfusion 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "finalfusion";
-        version = "0.10.1";
+        version = "0.11.0";
         edition = "2018";
-        sha256 = "1sab87k4zysl6j4z1jp0p0mm5cdmqrwq8vqvmginvnpxfaa6v7ch";
+        sha256 = "0pki8lx0nhigii4pzp1v2hzq1v42m6z8npq6bkvrxp741301dsbx";
         authors = [
           "Daniël de Kok <me@danieldk.eu>"
+          "Sebastian Pütz <sebastian.puetz@student.uni-tuebingen.de>"
         ];
         dependencies = {
           "byteorder" = "byteorder 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)";
           "fnv" = "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)";
           "itertools" = "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "memmap" = "memmap 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)";
-          "ndarray" = "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ndarray" = "ndarray 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "ordered-float" = "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
           "rand" = "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)";
           "rand_xorshift" = "rand_xorshift 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
-          "reductive" = "reductive 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "reductive" = "reductive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde" = {
             packageId = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
             features = [ "derive" ];
@@ -945,25 +988,6 @@ rec {
         features = {
         };
       };
-    "itertools 0.7.11 (registry+https://github.com/rust-lang/crates.io-index)"
-      = rec {
-        crateName = "itertools";
-        version = "0.7.11";
-        edition = "2015";
-        sha256 = "0gavmkvn2c3cwfwk5zl5p7saiqn4ww227am5ykn6pgfm7c6ppz56";
-        authors = [
-          "bluss"
-        ];
-        dependencies = {
-          "either" = {
-            packageId = "either 1.5.3 (registry+https://github.com/rust-lang/crates.io-index)";
-            usesDefaultFeatures = false;
-          };
-        };
-        features = {
-          "default" = [ "use_std" ];
-        };
-      };
     "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "itertools";
@@ -983,6 +1007,20 @@ rec {
           "default" = [ "use_std" ];
         };
         resolvedDefaultFeatures = [ "default" "use_std" ];
+      };
+    "itoa 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "itoa";
+        version = "0.4.4";
+        edition = "2015";
+        sha256 = "1fqc34xzzl2spfdawxd9awhzl0fwf1y6y4i94l8bq8rfrzd90awl";
+        authors = [
+          "David Tolnay <dtolnay@gmail.com>"
+        ];
+        features = {
+          "default" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
       };
     "kernel32-sys 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
@@ -1089,17 +1127,18 @@ rec {
           "kv_unstable_sval" = [ "kv_unstable" "sval/fmt" ];
         };
       };
-    "matrixmultiply 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)"
+    "matrixmultiply 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "matrixmultiply";
-        version = "0.1.15";
+        version = "0.2.3";
         edition = "2015";
-        sha256 = "0ix1i4lnkfqnzv8f9wr34bf0mlr1sx5hr7yr70k4npxmwxscvdj5";
+        sha256 = "19ngadpzg6wg43ga2zq4sqpq1m7cj4r75y8alchqzbx3s1s5rii3";
         authors = [
           "bluss"
+          "R. Janis Goldschmidt"
         ];
         dependencies = {
-          "rawpointer" = "rawpointer 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "rawpointer" = "rawpointer 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)";
         };
         features = {
         };
@@ -1218,60 +1257,55 @@ rec {
         };
         resolvedDefaultFeatures = [ "default" "no_c_export" ];
       };
-    "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)"
+    "ndarray 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "ndarray";
-        version = "0.12.1";
-        edition = "2015";
-        sha256 = "13708k97kdjfj6g4z1yapjln0v4m7zj0114h8snw44fj79l00346";
+        version = "0.13.0";
+        edition = "2018";
+        sha256 = "056bvjjisdbsgwb354ckm4qhgddcdal4wbxdi9yqyagmn0zbmqpq";
         authors = [
           "bluss"
           "Jim Turner"
         ];
         dependencies = {
+          "approx" = {
+            packageId = "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          };
           "itertools" = {
-            packageId = "itertools 0.7.11 (registry+https://github.com/rust-lang/crates.io-index)";
+            packageId = "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
             usesDefaultFeatures = false;
           };
-          "matrixmultiply" = "matrixmultiply 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)";
+          "matrixmultiply" = "matrixmultiply 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)";
           "num-complex" = "num-complex 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)";
+          "num-integer" = "num-integer 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)";
           "num-traits" = "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)";
+          "rawpointer" = "rawpointer 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "rayon" = {
+            packageId = "rayon 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            optional = true;
+          };
         };
         features = {
           "blas" = [ "cblas-sys" "blas-src" ];
-          "docs" = [ "rustc-serialize" "serde-1" ];
+          "docs" = [ "approx" "serde" "rayon" ];
           "serde-1" = [ "serde" ];
           "test" = [ "test-blas-openblas-sys" ];
           "test-blas-openblas-sys" = [ "blas" ];
         };
+        resolvedDefaultFeatures = [ "approx" "rayon" ];
       };
-    "ndarray-parallel 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)"
-      = rec {
-        crateName = "ndarray-parallel";
-        version = "0.9.0";
-        edition = "2015";
-        sha256 = "1y3hyiry8jrk5i1wd7a95r9s3x2shmlv8wrbhnfkbrg8h5h39p17";
-        authors = [
-          "bluss"
-        ];
-        dependencies = {
-          "ndarray" = "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
-          "rayon" = "rayon 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
-        };
-        features = {
-        };
-      };
-    "ndarray-tensorflow 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)"
+    "ndarray-tensorflow 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "ndarray-tensorflow";
-        version = "0.2.0";
+        version = "0.3.0";
         edition = "2018";
-        sha256 = "1j0dzn6l0chcrmijmr9r6kfcdj9ylqn68zawraa2kjmnl6gcsb2s";
+        sha256 = "1z1vzflq9my4mg62js0by2ddrxsbx6jxxmqs4syx54dqk8003ymy";
         authors = [
           "Daniël de Kok <me@danieldk.eu>"
         ];
         dependencies = {
-          "ndarray" = "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ndarray" = "ndarray 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "tensorflow" = "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
         };
         features = {
@@ -1297,6 +1331,31 @@ rec {
         version = "0.2.3";
         edition = "2015";
         sha256 = "1l8gwn4cqhx77wzhzslwxhryrr5h4vsv19ys8wr5xb1g332805m9";
+        authors = [
+          "The Rust Project Developers"
+        ];
+        dependencies = {
+          "num-traits" = {
+            packageId = "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)";
+            usesDefaultFeatures = false;
+          };
+        };
+        buildDependencies = {
+          "autocfg" = "autocfg 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)";
+        };
+        features = {
+          "default" = [ "std" ];
+          "i128" = [ "num-traits/i128" ];
+          "std" = [ "num-traits/std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
+      };
+    "num-integer 0.1.41 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "num-integer";
+        version = "0.1.41";
+        edition = "2015";
+        sha256 = "1y45nh9xlp2dra9svb1wfsy65fysm3k1w4m8jynywccq645yixid";
         authors = [
           "The Rust Project Developers"
         ];
@@ -1359,6 +1418,22 @@ rec {
         ];
         dependencies = {
           "num-traits" = "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)";
+        };
+        features = {
+        };
+      };
+    "numberer 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "numberer";
+        version = "0.1.1";
+        edition = "2018";
+        sha256 = "08z273m5bh1m9ka8ah6zim5aj9vbkw0y7dgw49ashwdwrq5h0rgp";
+        authors = [
+          "Daniël de Kok <me@danieldk.eu>"
+        ];
+        dependencies = {
+          "serde" = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
+          "serde_derive" = "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
         };
         features = {
         };
@@ -1843,12 +1918,12 @@ rec {
           "serde1" = [ "serde" ];
         };
       };
-    "rawpointer 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)"
+    "rawpointer 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "rawpointer";
-        version = "0.1.0";
+        version = "0.2.1";
         edition = "2015";
-        sha256 = "0hblv2cv310ixf5f1jw4nk9w5pb95wh4dwqyjv07g2xrshbw6j04";
+        sha256 = "01njdh2jkswv4lhvi4917pfga2ldg1v7hr47g2icipyxnyjdd7q7";
         authors = [
           "bluss"
         ];
@@ -1909,19 +1984,21 @@ rec {
         features = {
         };
       };
-    "reductive 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)"
+    "reductive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "reductive";
-        version = "0.3.0";
+        version = "0.4.0";
         edition = "2018";
-        sha256 = "0mcmwm05bmg13ni4xmgkza98bg4xzfq3pvwp65j71526w1wmv7zw";
+        sha256 = "0ifm6p5193zclgjja86y81hr8rbfmmj01nf7xxwnp4xq7jbchrxd";
         authors = [
           "Daniël de Kok <me@danieldk.eu>"
         ];
         dependencies = {
           "log" = "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)";
-          "ndarray" = "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
-          "ndarray-parallel" = "ndarray-parallel 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ndarray" = {
+            packageId = "ndarray 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            features = [ "approx" "rayon" ];
+          };
           "num-traits" = "num-traits 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)";
           "ordered-float" = "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
           "rand" = {
@@ -2046,6 +2123,18 @@ rec {
         features = {
         };
       };
+    "ryu 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "ryu";
+        version = "1.0.2";
+        edition = "2015";
+        sha256 = "04pxfhps9ix078qyml7hifjdmy4bg1n047ki0wx6i1007z85wjp1";
+        authors = [
+          "David Tolnay <dtolnay@gmail.com>"
+        ];
+        features = {
+        };
+      };
     "schannel 0.1.16 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "schannel";
@@ -2105,6 +2194,18 @@ rec {
         sha256 = "1da66c8413yakx0y15k8c055yna5lyb6fr0fw9318kdwkrk5k12h";
         authors = [
           "Steve Klabnik <steve@steveklabnik.com>"
+        ];
+        features = {
+        };
+      };
+    "seqalign 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "seqalign";
+        version = "0.2.1";
+        edition = "2015";
+        sha256 = "00dqmhyil559g85csvrgyr5fvva14jjnb491xb51y9k98czj55jx";
+        authors = [
+          "Daniël de Kok <me@danieldk.eu>"
         ];
         features = {
         };
@@ -2181,6 +2282,26 @@ rec {
         };
         resolvedDefaultFeatures = [ "default" ];
       };
+    "serde_json 1.0.43 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "serde_json";
+        version = "1.0.43";
+        edition = "2015";
+        sha256 = "1plnw609hngv5mmgld95d51nq9xdmy75f7zg43j4jsk0fabrxcpg";
+        authors = [
+          "Erick Tryzelaar <erick.tryzelaar@gmail.com>"
+          "David Tolnay <dtolnay@gmail.com>"
+        ];
+        dependencies = {
+          "itoa" = "itoa 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ryu" = "ryu 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
+          "serde" = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
+        };
+        features = {
+          "preserve_order" = [ "indexmap" ];
+        };
+        resolvedDefaultFeatures = [ "default" ];
+      };
     "smallvec 0.6.10 (registry+https://github.com/rust-lang/crates.io-index)"
       = rec {
         crateName = "smallvec";
@@ -2239,10 +2360,10 @@ rec {
         features = {
         };
       };
-    "sticker 0.9.0 (path+file:///home/daniel/git/sticker/sticker)"
+    "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)"
       = rec {
         crateName = "sticker";
-        version = "0.9.0";
+        version = "0.10.0";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../sticker);
         authors = [
@@ -2251,27 +2372,53 @@ rec {
         dependencies = {
           "conllx" = "conllx 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "failure" = "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
-          "finalfusion" = "finalfusion 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "finalfusion" = "finalfusion 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "itertools" = "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
-          "ndarray" = "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
-          "ndarray-tensorflow" = "ndarray-tensorflow 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ndarray" = "ndarray 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ndarray-tensorflow" = "ndarray-tensorflow 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "numberer" = "numberer 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "ordered-float" = "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
           "petgraph" = "petgraph 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)";
           "protobuf" = "protobuf 2.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "rand" = "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)";
+          "rand_xorshift" = "rand_xorshift 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde" = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde_cbor" = "serde_cbor 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde_derive" = "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
-          "sticker-tf-proto" = "sticker-tf-proto 0.7.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
+          "sticker-encoders" = "sticker-encoders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "sticker-tf-proto" = "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
           "tensorflow" = "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "toml" = "toml 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)";
         };
         features = {
         };
       };
-    "sticker-tf-proto 0.7.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)"
+    "sticker-encoders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)"
+      = rec {
+        crateName = "sticker-encoders";
+        version = "0.1.0";
+        edition = "2018";
+        sha256 = "0vmzp11x9l1xqq6lbmw11wlagzka9j7wcq86r47f826sp627ya05";
+        authors = [
+          "Daniël de Kok <me@danieldk.eu>"
+        ];
+        dependencies = {
+          "conllx" = "conllx 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "edit_tree" = "edit_tree 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "failure" = "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
+          "numberer" = "numberer 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)";
+          "ordered-float" = "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
+          "petgraph" = "petgraph 0.4.13 (registry+https://github.com/rust-lang/crates.io-index)";
+          "serde" = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
+          "serde_derive" = "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
+        };
+        features = {
+        };
+      };
+    "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)"
       = rec {
         crateName = "sticker-tf-proto";
-        version = "0.7.0";
+        version = "0.10.0";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../sticker-tf-proto);
         authors = [
@@ -2291,10 +2438,10 @@ rec {
         };
         resolvedDefaultFeatures = [ "proto-compile" "protoc-rust" ];
       };
-    "sticker-utils 0.9.0 (path+file:///home/daniel/git/sticker/sticker-utils)"
+    "sticker-utils 0.10.0 (path+file:///home/daniel/git/sticker/sticker-utils)"
       = rec {
         crateName = "sticker-utils";
-        version = "0.9.0";
+        version = "0.10.0";
         edition = "2018";
         src = (builtins.filterSource sourceFilter ../sticker-utils);
         authors = [
@@ -2304,17 +2451,18 @@ rec {
           "clap" = "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "conllx" = "conllx 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "failure" = "failure 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
-          "finalfusion" = "finalfusion 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "indicatif" = "indicatif 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "itertools" = "itertools 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)";
+          "numberer" = "numberer 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "ordered-float" = {
             packageId = "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)";
             features = [ "serde" ];
           };
           "serde" = "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
-          "serde_cbor" = "serde_cbor 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "serde_derive" = "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)";
           "stdinout" = "stdinout 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)";
-          "sticker" = "sticker 0.9.0 (path+file:///home/daniel/git/sticker/sticker)";
+          "sticker" = "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)";
+          "sticker-encoders" = "sticker-encoders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "tensorflow" = "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)";
           "threadpool" = "threadpool 1.7.1 (registry+https://github.com/rust-lang/crates.io-index)";
           "toml" = "toml 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)";
@@ -2860,11 +3008,20 @@ rec {
       builtins.match "^\\.sw[a-z]$$" baseName != null ||
       builtins.match "^\\..*\\.sw[a-z]$$" baseName != null ||
       lib.hasSuffix ".tmp" baseName ||
-      lib.hasSuffix ".bak" baseName
+      lib.hasSuffix ".bak" baseName ||
+      baseName == "tests.nix"
     );
 
+  /* A restricted overridable version of  buildRustCrateWithFeaturesImpl. */
+  buildRustCrateWithFeatures = {packageId, features}:
+    lib.makeOverridable
+      (args@{features, ...}:
+        let buildRustCrateArgs = lib.filterAttrs (n: _: n != "features") args;
+        in (buildRustCrateWithFeaturesImpl {inherit packageId features;}).override buildRustCrateArgs)
+      { inherit features; };
+
   /* Returns a buildRustCrate derivation for the given packageId and features. */
-  buildRustCrateWithFeatures = { crateConfigs? crates, packageId, features } @ args:
+  buildRustCrateWithFeaturesImpl = { crateConfigs? crates, packageId, features } @ args:
     assert (builtins.isAttrs crateConfigs);
     assert (builtins.isString packageId);
     assert (builtins.isList features);
