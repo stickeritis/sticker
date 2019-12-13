@@ -6,8 +6,13 @@
 }:
 
 let
-  stickerModels = (callPackage ./nix/sticker.nix {}).models;
-  sticker = callPackage ./default.nix {};
+  sources = import ./nix/sources.nix;
+  nixpkgs = import sources.nixpkgs {};
+  danieldk = nixpkgs.callPackage sources.danieldk {};
+  stickerModels = (nixpkgs.callPackage sources.sticker {}).models;
+  sticker = nixpkgs.callPackage ./default.nix {
+    libtensorflow-bin = danieldk.libtensorflow.v1_15_0;
+  };
   src = lib.sourceFilesBySuffices ./sticker-utils [".conll"];
 in runCommand "test-sticker" {} ''
   ${sticker}/bin/sticker tag \
