@@ -26,9 +26,9 @@ rec {
   # workspaceMembers."${crateName}".build.override { features = [ "default" "feature1" ... ]; }.
   workspaceMembers = {
     "sticker" = rec {
-      packageId = "sticker 0.10.0 (path+file:///Users/daniel/git/sticker/sticker)";
+      packageId = "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)";
       build = internal.buildRustCrateWithFeatures {
-        packageId = "sticker 0.10.0 (path+file:///Users/daniel/git/sticker/sticker)";
+        packageId = "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)";
       };
 
       # Debug support which might change between releases.
@@ -36,9 +36,9 @@ rec {
       debug = internal.debugCrate { inherit packageId; };
     };
     "sticker-tf-proto" = rec {
-      packageId = "sticker-tf-proto 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-tf-proto)";
+      packageId = "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
       build = internal.buildRustCrateWithFeatures {
-        packageId = "sticker-tf-proto 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-tf-proto)";
+        packageId = "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
       };
 
       # Debug support which might change between releases.
@@ -46,9 +46,9 @@ rec {
       debug = internal.debugCrate { inherit packageId; };
     };
     "sticker-utils" = rec {
-      packageId = "sticker-utils 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-utils)";
+      packageId = "sticker-utils 0.10.0 (path+file:///home/daniel/git/sticker/sticker-utils)";
       build = internal.buildRustCrateWithFeatures {
-        packageId = "sticker-utils 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-utils)";
+        packageId = "sticker-utils 0.10.0 (path+file:///home/daniel/git/sticker/sticker-utils)";
       };
 
       # Debug support which might change between releases.
@@ -2747,7 +2747,7 @@ rec {
         ];
         
       };
-      "sticker 0.10.0 (path+file:///Users/daniel/git/sticker/sticker)" = rec {
+      "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)" = rec {
         crateName = "sticker";
         version = "0.10.0";
         edition = "2018";
@@ -2818,11 +2818,11 @@ rec {
           }
           {
             name = "sticker-encoders";
-            packageId = "sticker-encoders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            packageId = "sticker-encoders 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
           }
           {
             name = "sticker-tf-proto";
-            packageId = "sticker-tf-proto 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-tf-proto)";
+            packageId = "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)";
           }
           {
             name = "tensorflow";
@@ -2849,11 +2849,11 @@ rec {
         ];
         
       };
-      "sticker-encoders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = rec {
+      "sticker-encoders 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = rec {
         crateName = "sticker-encoders";
-        version = "0.1.0";
+        version = "0.1.5";
         edition = "2018";
-        sha256 = "0rqzrl8bxbv8fbg089fhfg6cqphgpwgjlla84mhhllaj7kdcw0rn";
+        sha256 = "1igr9q4yxd01bkgx5f79pf8721vzyxdrxa6pjnzcp6jrszdk6rhz";
         authors = [
           "Daniël de Kok <me@danieldk.eu>"
         ];
@@ -2893,7 +2893,7 @@ rec {
         ];
         
       };
-      "sticker-tf-proto 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-tf-proto)" = rec {
+      "sticker-tf-proto 0.10.0 (path+file:///home/daniel/git/sticker/sticker-tf-proto)" = rec {
         crateName = "sticker-tf-proto";
         version = "0.10.0";
         edition = "2018";
@@ -2919,7 +2919,7 @@ rec {
         };
         resolvedDefaultFeatures = [ "proto-compile" "protoc-rust" ];
       };
-      "sticker-utils 0.10.0 (path+file:///Users/daniel/git/sticker/sticker-utils)" = rec {
+      "sticker-utils 0.10.0 (path+file:///home/daniel/git/sticker/sticker-utils)" = rec {
         crateName = "sticker-utils";
         version = "0.10.0";
         edition = "2018";
@@ -2974,11 +2974,11 @@ rec {
           }
           {
             name = "sticker";
-            packageId = "sticker 0.10.0 (path+file:///Users/daniel/git/sticker/sticker)";
+            packageId = "sticker 0.10.0 (path+file:///home/daniel/git/sticker/sticker)";
           }
           {
             name = "sticker-encoders";
-            packageId = "sticker-encoders 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)";
+            packageId = "sticker-encoders 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)";
           }
           {
             name = "tensorflow";
