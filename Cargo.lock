@@ -947,7 +947,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "sticker"
-version = "0.10.0"
+version = "0.11.0"
 dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "conllx 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -968,7 +968,7 @@ dependencies = [
  "serde_cbor 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "sticker-encoders 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "sticker-tf-proto 0.10.0",
+ "sticker-tf-proto 0.11.0",
  "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "toml 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -990,7 +990,7 @@ dependencies = [
 
 [[package]]
 name = "sticker-tf-proto"
-version = "0.10.0"
+version = "0.11.0"
 dependencies = [
  "protobuf 2.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "protoc-rust 2.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -998,7 +998,7 @@ dependencies = [
 
 [[package]]
 name = "sticker-utils"
-version = "0.10.0"
+version = "0.11.0"
 dependencies = [
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "conllx 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1010,7 +1010,7 @@ dependencies = [
  "serde 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.101 (registry+https://github.com/rust-lang/crates.io-index)",
  "stdinout 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "sticker 0.10.0",
+ "sticker 0.11.0",
  "sticker-encoders 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "tensorflow 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "threadpool 1.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
