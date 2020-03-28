@@ -36,15 +36,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
-        "branch": "nixos-19.09",
+        "branch": "cc90ececa78a269bcf185e62e160a0eed4d45a14",
         "description": "A read-only mirror of NixOS/nixpkgs tracking the released channels. Send issues and PRs to",
         "homepage": "https://github.com/NixOS/nixpkgs",
         "owner": "NixOS",
         "repo": "nixpkgs-channels",
-        "rev": "45ea60922036b7be302b95d107595f6eb5cd0675",
-        "sha256": "11wm7af6ab2979z8yrpcprb6d99kbrjq44a48ayi4a7c58a2xb6q",
+        "rev": "cc90ececa78a269bcf185e62e160a0eed4d45a14",
+        "sha256": "0rnavvhnj2ihajrlfb3pl3fn2yj73j8b4d5r4wpakqz5q53xzvmg",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs-channels/archive/45ea60922036b7be302b95d107595f6eb5cd0675.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/cc90ececa78a269bcf185e62e160a0eed4d45a14.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "sticker": {
@@ -53,10 +53,10 @@
         "homepage": null,
         "owner": "stickeritis",
         "repo": "nix-packages",
-        "rev": "531fe8dec6efa705286775e541e85c54de802b21",
-        "sha256": "0s82cd2wrppm0p1m4dn1pmghbk5i5k6w69b0n3nh5j0y4r36crxc",
+        "rev": "8c3ec2ede634eafed796714998cac54d213512ef",
+        "sha256": "0hcb9y7ld6gr633h430q3iskiibgpqr1mhvl1yr708xd9v5i7wll",
         "type": "tarball",
-        "url": "https://github.com/stickeritis/nix-packages/archive/531fe8dec6efa705286775e541e85c54de802b21.tar.gz",
+        "url": "https://github.com/stickeritis/nix-packages/archive/8c3ec2ede634eafed796714998cac54d213512ef.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
