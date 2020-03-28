@@ -1,24 +1,13 @@
-{
-  callPackage
-, lib
-, stdenv
+{ pkgs ? import (import nix/sources.nix).nixpkgs {} }:
 
-, defaultCrateOverrides
-
-, pkgconfig
-
-, curl
-, openssl
-, libtensorflow-bin
-}:
-
-((callPackage ./nix/Cargo.nix {}).workspaceMembers."sticker-utils").build.override {
-  crateOverrides = defaultCrateOverrides // {
+let
+  sources = import nix/sources.nix;
+  danieldk = pkgs.callPackage sources.danieldk {};
+  crateOverrides = with pkgs; defaultCrateOverrides // {
     sticker-utils = attrs: {
       src = lib.sourceFilesBySuffices ./sticker-utils [".rs"];
 
       postInstall = ''
-        mv $out/bin/sticker-utils $out/bin/sticker
         rm -rf $out/lib
         rm $out/bin/*.d
       '';
@@ -27,8 +16,14 @@
     tensorflow-sys = attrs: {
       nativeBuildInputs = [ pkgconfig ];
 
-      buildInputs = [ libtensorflow-bin ] ++
+      buildInputs = [ danieldk.libtensorflow.v1_15_0 ] ++
         stdenv.lib.optional stdenv.isDarwin curl;
     };
   };
-}
+  buildRustCrate = pkgs.buildRustCrate.override {
+    defaultCrateOverrides = crateOverrides;
+  };
+  cargo_nix = pkgs.callPackage ./nix/Cargo.nix {
+    inherit pkgs buildRustCrate;
+  };
+in cargo_nix.workspaceMembers.sticker-utils.build
