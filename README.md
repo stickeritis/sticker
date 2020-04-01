@@ -76,3 +76,10 @@ sticker is licensed under the [Blue Oak Model License version
 1.0.0](LICENSE.md). The Tensorflow protocol buffer definitions in
 `tf-proto` are licensed under the Apache License version 2.0. The
 [list of contributors](CONTRIBUTORS) is also available.
+
+## Credits
+
+* sticker is developed by Daniël de Kok & Tobias Pütz.
+* The Python precursor to sticker was developer by Erik Schill.
+* Sebastian Pütz and Patricia Fischer reviewed a lot of code across
+  the sticker projects.
