@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct DebugTensorWatch {
     // message fields
     pub node_name: ::std::string::String,
@@ -51,7 +51,6 @@ impl DebugTensorWatch {
     }
 
     // string node_name = 1;
-
 
     pub fn get_node_name(&self) -> &str {
         &self.node_name
@@ -78,7 +77,6 @@ impl DebugTensorWatch {
 
     // int32 output_slot = 2;
 
-
     pub fn get_output_slot(&self) -> i32 {
         self.output_slot
     }
@@ -92,7 +90,6 @@ impl DebugTensorWatch {
     }
 
     // repeated string debug_ops = 3;
-
 
     pub fn get_debug_ops(&self) -> &[::std::string::String] {
         &self.debug_ops
@@ -118,7 +115,6 @@ impl DebugTensorWatch {
 
     // repeated string debug_urls = 4;
 
-
     pub fn get_debug_urls(&self) -> &[::std::string::String] {
         &self.debug_urls
     }
@@ -143,7 +139,6 @@ impl DebugTensorWatch {
 
     // bool tolerate_debug_op_creation_failures = 5;
 
-
     pub fn get_tolerate_debug_op_creation_failures(&self) -> bool {
         self.tolerate_debug_op_creation_failures
     }
@@ -162,36 +157,52 @@ impl ::protobuf::Message for DebugTensorWatch {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.node_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.node_name,
+                    )?;
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.output_slot = tmp;
-                },
+                }
                 3 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.debug_ops)?;
-                },
+                }
                 4 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.debug_urls)?;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.tolerate_debug_op_creation_failures = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -205,14 +216,18 @@ impl ::protobuf::Message for DebugTensorWatch {
             my_size += ::protobuf::rt::string_size(1, &self.node_name);
         }
         if self.output_slot != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.output_slot, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.output_slot,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.debug_ops {
             my_size += ::protobuf::rt::string_size(3, &value);
-        };
+        }
         for value in &self.debug_urls {
             my_size += ::protobuf::rt::string_size(4, &value);
-        };
+        }
         if self.tolerate_debug_op_creation_failures != false {
             my_size += 2;
         }
@@ -221,7 +236,10 @@ impl ::protobuf::Message for DebugTensorWatch {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.node_name.is_empty() {
             os.write_string(1, &self.node_name)?;
         }
@@ -230,10 +248,10 @@ impl ::protobuf::Message for DebugTensorWatch {
         }
         for v in &self.debug_ops {
             os.write_string(3, &v)?;
-        };
+        }
         for v in &self.debug_urls {
             os.write_string(4, &v)?;
-        };
+        }
         if self.tolerate_debug_op_creation_failures != false {
             os.write_bool(5, self.tolerate_debug_op_creation_failures)?;
         }
@@ -272,42 +290,62 @@ impl ::protobuf::Message for DebugTensorWatch {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "node_name",
-                    |m: &DebugTensorWatch| { &m.node_name },
-                    |m: &mut DebugTensorWatch| { &mut m.node_name },
+                    |m: &DebugTensorWatch| &m.node_name,
+                    |m: &mut DebugTensorWatch| &mut m.node_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "output_slot",
-                    |m: &DebugTensorWatch| { &m.output_slot },
-                    |m: &mut DebugTensorWatch| { &mut m.output_slot },
+                    |m: &DebugTensorWatch| &m.output_slot,
+                    |m: &mut DebugTensorWatch| &mut m.output_slot,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "debug_ops",
-                    |m: &DebugTensorWatch| { &m.debug_ops },
-                    |m: &mut DebugTensorWatch| { &mut m.debug_ops },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "debug_urls",
-                    |m: &DebugTensorWatch| { &m.debug_urls },
-                    |m: &mut DebugTensorWatch| { &mut m.debug_urls },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "debug_ops",
+                        |m: &DebugTensorWatch| &m.debug_ops,
+                        |m: &mut DebugTensorWatch| &mut m.debug_ops,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "debug_urls",
+                        |m: &DebugTensorWatch| &m.debug_urls,
+                        |m: &mut DebugTensorWatch| &mut m.debug_urls,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "tolerate_debug_op_creation_failures",
-                    |m: &DebugTensorWatch| { &m.tolerate_debug_op_creation_failures },
-                    |m: &mut DebugTensorWatch| { &mut m.tolerate_debug_op_creation_failures },
+                    |m: &DebugTensorWatch| &m.tolerate_debug_op_creation_failures,
+                    |m: &mut DebugTensorWatch| &mut m.tolerate_debug_op_creation_failures,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<DebugTensorWatch>(
                     "DebugTensorWatch",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -318,9 +356,7 @@ impl ::protobuf::Message for DebugTensorWatch {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const DebugTensorWatch,
         };
-        unsafe {
-            instance.get(DebugTensorWatch::new)
-        }
+        unsafe { instance.get(DebugTensorWatch::new) }
     }
 }
 
@@ -347,7 +383,7 @@ impl ::protobuf::reflect::ProtobufValue for DebugTensorWatch {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct DebugOptions {
     // message fields
     pub debug_tensor_watch_opts: ::protobuf::RepeatedField<DebugTensorWatch>,
@@ -371,7 +407,6 @@ impl DebugOptions {
 
     // repeated .tensorflow.DebugTensorWatch debug_tensor_watch_opts = 4;
 
-
     pub fn get_debug_tensor_watch_opts(&self) -> &[DebugTensorWatch] {
         &self.debug_tensor_watch_opts
     }
@@ -385,17 +420,21 @@ impl DebugOptions {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_debug_tensor_watch_opts(&mut self) -> &mut ::protobuf::RepeatedField<DebugTensorWatch> {
+    pub fn mut_debug_tensor_watch_opts(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<DebugTensorWatch> {
         &mut self.debug_tensor_watch_opts
     }
 
     // Take field
     pub fn take_debug_tensor_watch_opts(&mut self) -> ::protobuf::RepeatedField<DebugTensorWatch> {
-        ::std::mem::replace(&mut self.debug_tensor_watch_opts, ::protobuf::RepeatedField::new())
+        ::std::mem::replace(
+            &mut self.debug_tensor_watch_opts,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // int64 global_step = 10;
-
 
     pub fn get_global_step(&self) -> i64 {
         self.global_step
@@ -410,7 +449,6 @@ impl DebugOptions {
     }
 
     // bool reset_disk_byte_usage = 11;
-
 
     pub fn get_reset_disk_byte_usage(&self) -> bool {
         self.reset_disk_byte_usage
@@ -431,34 +469,50 @@ impl ::protobuf::Message for DebugOptions {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 4 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.debug_tensor_watch_opts)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.debug_tensor_watch_opts,
+                    )?;
+                }
                 10 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.global_step = tmp;
-                },
+                }
                 11 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.reset_disk_byte_usage = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -471,9 +525,13 @@ impl ::protobuf::Message for DebugOptions {
         for value in &self.debug_tensor_watch_opts {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if self.global_step != 0 {
-            my_size += ::protobuf::rt::value_size(10, self.global_step, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                10,
+                self.global_step,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.reset_disk_byte_usage != false {
             my_size += 2;
@@ -483,12 +541,15 @@ impl ::protobuf::Message for DebugOptions {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.debug_tensor_watch_opts {
             os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if self.global_step != 0 {
             os.write_int64(10, self.global_step)?;
         }
@@ -530,32 +591,44 @@ impl ::protobuf::Message for DebugOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<DebugTensorWatch>>(
-                    "debug_tensor_watch_opts",
-                    |m: &DebugOptions| { &m.debug_tensor_watch_opts },
-                    |m: &mut DebugOptions| { &mut m.debug_tensor_watch_opts },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<DebugTensorWatch>,
+                    >(
+                        "debug_tensor_watch_opts",
+                        |m: &DebugOptions| &m.debug_tensor_watch_opts,
+                        |m: &mut DebugOptions| &mut m.debug_tensor_watch_opts,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "global_step",
-                    |m: &DebugOptions| { &m.global_step },
-                    |m: &mut DebugOptions| { &mut m.global_step },
+                    |m: &DebugOptions| &m.global_step,
+                    |m: &mut DebugOptions| &mut m.global_step,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "reset_disk_byte_usage",
-                    |m: &DebugOptions| { &m.reset_disk_byte_usage },
-                    |m: &mut DebugOptions| { &mut m.reset_disk_byte_usage },
+                    |m: &DebugOptions| &m.reset_disk_byte_usage,
+                    |m: &mut DebugOptions| &mut m.reset_disk_byte_usage,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<DebugOptions>(
                     "DebugOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -566,9 +639,7 @@ impl ::protobuf::Message for DebugOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const DebugOptions,
         };
-        unsafe {
-            instance.get(DebugOptions::new)
-        }
+        unsafe { instance.get(DebugOptions::new) }
     }
 }
 
@@ -593,7 +664,7 @@ impl ::protobuf::reflect::ProtobufValue for DebugOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct DebuggedSourceFile {
     // message fields
     pub host: ::std::string::String,
@@ -618,7 +689,6 @@ impl DebuggedSourceFile {
     }
 
     // string host = 1;
-
 
     pub fn get_host(&self) -> &str {
         &self.host
@@ -645,7 +715,6 @@ impl DebuggedSourceFile {
 
     // string file_path = 2;
 
-
     pub fn get_file_path(&self) -> &str {
         &self.file_path
     }
@@ -671,7 +740,6 @@ impl DebuggedSourceFile {
 
     // int64 last_modified = 3;
 
-
     pub fn get_last_modified(&self) -> i64 {
         self.last_modified
     }
@@ -686,7 +754,6 @@ impl DebuggedSourceFile {
 
     // int64 bytes = 4;
 
-
     pub fn get_bytes(&self) -> i64 {
         self.bytes
     }
@@ -700,7 +767,6 @@ impl DebuggedSourceFile {
     }
 
     // repeated string lines = 5;
-
 
     pub fn get_lines(&self) -> &[::std::string::String] {
         &self.lines
@@ -730,36 +796,56 @@ impl ::protobuf::Message for DebuggedSourceFile {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.host)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.host,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.file_path)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.file_path,
+                    )?;
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.last_modified = tmp;
-                },
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.bytes = tmp;
-                },
+                }
                 5 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.lines)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -776,20 +862,28 @@ impl ::protobuf::Message for DebuggedSourceFile {
             my_size += ::protobuf::rt::string_size(2, &self.file_path);
         }
         if self.last_modified != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.last_modified, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.last_modified,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.bytes != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size +=
+                ::protobuf::rt::value_size(4, self.bytes, ::protobuf::wire_format::WireTypeVarint);
         }
         for value in &self.lines {
             my_size += ::protobuf::rt::string_size(5, &value);
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.host.is_empty() {
             os.write_string(1, &self.host)?;
         }
@@ -804,7 +898,7 @@ impl ::protobuf::Message for DebuggedSourceFile {
         }
         for v in &self.lines {
             os.write_string(5, &v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -840,42 +934,60 @@ impl ::protobuf::Message for DebuggedSourceFile {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "host",
-                    |m: &DebuggedSourceFile| { &m.host },
-                    |m: &mut DebuggedSourceFile| { &mut m.host },
+                    |m: &DebuggedSourceFile| &m.host,
+                    |m: &mut DebuggedSourceFile| &mut m.host,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "file_path",
-                    |m: &DebuggedSourceFile| { &m.file_path },
-                    |m: &mut DebuggedSourceFile| { &mut m.file_path },
+                    |m: &DebuggedSourceFile| &m.file_path,
+                    |m: &mut DebuggedSourceFile| &mut m.file_path,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "last_modified",
-                    |m: &DebuggedSourceFile| { &m.last_modified },
-                    |m: &mut DebuggedSourceFile| { &mut m.last_modified },
+                    |m: &DebuggedSourceFile| &m.last_modified,
+                    |m: &mut DebuggedSourceFile| &mut m.last_modified,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "bytes",
-                    |m: &DebuggedSourceFile| { &m.bytes },
-                    |m: &mut DebuggedSourceFile| { &mut m.bytes },
+                    |m: &DebuggedSourceFile| &m.bytes,
+                    |m: &mut DebuggedSourceFile| &mut m.bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "lines",
-                    |m: &DebuggedSourceFile| { &m.lines },
-                    |m: &mut DebuggedSourceFile| { &mut m.lines },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "lines",
+                        |m: &DebuggedSourceFile| &m.lines,
+                        |m: &mut DebuggedSourceFile| &mut m.lines,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<DebuggedSourceFile>(
                     "DebuggedSourceFile",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -886,9 +998,7 @@ impl ::protobuf::Message for DebuggedSourceFile {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const DebuggedSourceFile,
         };
-        unsafe {
-            instance.get(DebuggedSourceFile::new)
-        }
+        unsafe { instance.get(DebuggedSourceFile::new) }
     }
 }
 
@@ -915,7 +1025,7 @@ impl ::protobuf::reflect::ProtobufValue for DebuggedSourceFile {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct DebuggedSourceFiles {
     // message fields
     pub source_files: ::protobuf::RepeatedField<DebuggedSourceFile>,
@@ -936,7 +1046,6 @@ impl DebuggedSourceFiles {
     }
 
     // repeated .tensorflow.DebuggedSourceFile source_files = 1;
-
 
     pub fn get_source_files(&self) -> &[DebuggedSourceFile] {
         &self.source_files
@@ -967,20 +1076,32 @@ impl ::protobuf::Message for DebuggedSourceFiles {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.source_files)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.source_files,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -993,18 +1114,21 @@ impl ::protobuf::Message for DebuggedSourceFiles {
         for value in &self.source_files {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.source_files {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1040,22 +1164,28 @@ impl ::protobuf::Message for DebuggedSourceFiles {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<DebuggedSourceFile>>(
-                    "source_files",
-                    |m: &DebuggedSourceFiles| { &m.source_files },
-                    |m: &mut DebuggedSourceFiles| { &mut m.source_files },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<DebuggedSourceFile>,
+                    >(
+                        "source_files",
+                        |m: &DebuggedSourceFiles| &m.source_files,
+                        |m: &mut DebuggedSourceFiles| &mut m.source_files,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<DebuggedSourceFiles>(
                     "DebuggedSourceFiles",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1066,9 +1196,7 @@ impl ::protobuf::Message for DebuggedSourceFiles {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const DebuggedSourceFiles,
         };
-        unsafe {
-            instance.get(DebuggedSourceFiles::new)
-        }
+        unsafe { instance.get(DebuggedSourceFiles::new) }
     }
 }
 
@@ -1112,7 +1240,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -1122,9 +1252,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

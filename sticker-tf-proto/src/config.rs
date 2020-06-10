@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct GPUOptions {
     // message fields
     pub per_process_gpu_memory_fraction: f64,
@@ -56,7 +56,6 @@ impl GPUOptions {
 
     // double per_process_gpu_memory_fraction = 1;
 
-
     pub fn get_per_process_gpu_memory_fraction(&self) -> f64 {
         self.per_process_gpu_memory_fraction
     }
@@ -71,7 +70,6 @@ impl GPUOptions {
 
     // bool allow_growth = 4;
 
-
     pub fn get_allow_growth(&self) -> bool {
         self.allow_growth
     }
@@ -85,7 +83,6 @@ impl GPUOptions {
     }
 
     // string allocator_type = 2;
-
 
     pub fn get_allocator_type(&self) -> &str {
         &self.allocator_type
@@ -112,7 +109,6 @@ impl GPUOptions {
 
     // int64 deferred_deletion_bytes = 3;
 
-
     pub fn get_deferred_deletion_bytes(&self) -> i64 {
         self.deferred_deletion_bytes
     }
@@ -126,7 +122,6 @@ impl GPUOptions {
     }
 
     // string visible_device_list = 5;
-
 
     pub fn get_visible_device_list(&self) -> &str {
         &self.visible_device_list
@@ -153,7 +148,6 @@ impl GPUOptions {
 
     // int32 polling_active_delay_usecs = 6;
 
-
     pub fn get_polling_active_delay_usecs(&self) -> i32 {
         self.polling_active_delay_usecs
     }
@@ -167,7 +161,6 @@ impl GPUOptions {
     }
 
     // int32 polling_inactive_delay_msecs = 7;
-
 
     pub fn get_polling_inactive_delay_msecs(&self) -> i32 {
         self.polling_inactive_delay_msecs
@@ -183,7 +176,6 @@ impl GPUOptions {
 
     // bool force_gpu_compatible = 8;
 
-
     pub fn get_force_gpu_compatible(&self) -> bool {
         self.force_gpu_compatible
     }
@@ -198,9 +190,10 @@ impl GPUOptions {
 
     // .tensorflow.GPUOptions.Experimental experimental = 9;
 
-
     pub fn get_experimental(&self) -> &GPUOptions_Experimental {
-        self.experimental.as_ref().unwrap_or_else(|| GPUOptions_Experimental::default_instance())
+        self.experimental
+            .as_ref()
+            .unwrap_or_else(|| GPUOptions_Experimental::default_instance())
     }
     pub fn clear_experimental(&mut self) {
         self.experimental.clear();
@@ -226,7 +219,9 @@ impl GPUOptions {
 
     // Take field
     pub fn take_experimental(&mut self) -> GPUOptions_Experimental {
-        self.experimental.take().unwrap_or_else(|| GPUOptions_Experimental::new())
+        self.experimental
+            .take()
+            .unwrap_or_else(|| GPUOptions_Experimental::new())
     }
 }
 
@@ -236,68 +231,100 @@ impl ::protobuf::Message for GPUOptions {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeFixed64 {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_double()?;
                     self.per_process_gpu_memory_fraction = tmp;
-                },
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.allow_growth = tmp;
-                },
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.allocator_type)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.allocator_type,
+                    )?;
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.deferred_deletion_bytes = tmp;
-                },
+                }
                 5 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.visible_device_list)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.visible_device_list,
+                    )?;
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.polling_active_delay_usecs = tmp;
-                },
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.polling_inactive_delay_msecs = tmp;
-                },
+                }
                 8 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.force_gpu_compatible = tmp;
-                },
+                }
                 9 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.experimental)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.experimental,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -317,16 +344,28 @@ impl ::protobuf::Message for GPUOptions {
             my_size += ::protobuf::rt::string_size(2, &self.allocator_type);
         }
         if self.deferred_deletion_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.deferred_deletion_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.deferred_deletion_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if !self.visible_device_list.is_empty() {
             my_size += ::protobuf::rt::string_size(5, &self.visible_device_list);
         }
         if self.polling_active_delay_usecs != 0 {
-            my_size += ::protobuf::rt::value_size(6, self.polling_active_delay_usecs, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                6,
+                self.polling_active_delay_usecs,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.polling_inactive_delay_msecs != 0 {
-            my_size += ::protobuf::rt::value_size(7, self.polling_inactive_delay_msecs, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                7,
+                self.polling_inactive_delay_msecs,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.force_gpu_compatible != false {
             my_size += 2;
@@ -340,7 +379,10 @@ impl ::protobuf::Message for GPUOptions {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.per_process_gpu_memory_fraction != 0. {
             os.write_double(1, self.per_process_gpu_memory_fraction)?;
         }
@@ -405,62 +447,92 @@ impl ::protobuf::Message for GPUOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeDouble>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeDouble,
+                >(
                     "per_process_gpu_memory_fraction",
-                    |m: &GPUOptions| { &m.per_process_gpu_memory_fraction },
-                    |m: &mut GPUOptions| { &mut m.per_process_gpu_memory_fraction },
+                    |m: &GPUOptions| &m.per_process_gpu_memory_fraction,
+                    |m: &mut GPUOptions| &mut m.per_process_gpu_memory_fraction,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "allow_growth",
-                    |m: &GPUOptions| { &m.allow_growth },
-                    |m: &mut GPUOptions| { &mut m.allow_growth },
+                    |m: &GPUOptions| &m.allow_growth,
+                    |m: &mut GPUOptions| &mut m.allow_growth,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "allocator_type",
-                    |m: &GPUOptions| { &m.allocator_type },
-                    |m: &mut GPUOptions| { &mut m.allocator_type },
+                    |m: &GPUOptions| &m.allocator_type,
+                    |m: &mut GPUOptions| &mut m.allocator_type,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "deferred_deletion_bytes",
-                    |m: &GPUOptions| { &m.deferred_deletion_bytes },
-                    |m: &mut GPUOptions| { &mut m.deferred_deletion_bytes },
+                    |m: &GPUOptions| &m.deferred_deletion_bytes,
+                    |m: &mut GPUOptions| &mut m.deferred_deletion_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "visible_device_list",
-                    |m: &GPUOptions| { &m.visible_device_list },
-                    |m: &mut GPUOptions| { &mut m.visible_device_list },
+                    |m: &GPUOptions| &m.visible_device_list,
+                    |m: &mut GPUOptions| &mut m.visible_device_list,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "polling_active_delay_usecs",
-                    |m: &GPUOptions| { &m.polling_active_delay_usecs },
-                    |m: &mut GPUOptions| { &mut m.polling_active_delay_usecs },
+                    |m: &GPUOptions| &m.polling_active_delay_usecs,
+                    |m: &mut GPUOptions| &mut m.polling_active_delay_usecs,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "polling_inactive_delay_msecs",
-                    |m: &GPUOptions| { &m.polling_inactive_delay_msecs },
-                    |m: &mut GPUOptions| { &mut m.polling_inactive_delay_msecs },
+                    |m: &GPUOptions| &m.polling_inactive_delay_msecs,
+                    |m: &mut GPUOptions| &mut m.polling_inactive_delay_msecs,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "force_gpu_compatible",
-                    |m: &GPUOptions| { &m.force_gpu_compatible },
-                    |m: &mut GPUOptions| { &mut m.force_gpu_compatible },
+                    |m: &GPUOptions| &m.force_gpu_compatible,
+                    |m: &mut GPUOptions| &mut m.force_gpu_compatible,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<GPUOptions_Experimental>>(
-                    "experimental",
-                    |m: &GPUOptions| { &m.experimental },
-                    |m: &mut GPUOptions| { &mut m.experimental },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<GPUOptions_Experimental>,
+                    >(
+                        "experimental",
+                        |m: &GPUOptions| &m.experimental,
+                        |m: &mut GPUOptions| &mut m.experimental,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<GPUOptions>(
                     "GPUOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -471,9 +543,7 @@ impl ::protobuf::Message for GPUOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const GPUOptions,
         };
-        unsafe {
-            instance.get(GPUOptions::new)
-        }
+        unsafe { instance.get(GPUOptions::new) }
     }
 }
 
@@ -504,7 +574,7 @@ impl ::protobuf::reflect::ProtobufValue for GPUOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct GPUOptions_Experimental {
     // message fields
     pub virtual_devices: ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices>,
@@ -533,7 +603,6 @@ impl GPUOptions_Experimental {
 
     // repeated .tensorflow.GPUOptions.Experimental.VirtualDevices virtual_devices = 1;
 
-
     pub fn get_virtual_devices(&self) -> &[GPUOptions_Experimental_VirtualDevices] {
         &self.virtual_devices
     }
@@ -542,22 +611,28 @@ impl GPUOptions_Experimental {
     }
 
     // Param is passed by value, moved
-    pub fn set_virtual_devices(&mut self, v: ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices>) {
+    pub fn set_virtual_devices(
+        &mut self,
+        v: ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices>,
+    ) {
         self.virtual_devices = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_virtual_devices(&mut self) -> &mut ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices> {
+    pub fn mut_virtual_devices(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices> {
         &mut self.virtual_devices
     }
 
     // Take field
-    pub fn take_virtual_devices(&mut self) -> ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices> {
+    pub fn take_virtual_devices(
+        &mut self,
+    ) -> ::protobuf::RepeatedField<GPUOptions_Experimental_VirtualDevices> {
         ::std::mem::replace(&mut self.virtual_devices, ::protobuf::RepeatedField::new())
     }
 
     // bool use_unified_memory = 2;
-
 
     pub fn get_use_unified_memory(&self) -> bool {
         self.use_unified_memory
@@ -573,7 +648,6 @@ impl GPUOptions_Experimental {
 
     // int32 num_dev_to_dev_copy_streams = 3;
 
-
     pub fn get_num_dev_to_dev_copy_streams(&self) -> i32 {
         self.num_dev_to_dev_copy_streams
     }
@@ -587,7 +661,6 @@ impl GPUOptions_Experimental {
     }
 
     // string collective_ring_order = 4;
-
 
     pub fn get_collective_ring_order(&self) -> &str {
         &self.collective_ring_order
@@ -609,11 +682,13 @@ impl GPUOptions_Experimental {
 
     // Take field
     pub fn take_collective_ring_order(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.collective_ring_order, ::std::string::String::new())
+        ::std::mem::replace(
+            &mut self.collective_ring_order,
+            ::std::string::String::new(),
+        )
     }
 
     // bool timestamped_allocator = 5;
-
 
     pub fn get_timestamped_allocator(&self) -> bool {
         self.timestamped_allocator
@@ -629,7 +704,6 @@ impl GPUOptions_Experimental {
 
     // int32 kernel_tracker_max_interval = 7;
 
-
     pub fn get_kernel_tracker_max_interval(&self) -> i32 {
         self.kernel_tracker_max_interval
     }
@@ -644,7 +718,6 @@ impl GPUOptions_Experimental {
 
     // int32 kernel_tracker_max_bytes = 8;
 
-
     pub fn get_kernel_tracker_max_bytes(&self) -> i32 {
         self.kernel_tracker_max_bytes
     }
@@ -658,7 +731,6 @@ impl GPUOptions_Experimental {
     }
 
     // int32 kernel_tracker_max_pending = 9;
-
 
     pub fn get_kernel_tracker_max_pending(&self) -> i32 {
         self.kernel_tracker_max_pending
@@ -679,65 +751,93 @@ impl ::protobuf::Message for GPUOptions_Experimental {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.virtual_devices)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.virtual_devices,
+                    )?;
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.use_unified_memory = tmp;
-                },
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.num_dev_to_dev_copy_streams = tmp;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.collective_ring_order)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.collective_ring_order,
+                    )?;
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.timestamped_allocator = tmp;
-                },
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.kernel_tracker_max_interval = tmp;
-                },
+                }
                 8 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.kernel_tracker_max_bytes = tmp;
-                },
+                }
                 9 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.kernel_tracker_max_pending = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -750,12 +850,16 @@ impl ::protobuf::Message for GPUOptions_Experimental {
         for value in &self.virtual_devices {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if self.use_unified_memory != false {
             my_size += 2;
         }
         if self.num_dev_to_dev_copy_streams != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.num_dev_to_dev_copy_streams, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.num_dev_to_dev_copy_streams,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if !self.collective_ring_order.is_empty() {
             my_size += ::protobuf::rt::string_size(4, &self.collective_ring_order);
@@ -764,25 +868,40 @@ impl ::protobuf::Message for GPUOptions_Experimental {
             my_size += 2;
         }
         if self.kernel_tracker_max_interval != 0 {
-            my_size += ::protobuf::rt::value_size(7, self.kernel_tracker_max_interval, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                7,
+                self.kernel_tracker_max_interval,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.kernel_tracker_max_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(8, self.kernel_tracker_max_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                8,
+                self.kernel_tracker_max_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.kernel_tracker_max_pending != 0 {
-            my_size += ::protobuf::rt::value_size(9, self.kernel_tracker_max_pending, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                9,
+                self.kernel_tracker_max_pending,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.virtual_devices {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if self.use_unified_memory != false {
             os.write_bool(2, self.use_unified_memory)?;
         }
@@ -839,70 +958,98 @@ impl ::protobuf::Message for GPUOptions_Experimental {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<GPUOptions_Experimental_VirtualDevices>>(
-                    "virtual_devices",
-                    |m: &GPUOptions_Experimental| { &m.virtual_devices },
-                    |m: &mut GPUOptions_Experimental| { &mut m.virtual_devices },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            GPUOptions_Experimental_VirtualDevices,
+                        >,
+                    >(
+                        "virtual_devices",
+                        |m: &GPUOptions_Experimental| &m.virtual_devices,
+                        |m: &mut GPUOptions_Experimental| &mut m.virtual_devices,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "use_unified_memory",
-                    |m: &GPUOptions_Experimental| { &m.use_unified_memory },
-                    |m: &mut GPUOptions_Experimental| { &mut m.use_unified_memory },
+                    |m: &GPUOptions_Experimental| &m.use_unified_memory,
+                    |m: &mut GPUOptions_Experimental| &mut m.use_unified_memory,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "num_dev_to_dev_copy_streams",
-                    |m: &GPUOptions_Experimental| { &m.num_dev_to_dev_copy_streams },
-                    |m: &mut GPUOptions_Experimental| { &mut m.num_dev_to_dev_copy_streams },
+                    |m: &GPUOptions_Experimental| &m.num_dev_to_dev_copy_streams,
+                    |m: &mut GPUOptions_Experimental| &mut m.num_dev_to_dev_copy_streams,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "collective_ring_order",
-                    |m: &GPUOptions_Experimental| { &m.collective_ring_order },
-                    |m: &mut GPUOptions_Experimental| { &mut m.collective_ring_order },
+                    |m: &GPUOptions_Experimental| &m.collective_ring_order,
+                    |m: &mut GPUOptions_Experimental| &mut m.collective_ring_order,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "timestamped_allocator",
-                    |m: &GPUOptions_Experimental| { &m.timestamped_allocator },
-                    |m: &mut GPUOptions_Experimental| { &mut m.timestamped_allocator },
+                    |m: &GPUOptions_Experimental| &m.timestamped_allocator,
+                    |m: &mut GPUOptions_Experimental| &mut m.timestamped_allocator,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "kernel_tracker_max_interval",
-                    |m: &GPUOptions_Experimental| { &m.kernel_tracker_max_interval },
-                    |m: &mut GPUOptions_Experimental| { &mut m.kernel_tracker_max_interval },
+                    |m: &GPUOptions_Experimental| &m.kernel_tracker_max_interval,
+                    |m: &mut GPUOptions_Experimental| &mut m.kernel_tracker_max_interval,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "kernel_tracker_max_bytes",
-                    |m: &GPUOptions_Experimental| { &m.kernel_tracker_max_bytes },
-                    |m: &mut GPUOptions_Experimental| { &mut m.kernel_tracker_max_bytes },
+                    |m: &GPUOptions_Experimental| &m.kernel_tracker_max_bytes,
+                    |m: &mut GPUOptions_Experimental| &mut m.kernel_tracker_max_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "kernel_tracker_max_pending",
-                    |m: &GPUOptions_Experimental| { &m.kernel_tracker_max_pending },
-                    |m: &mut GPUOptions_Experimental| { &mut m.kernel_tracker_max_pending },
+                    |m: &GPUOptions_Experimental| &m.kernel_tracker_max_pending,
+                    |m: &mut GPUOptions_Experimental| &mut m.kernel_tracker_max_pending,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<GPUOptions_Experimental>(
                     "GPUOptions_Experimental",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static GPUOptions_Experimental {
-        static mut instance: ::protobuf::lazy::Lazy<GPUOptions_Experimental> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const GPUOptions_Experimental,
-        };
-        unsafe {
-            instance.get(GPUOptions_Experimental::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<GPUOptions_Experimental> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const GPUOptions_Experimental,
+            };
+        unsafe { instance.get(GPUOptions_Experimental::new) }
     }
 }
 
@@ -932,7 +1079,7 @@ impl ::protobuf::reflect::ProtobufValue for GPUOptions_Experimental {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct GPUOptions_Experimental_VirtualDevices {
     // message fields
     pub memory_limit_mb: ::std::vec::Vec<f32>,
@@ -953,7 +1100,6 @@ impl GPUOptions_Experimental_VirtualDevices {
     }
 
     // repeated float memory_limit_mb = 1;
-
 
     pub fn get_memory_limit_mb(&self) -> &[f32] {
         &self.memory_limit_mb
@@ -983,16 +1129,28 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_repeated_float_into(wire_type, is, &mut self.memory_limit_mb)?;
-                },
+                    ::protobuf::rt::read_repeated_float_into(
+                        wire_type,
+                        is,
+                        &mut self.memory_limit_mb,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1008,10 +1166,13 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.memory_limit_mb {
             os.write_float(1, *v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1047,10 +1208,11 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
@@ -1069,13 +1231,12 @@ impl ::protobuf::Message for GPUOptions_Experimental_VirtualDevices {
     }
 
     fn default_instance() -> &'static GPUOptions_Experimental_VirtualDevices {
-        static mut instance: ::protobuf::lazy::Lazy<GPUOptions_Experimental_VirtualDevices> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const GPUOptions_Experimental_VirtualDevices,
-        };
-        unsafe {
-            instance.get(GPUOptions_Experimental_VirtualDevices::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<GPUOptions_Experimental_VirtualDevices> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const GPUOptions_Experimental_VirtualDevices,
+            };
+        unsafe { instance.get(GPUOptions_Experimental_VirtualDevices::new) }
     }
 }
 
@@ -1098,7 +1259,7 @@ impl ::protobuf::reflect::ProtobufValue for GPUOptions_Experimental_VirtualDevic
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct OptimizerOptions {
     // message fields
     pub do_common_subexpression_elimination: bool,
@@ -1125,7 +1286,6 @@ impl OptimizerOptions {
 
     // bool do_common_subexpression_elimination = 1;
 
-
     pub fn get_do_common_subexpression_elimination(&self) -> bool {
         self.do_common_subexpression_elimination
     }
@@ -1139,7 +1299,6 @@ impl OptimizerOptions {
     }
 
     // bool do_constant_folding = 2;
-
 
     pub fn get_do_constant_folding(&self) -> bool {
         self.do_constant_folding
@@ -1155,7 +1314,6 @@ impl OptimizerOptions {
 
     // int64 max_folded_constant_in_bytes = 6;
 
-
     pub fn get_max_folded_constant_in_bytes(&self) -> i64 {
         self.max_folded_constant_in_bytes
     }
@@ -1169,7 +1327,6 @@ impl OptimizerOptions {
     }
 
     // bool do_function_inlining = 4;
-
 
     pub fn get_do_function_inlining(&self) -> bool {
         self.do_function_inlining
@@ -1185,7 +1342,6 @@ impl OptimizerOptions {
 
     // .tensorflow.OptimizerOptions.Level opt_level = 3;
 
-
     pub fn get_opt_level(&self) -> OptimizerOptions_Level {
         self.opt_level
     }
@@ -1199,7 +1355,6 @@ impl OptimizerOptions {
     }
 
     // .tensorflow.OptimizerOptions.GlobalJitLevel global_jit_level = 5;
-
 
     pub fn get_global_jit_level(&self) -> OptimizerOptions_GlobalJitLevel {
         self.global_jit_level
@@ -1219,47 +1374,71 @@ impl ::protobuf::Message for OptimizerOptions {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.do_common_subexpression_elimination = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.do_constant_folding = tmp;
-                },
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.max_folded_constant_in_bytes = tmp;
-                },
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.do_function_inlining = tmp;
-                },
-                3 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.opt_level, 3, &mut self.unknown_fields)?
-                },
-                5 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.global_jit_level, 5, &mut self.unknown_fields)?
-                },
+                }
+                3 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.opt_level,
+                    3,
+                    &mut self.unknown_fields,
+                )?,
+                5 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.global_jit_level,
+                    5,
+                    &mut self.unknown_fields,
+                )?,
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1276,7 +1455,11 @@ impl ::protobuf::Message for OptimizerOptions {
             my_size += 2;
         }
         if self.max_folded_constant_in_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(6, self.max_folded_constant_in_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                6,
+                self.max_folded_constant_in_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.do_function_inlining != false {
             my_size += 2;
@@ -1292,7 +1475,10 @@ impl ::protobuf::Message for OptimizerOptions {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.do_common_subexpression_elimination != false {
             os.write_bool(1, self.do_common_subexpression_elimination)?;
         }
@@ -1346,47 +1532,66 @@ impl ::protobuf::Message for OptimizerOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "do_common_subexpression_elimination",
-                    |m: &OptimizerOptions| { &m.do_common_subexpression_elimination },
-                    |m: &mut OptimizerOptions| { &mut m.do_common_subexpression_elimination },
+                    |m: &OptimizerOptions| &m.do_common_subexpression_elimination,
+                    |m: &mut OptimizerOptions| &mut m.do_common_subexpression_elimination,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "do_constant_folding",
-                    |m: &OptimizerOptions| { &m.do_constant_folding },
-                    |m: &mut OptimizerOptions| { &mut m.do_constant_folding },
+                    |m: &OptimizerOptions| &m.do_constant_folding,
+                    |m: &mut OptimizerOptions| &mut m.do_constant_folding,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "max_folded_constant_in_bytes",
-                    |m: &OptimizerOptions| { &m.max_folded_constant_in_bytes },
-                    |m: &mut OptimizerOptions| { &mut m.max_folded_constant_in_bytes },
+                    |m: &OptimizerOptions| &m.max_folded_constant_in_bytes,
+                    |m: &mut OptimizerOptions| &mut m.max_folded_constant_in_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "do_function_inlining",
-                    |m: &OptimizerOptions| { &m.do_function_inlining },
-                    |m: &mut OptimizerOptions| { &mut m.do_function_inlining },
+                    |m: &OptimizerOptions| &m.do_function_inlining,
+                    |m: &mut OptimizerOptions| &mut m.do_function_inlining,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<OptimizerOptions_Level>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<OptimizerOptions_Level>,
+                >(
                     "opt_level",
-                    |m: &OptimizerOptions| { &m.opt_level },
-                    |m: &mut OptimizerOptions| { &mut m.opt_level },
+                    |m: &OptimizerOptions| &m.opt_level,
+                    |m: &mut OptimizerOptions| &mut m.opt_level,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<OptimizerOptions_GlobalJitLevel>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<OptimizerOptions_GlobalJitLevel>,
+                >(
                     "global_jit_level",
-                    |m: &OptimizerOptions| { &m.global_jit_level },
-                    |m: &mut OptimizerOptions| { &mut m.global_jit_level },
+                    |m: &OptimizerOptions| &m.global_jit_level,
+                    |m: &mut OptimizerOptions| &mut m.global_jit_level,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<OptimizerOptions>(
                     "OptimizerOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1397,9 +1602,7 @@ impl ::protobuf::Message for OptimizerOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const OptimizerOptions,
         };
-        unsafe {
-            instance.get(OptimizerOptions::new)
-        }
+        unsafe { instance.get(OptimizerOptions::new) }
     }
 }
 
@@ -1427,7 +1630,7 @@ impl ::protobuf::reflect::ProtobufValue for OptimizerOptions {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum OptimizerOptions_Level {
     L1 = 0,
     L0 = -1,
@@ -1442,33 +1645,34 @@ impl ::protobuf::ProtobufEnum for OptimizerOptions_Level {
         match value {
             0 => ::std::option::Option::Some(OptimizerOptions_Level::L1),
             -1 => ::std::option::Option::Some(OptimizerOptions_Level::L0),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
     fn values() -> &'static [Self] {
-        static values: &'static [OptimizerOptions_Level] = &[
-            OptimizerOptions_Level::L1,
-            OptimizerOptions_Level::L0,
-        ];
+        static values: &'static [OptimizerOptions_Level] =
+            &[OptimizerOptions_Level::L1, OptimizerOptions_Level::L0];
         values
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("OptimizerOptions_Level", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "OptimizerOptions_Level",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for OptimizerOptions_Level {
-}
+impl ::std::marker::Copy for OptimizerOptions_Level {}
 
 impl ::std::default::Default for OptimizerOptions_Level {
     fn default() -> Self {
@@ -1482,7 +1686,7 @@ impl ::protobuf::reflect::ProtobufValue for OptimizerOptions_Level {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum OptimizerOptions_GlobalJitLevel {
     DEFAULT = 0,
     OFF = -1,
@@ -1501,7 +1705,7 @@ impl ::protobuf::ProtobufEnum for OptimizerOptions_GlobalJitLevel {
             -1 => ::std::option::Option::Some(OptimizerOptions_GlobalJitLevel::OFF),
             1 => ::std::option::Option::Some(OptimizerOptions_GlobalJitLevel::ON_1),
             2 => ::std::option::Option::Some(OptimizerOptions_GlobalJitLevel::ON_2),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -1516,20 +1720,23 @@ impl ::protobuf::ProtobufEnum for OptimizerOptions_GlobalJitLevel {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("OptimizerOptions_GlobalJitLevel", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "OptimizerOptions_GlobalJitLevel",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for OptimizerOptions_GlobalJitLevel {
-}
+impl ::std::marker::Copy for OptimizerOptions_GlobalJitLevel {}
 
 impl ::std::default::Default for OptimizerOptions_GlobalJitLevel {
     fn default() -> Self {
@@ -1543,7 +1750,7 @@ impl ::protobuf::reflect::ProtobufValue for OptimizerOptions_GlobalJitLevel {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct GraphOptions {
     // message fields
     pub enable_recv_scheduling: bool,
@@ -1573,7 +1780,6 @@ impl GraphOptions {
 
     // bool enable_recv_scheduling = 2;
 
-
     pub fn get_enable_recv_scheduling(&self) -> bool {
         self.enable_recv_scheduling
     }
@@ -1588,9 +1794,10 @@ impl GraphOptions {
 
     // .tensorflow.OptimizerOptions optimizer_options = 3;
 
-
     pub fn get_optimizer_options(&self) -> &OptimizerOptions {
-        self.optimizer_options.as_ref().unwrap_or_else(|| OptimizerOptions::default_instance())
+        self.optimizer_options
+            .as_ref()
+            .unwrap_or_else(|| OptimizerOptions::default_instance())
     }
     pub fn clear_optimizer_options(&mut self) {
         self.optimizer_options.clear();
@@ -1616,11 +1823,12 @@ impl GraphOptions {
 
     // Take field
     pub fn take_optimizer_options(&mut self) -> OptimizerOptions {
-        self.optimizer_options.take().unwrap_or_else(|| OptimizerOptions::new())
+        self.optimizer_options
+            .take()
+            .unwrap_or_else(|| OptimizerOptions::new())
     }
 
     // int64 build_cost_model = 4;
-
 
     pub fn get_build_cost_model(&self) -> i64 {
         self.build_cost_model
@@ -1636,7 +1844,6 @@ impl GraphOptions {
 
     // int64 build_cost_model_after = 9;
 
-
     pub fn get_build_cost_model_after(&self) -> i64 {
         self.build_cost_model_after
     }
@@ -1650,7 +1857,6 @@ impl GraphOptions {
     }
 
     // bool infer_shapes = 5;
-
 
     pub fn get_infer_shapes(&self) -> bool {
         self.infer_shapes
@@ -1666,7 +1872,6 @@ impl GraphOptions {
 
     // bool place_pruned_graph = 6;
 
-
     pub fn get_place_pruned_graph(&self) -> bool {
         self.place_pruned_graph
     }
@@ -1680,7 +1885,6 @@ impl GraphOptions {
     }
 
     // bool enable_bfloat16_sendrecv = 7;
-
 
     pub fn get_enable_bfloat16_sendrecv(&self) -> bool {
         self.enable_bfloat16_sendrecv
@@ -1696,7 +1900,6 @@ impl GraphOptions {
 
     // int32 timeline_step = 8;
 
-
     pub fn get_timeline_step(&self) -> i32 {
         self.timeline_step
     }
@@ -1711,9 +1914,10 @@ impl GraphOptions {
 
     // .tensorflow.RewriterConfig rewrite_options = 10;
 
-
     pub fn get_rewrite_options(&self) -> &super::rewriter_config::RewriterConfig {
-        self.rewrite_options.as_ref().unwrap_or_else(|| super::rewriter_config::RewriterConfig::default_instance())
+        self.rewrite_options
+            .as_ref()
+            .unwrap_or_else(|| super::rewriter_config::RewriterConfig::default_instance())
     }
     pub fn clear_rewrite_options(&mut self) {
         self.rewrite_options.clear();
@@ -1739,7 +1943,9 @@ impl GraphOptions {
 
     // Take field
     pub fn take_rewrite_options(&mut self) -> super::rewriter_config::RewriterConfig {
-        self.rewrite_options.take().unwrap_or_else(|| super::rewriter_config::RewriterConfig::new())
+        self.rewrite_options
+            .take()
+            .unwrap_or_else(|| super::rewriter_config::RewriterConfig::new())
     }
 }
 
@@ -1749,77 +1955,107 @@ impl ::protobuf::Message for GraphOptions {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.rewrite_options {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.enable_recv_scheduling = tmp;
-                },
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.optimizer_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.optimizer_options,
+                    )?;
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.build_cost_model = tmp;
-                },
+                }
                 9 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.build_cost_model_after = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.infer_shapes = tmp;
-                },
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.place_pruned_graph = tmp;
-                },
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.enable_bfloat16_sendrecv = tmp;
-                },
+                }
                 8 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.timeline_step = tmp;
-                },
+                }
                 10 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.rewrite_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.rewrite_options,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1837,10 +2073,18 @@ impl ::protobuf::Message for GraphOptions {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         if self.build_cost_model != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.build_cost_model, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.build_cost_model,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.build_cost_model_after != 0 {
-            my_size += ::protobuf::rt::value_size(9, self.build_cost_model_after, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                9,
+                self.build_cost_model_after,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.infer_shapes != false {
             my_size += 2;
@@ -1852,7 +2096,11 @@ impl ::protobuf::Message for GraphOptions {
             my_size += 2;
         }
         if self.timeline_step != 0 {
-            my_size += ::protobuf::rt::value_size(8, self.timeline_step, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                8,
+                self.timeline_step,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if let Some(ref v) = self.rewrite_options.as_ref() {
             let len = v.compute_size();
@@ -1863,7 +2111,10 @@ impl ::protobuf::Message for GraphOptions {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.enable_recv_scheduling != false {
             os.write_bool(2, self.enable_recv_scheduling)?;
         }
@@ -1930,62 +2181,96 @@ impl ::protobuf::Message for GraphOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "enable_recv_scheduling",
-                    |m: &GraphOptions| { &m.enable_recv_scheduling },
-                    |m: &mut GraphOptions| { &mut m.enable_recv_scheduling },
+                    |m: &GraphOptions| &m.enable_recv_scheduling,
+                    |m: &mut GraphOptions| &mut m.enable_recv_scheduling,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<OptimizerOptions>>(
-                    "optimizer_options",
-                    |m: &GraphOptions| { &m.optimizer_options },
-                    |m: &mut GraphOptions| { &mut m.optimizer_options },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<OptimizerOptions>,
+                    >(
+                        "optimizer_options",
+                        |m: &GraphOptions| &m.optimizer_options,
+                        |m: &mut GraphOptions| &mut m.optimizer_options,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "build_cost_model",
-                    |m: &GraphOptions| { &m.build_cost_model },
-                    |m: &mut GraphOptions| { &mut m.build_cost_model },
+                    |m: &GraphOptions| &m.build_cost_model,
+                    |m: &mut GraphOptions| &mut m.build_cost_model,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "build_cost_model_after",
-                    |m: &GraphOptions| { &m.build_cost_model_after },
-                    |m: &mut GraphOptions| { &mut m.build_cost_model_after },
+                    |m: &GraphOptions| &m.build_cost_model_after,
+                    |m: &mut GraphOptions| &mut m.build_cost_model_after,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "infer_shapes",
-                    |m: &GraphOptions| { &m.infer_shapes },
-                    |m: &mut GraphOptions| { &mut m.infer_shapes },
+                    |m: &GraphOptions| &m.infer_shapes,
+                    |m: &mut GraphOptions| &mut m.infer_shapes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "place_pruned_graph",
-                    |m: &GraphOptions| { &m.place_pruned_graph },
-                    |m: &mut GraphOptions| { &mut m.place_pruned_graph },
+                    |m: &GraphOptions| &m.place_pruned_graph,
+                    |m: &mut GraphOptions| &mut m.place_pruned_graph,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "enable_bfloat16_sendrecv",
-                    |m: &GraphOptions| { &m.enable_bfloat16_sendrecv },
-                    |m: &mut GraphOptions| { &mut m.enable_bfloat16_sendrecv },
+                    |m: &GraphOptions| &m.enable_bfloat16_sendrecv,
+                    |m: &mut GraphOptions| &mut m.enable_bfloat16_sendrecv,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "timeline_step",
-                    |m: &GraphOptions| { &m.timeline_step },
-                    |m: &mut GraphOptions| { &mut m.timeline_step },
+                    |m: &GraphOptions| &m.timeline_step,
+                    |m: &mut GraphOptions| &mut m.timeline_step,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::rewriter_config::RewriterConfig>>(
-                    "rewrite_options",
-                    |m: &GraphOptions| { &m.rewrite_options },
-                    |m: &mut GraphOptions| { &mut m.rewrite_options },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::rewriter_config::RewriterConfig,
+                        >,
+                    >(
+                        "rewrite_options",
+                        |m: &GraphOptions| &m.rewrite_options,
+                        |m: &mut GraphOptions| &mut m.rewrite_options,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<GraphOptions>(
                     "GraphOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1996,9 +2281,7 @@ impl ::protobuf::Message for GraphOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const GraphOptions,
         };
-        unsafe {
-            instance.get(GraphOptions::new)
-        }
+        unsafe { instance.get(GraphOptions::new) }
     }
 }
 
@@ -2029,7 +2312,7 @@ impl ::protobuf::reflect::ProtobufValue for GraphOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct ThreadPoolOptionProto {
     // message fields
     pub num_threads: i32,
@@ -2052,7 +2335,6 @@ impl ThreadPoolOptionProto {
 
     // int32 num_threads = 1;
 
-
     pub fn get_num_threads(&self) -> i32 {
         self.num_threads
     }
@@ -2066,7 +2348,6 @@ impl ThreadPoolOptionProto {
     }
 
     // string global_name = 2;
-
 
     pub fn get_global_name(&self) -> &str {
         &self.global_name
@@ -2097,23 +2378,37 @@ impl ::protobuf::Message for ThreadPoolOptionProto {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.num_threads = tmp;
-                },
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.global_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.global_name,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2124,7 +2419,11 @@ impl ::protobuf::Message for ThreadPoolOptionProto {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.num_threads != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.num_threads, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.num_threads,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if !self.global_name.is_empty() {
             my_size += ::protobuf::rt::string_size(2, &self.global_name);
@@ -2134,7 +2433,10 @@ impl ::protobuf::Message for ThreadPoolOptionProto {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.num_threads != 0 {
             os.write_int32(1, self.num_threads)?;
         }
@@ -2176,40 +2478,46 @@ impl ::protobuf::Message for ThreadPoolOptionProto {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "num_threads",
-                    |m: &ThreadPoolOptionProto| { &m.num_threads },
-                    |m: &mut ThreadPoolOptionProto| { &mut m.num_threads },
+                    |m: &ThreadPoolOptionProto| &m.num_threads,
+                    |m: &mut ThreadPoolOptionProto| &mut m.num_threads,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "global_name",
-                    |m: &ThreadPoolOptionProto| { &m.global_name },
-                    |m: &mut ThreadPoolOptionProto| { &mut m.global_name },
+                    |m: &ThreadPoolOptionProto| &m.global_name,
+                    |m: &mut ThreadPoolOptionProto| &mut m.global_name,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<ThreadPoolOptionProto>(
                     "ThreadPoolOptionProto",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static ThreadPoolOptionProto {
-        static mut instance: ::protobuf::lazy::Lazy<ThreadPoolOptionProto> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ThreadPoolOptionProto,
-        };
-        unsafe {
-            instance.get(ThreadPoolOptionProto::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<ThreadPoolOptionProto> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ThreadPoolOptionProto,
+            };
+        unsafe { instance.get(ThreadPoolOptionProto::new) }
     }
 }
 
@@ -2233,7 +2541,7 @@ impl ::protobuf::reflect::ProtobufValue for ThreadPoolOptionProto {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RPCOptions {
     // message fields
     pub use_rpc_for_inprocess_master: bool,
@@ -2257,7 +2565,6 @@ impl RPCOptions {
 
     // bool use_rpc_for_inprocess_master = 1;
 
-
     pub fn get_use_rpc_for_inprocess_master(&self) -> bool {
         self.use_rpc_for_inprocess_master
     }
@@ -2271,7 +2578,6 @@ impl RPCOptions {
     }
 
     // string compression_algorithm = 2;
-
 
     pub fn get_compression_algorithm(&self) -> &str {
         &self.compression_algorithm
@@ -2293,11 +2599,13 @@ impl RPCOptions {
 
     // Take field
     pub fn take_compression_algorithm(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.compression_algorithm, ::std::string::String::new())
+        ::std::mem::replace(
+            &mut self.compression_algorithm,
+            ::std::string::String::new(),
+        )
     }
 
     // int32 compression_level = 3;
-
 
     pub fn get_compression_level(&self) -> i32 {
         self.compression_level
@@ -2317,30 +2625,46 @@ impl ::protobuf::Message for RPCOptions {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.use_rpc_for_inprocess_master = tmp;
-                },
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.compression_algorithm)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.compression_algorithm,
+                    )?;
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.compression_level = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2357,14 +2681,21 @@ impl ::protobuf::Message for RPCOptions {
             my_size += ::protobuf::rt::string_size(2, &self.compression_algorithm);
         }
         if self.compression_level != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.compression_level, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.compression_level,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.use_rpc_for_inprocess_master != false {
             os.write_bool(1, self.use_rpc_for_inprocess_master)?;
         }
@@ -2409,32 +2740,42 @@ impl ::protobuf::Message for RPCOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "use_rpc_for_inprocess_master",
-                    |m: &RPCOptions| { &m.use_rpc_for_inprocess_master },
-                    |m: &mut RPCOptions| { &mut m.use_rpc_for_inprocess_master },
+                    |m: &RPCOptions| &m.use_rpc_for_inprocess_master,
+                    |m: &mut RPCOptions| &mut m.use_rpc_for_inprocess_master,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "compression_algorithm",
-                    |m: &RPCOptions| { &m.compression_algorithm },
-                    |m: &mut RPCOptions| { &mut m.compression_algorithm },
+                    |m: &RPCOptions| &m.compression_algorithm,
+                    |m: &mut RPCOptions| &mut m.compression_algorithm,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "compression_level",
-                    |m: &RPCOptions| { &m.compression_level },
-                    |m: &mut RPCOptions| { &mut m.compression_level },
+                    |m: &RPCOptions| &m.compression_level,
+                    |m: &mut RPCOptions| &mut m.compression_level,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<RPCOptions>(
                     "RPCOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -2445,9 +2786,7 @@ impl ::protobuf::Message for RPCOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const RPCOptions,
         };
-        unsafe {
-            instance.get(RPCOptions::new)
-        }
+        unsafe { instance.get(RPCOptions::new) }
     }
 }
 
@@ -2472,7 +2811,7 @@ impl ::protobuf::reflect::ProtobufValue for RPCOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct ConfigProto {
     // message fields
     pub device_count: ::std::collections::HashMap<::std::string::String, i32>,
@@ -2509,7 +2848,6 @@ impl ConfigProto {
 
     // repeated .tensorflow.ConfigProto.DeviceCountEntry device_count = 1;
 
-
     pub fn get_device_count(&self) -> &::std::collections::HashMap<::std::string::String, i32> {
         &self.device_count
     }
@@ -2523,7 +2861,9 @@ impl ConfigProto {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_device_count(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, i32> {
+    pub fn mut_device_count(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, i32> {
         &mut self.device_count
     }
 
@@ -2533,7 +2873,6 @@ impl ConfigProto {
     }
 
     // int32 intra_op_parallelism_threads = 2;
-
 
     pub fn get_intra_op_parallelism_threads(&self) -> i32 {
         self.intra_op_parallelism_threads
@@ -2549,7 +2888,6 @@ impl ConfigProto {
 
     // int32 inter_op_parallelism_threads = 5;
 
-
     pub fn get_inter_op_parallelism_threads(&self) -> i32 {
         self.inter_op_parallelism_threads
     }
@@ -2563,7 +2901,6 @@ impl ConfigProto {
     }
 
     // bool use_per_session_threads = 9;
-
 
     pub fn get_use_per_session_threads(&self) -> bool {
         self.use_per_session_threads
@@ -2579,7 +2916,6 @@ impl ConfigProto {
 
     // repeated .tensorflow.ThreadPoolOptionProto session_inter_op_thread_pool = 12;
 
-
     pub fn get_session_inter_op_thread_pool(&self) -> &[ThreadPoolOptionProto] {
         &self.session_inter_op_thread_pool
     }
@@ -2588,22 +2924,31 @@ impl ConfigProto {
     }
 
     // Param is passed by value, moved
-    pub fn set_session_inter_op_thread_pool(&mut self, v: ::protobuf::RepeatedField<ThreadPoolOptionProto>) {
+    pub fn set_session_inter_op_thread_pool(
+        &mut self,
+        v: ::protobuf::RepeatedField<ThreadPoolOptionProto>,
+    ) {
         self.session_inter_op_thread_pool = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_session_inter_op_thread_pool(&mut self) -> &mut ::protobuf::RepeatedField<ThreadPoolOptionProto> {
+    pub fn mut_session_inter_op_thread_pool(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<ThreadPoolOptionProto> {
         &mut self.session_inter_op_thread_pool
     }
 
     // Take field
-    pub fn take_session_inter_op_thread_pool(&mut self) -> ::protobuf::RepeatedField<ThreadPoolOptionProto> {
-        ::std::mem::replace(&mut self.session_inter_op_thread_pool, ::protobuf::RepeatedField::new())
+    pub fn take_session_inter_op_thread_pool(
+        &mut self,
+    ) -> ::protobuf::RepeatedField<ThreadPoolOptionProto> {
+        ::std::mem::replace(
+            &mut self.session_inter_op_thread_pool,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // int32 placement_period = 3;
-
 
     pub fn get_placement_period(&self) -> i32 {
         self.placement_period
@@ -2618,7 +2963,6 @@ impl ConfigProto {
     }
 
     // repeated string device_filters = 4;
-
 
     pub fn get_device_filters(&self) -> &[::std::string::String] {
         &self.device_filters
@@ -2644,9 +2988,10 @@ impl ConfigProto {
 
     // .tensorflow.GPUOptions gpu_options = 6;
 
-
     pub fn get_gpu_options(&self) -> &GPUOptions {
-        self.gpu_options.as_ref().unwrap_or_else(|| GPUOptions::default_instance())
+        self.gpu_options
+            .as_ref()
+            .unwrap_or_else(|| GPUOptions::default_instance())
     }
     pub fn clear_gpu_options(&mut self) {
         self.gpu_options.clear();
@@ -2677,7 +3022,6 @@ impl ConfigProto {
 
     // bool allow_soft_placement = 7;
 
-
     pub fn get_allow_soft_placement(&self) -> bool {
         self.allow_soft_placement
     }
@@ -2691,7 +3035,6 @@ impl ConfigProto {
     }
 
     // bool log_device_placement = 8;
-
 
     pub fn get_log_device_placement(&self) -> bool {
         self.log_device_placement
@@ -2707,9 +3050,10 @@ impl ConfigProto {
 
     // .tensorflow.GraphOptions graph_options = 10;
 
-
     pub fn get_graph_options(&self) -> &GraphOptions {
-        self.graph_options.as_ref().unwrap_or_else(|| GraphOptions::default_instance())
+        self.graph_options
+            .as_ref()
+            .unwrap_or_else(|| GraphOptions::default_instance())
     }
     pub fn clear_graph_options(&mut self) {
         self.graph_options.clear();
@@ -2735,11 +3079,12 @@ impl ConfigProto {
 
     // Take field
     pub fn take_graph_options(&mut self) -> GraphOptions {
-        self.graph_options.take().unwrap_or_else(|| GraphOptions::new())
+        self.graph_options
+            .take()
+            .unwrap_or_else(|| GraphOptions::new())
     }
 
     // int64 operation_timeout_in_ms = 11;
-
 
     pub fn get_operation_timeout_in_ms(&self) -> i64 {
         self.operation_timeout_in_ms
@@ -2755,9 +3100,10 @@ impl ConfigProto {
 
     // .tensorflow.RPCOptions rpc_options = 13;
 
-
     pub fn get_rpc_options(&self) -> &RPCOptions {
-        self.rpc_options.as_ref().unwrap_or_else(|| RPCOptions::default_instance())
+        self.rpc_options
+            .as_ref()
+            .unwrap_or_else(|| RPCOptions::default_instance())
     }
     pub fn clear_rpc_options(&mut self) {
         self.rpc_options.clear();
@@ -2788,9 +3134,10 @@ impl ConfigProto {
 
     // .tensorflow.ClusterDef cluster_def = 14;
 
-
     pub fn get_cluster_def(&self) -> &super::cluster::ClusterDef {
-        self.cluster_def.as_ref().unwrap_or_else(|| super::cluster::ClusterDef::default_instance())
+        self.cluster_def
+            .as_ref()
+            .unwrap_or_else(|| super::cluster::ClusterDef::default_instance())
     }
     pub fn clear_cluster_def(&mut self) {
         self.cluster_def.clear();
@@ -2816,11 +3163,12 @@ impl ConfigProto {
 
     // Take field
     pub fn take_cluster_def(&mut self) -> super::cluster::ClusterDef {
-        self.cluster_def.take().unwrap_or_else(|| super::cluster::ClusterDef::new())
+        self.cluster_def
+            .take()
+            .unwrap_or_else(|| super::cluster::ClusterDef::new())
     }
 
     // bool isolate_session_state = 15;
-
 
     pub fn get_isolate_session_state(&self) -> bool {
         self.isolate_session_state
@@ -2836,9 +3184,10 @@ impl ConfigProto {
 
     // .tensorflow.ConfigProto.Experimental experimental = 16;
 
-
     pub fn get_experimental(&self) -> &ConfigProto_Experimental {
-        self.experimental.as_ref().unwrap_or_else(|| ConfigProto_Experimental::default_instance())
+        self.experimental
+            .as_ref()
+            .unwrap_or_else(|| ConfigProto_Experimental::default_instance())
     }
     pub fn clear_experimental(&mut self) {
         self.experimental.clear();
@@ -2864,7 +3213,9 @@ impl ConfigProto {
 
     // Take field
     pub fn take_experimental(&mut self) -> ConfigProto_Experimental {
-        self.experimental.take().unwrap_or_else(|| ConfigProto_Experimental::new())
+        self.experimental
+            .take()
+            .unwrap_or_else(|| ConfigProto_Experimental::new())
     }
 }
 
@@ -2874,122 +3225,177 @@ impl ::protobuf::Message for ConfigProto {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.gpu_options {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.graph_options {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.rpc_options {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.cluster_def {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.experimental {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeInt32>(wire_type, is, &mut self.device_count)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeInt32,
+                    >(wire_type, is, &mut self.device_count)?;
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.intra_op_parallelism_threads = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.inter_op_parallelism_threads = tmp;
-                },
+                }
                 9 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.use_per_session_threads = tmp;
-                },
+                }
                 12 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.session_inter_op_thread_pool)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.session_inter_op_thread_pool,
+                    )?;
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.placement_period = tmp;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.device_filters)?;
-                },
+                    ::protobuf::rt::read_repeated_string_into(
+                        wire_type,
+                        is,
+                        &mut self.device_filters,
+                    )?;
+                }
                 6 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.gpu_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.gpu_options,
+                    )?;
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.allow_soft_placement = tmp;
-                },
+                }
                 8 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.log_device_placement = tmp;
-                },
+                }
                 10 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.graph_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.graph_options,
+                    )?;
+                }
                 11 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.operation_timeout_in_ms = tmp;
-                },
+                }
                 13 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.rpc_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.rpc_options,
+                    )?;
+                }
                 14 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.cluster_def)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.cluster_def,
+                    )?;
+                }
                 15 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.isolate_session_state = tmp;
-                },
+                }
                 16 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.experimental)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.experimental,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2999,12 +3405,23 @@ impl ::protobuf::Message for ConfigProto {
     #[allow(unused_variables)]
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeInt32>(1, &self.device_count);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeInt32,
+        >(1, &self.device_count);
         if self.intra_op_parallelism_threads != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.intra_op_parallelism_threads, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.intra_op_parallelism_threads,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.inter_op_parallelism_threads != 0 {
-            my_size += ::protobuf::rt::value_size(5, self.inter_op_parallelism_threads, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                5,
+                self.inter_op_parallelism_threads,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.use_per_session_threads != false {
             my_size += 2;
@@ -3012,13 +3429,17 @@ impl ::protobuf::Message for ConfigProto {
         for value in &self.session_inter_op_thread_pool {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if self.placement_period != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.placement_period, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.placement_period,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.device_filters {
             my_size += ::protobuf::rt::string_size(4, &value);
-        };
+        }
         if let Some(ref v) = self.gpu_options.as_ref() {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
@@ -3034,7 +3455,11 @@ impl ::protobuf::Message for ConfigProto {
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         if self.operation_timeout_in_ms != 0 {
-            my_size += ::protobuf::rt::value_size(11, self.operation_timeout_in_ms, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                11,
+                self.operation_timeout_in_ms,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if let Some(ref v) = self.rpc_options.as_ref() {
             let len = v.compute_size();
@@ -3056,8 +3481,14 @@ impl ::protobuf::Message for ConfigProto {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeInt32>(1, &self.device_count, os)?;
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeInt32,
+        >(1, &self.device_count, os)?;
         if self.intra_op_parallelism_threads != 0 {
             os.write_int32(2, self.intra_op_parallelism_threads)?;
         }
@@ -3071,13 +3502,13 @@ impl ::protobuf::Message for ConfigProto {
             os.write_tag(12, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if self.placement_period != 0 {
             os.write_int32(3, self.placement_period)?;
         }
         for v in &self.device_filters {
             os.write_string(4, &v)?;
-        };
+        }
         if let Some(ref v) = self.gpu_options.as_ref() {
             os.write_tag(6, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -3150,97 +3581,161 @@ impl ::protobuf::Message for ConfigProto {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "device_count",
-                    |m: &ConfigProto| { &m.device_count },
-                    |m: &mut ConfigProto| { &mut m.device_count },
+                    |m: &ConfigProto| &m.device_count,
+                    |m: &mut ConfigProto| &mut m.device_count,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "intra_op_parallelism_threads",
-                    |m: &ConfigProto| { &m.intra_op_parallelism_threads },
-                    |m: &mut ConfigProto| { &mut m.intra_op_parallelism_threads },
+                    |m: &ConfigProto| &m.intra_op_parallelism_threads,
+                    |m: &mut ConfigProto| &mut m.intra_op_parallelism_threads,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "inter_op_parallelism_threads",
-                    |m: &ConfigProto| { &m.inter_op_parallelism_threads },
-                    |m: &mut ConfigProto| { &mut m.inter_op_parallelism_threads },
+                    |m: &ConfigProto| &m.inter_op_parallelism_threads,
+                    |m: &mut ConfigProto| &mut m.inter_op_parallelism_threads,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "use_per_session_threads",
-                    |m: &ConfigProto| { &m.use_per_session_threads },
-                    |m: &mut ConfigProto| { &mut m.use_per_session_threads },
+                    |m: &ConfigProto| &m.use_per_session_threads,
+                    |m: &mut ConfigProto| &mut m.use_per_session_threads,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<ThreadPoolOptionProto>>(
-                    "session_inter_op_thread_pool",
-                    |m: &ConfigProto| { &m.session_inter_op_thread_pool },
-                    |m: &mut ConfigProto| { &mut m.session_inter_op_thread_pool },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<ThreadPoolOptionProto>,
+                    >(
+                        "session_inter_op_thread_pool",
+                        |m: &ConfigProto| &m.session_inter_op_thread_pool,
+                        |m: &mut ConfigProto| &mut m.session_inter_op_thread_pool,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "placement_period",
-                    |m: &ConfigProto| { &m.placement_period },
-                    |m: &mut ConfigProto| { &mut m.placement_period },
+                    |m: &ConfigProto| &m.placement_period,
+                    |m: &mut ConfigProto| &mut m.placement_period,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "device_filters",
-                    |m: &ConfigProto| { &m.device_filters },
-                    |m: &mut ConfigProto| { &mut m.device_filters },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<GPUOptions>>(
-                    "gpu_options",
-                    |m: &ConfigProto| { &m.gpu_options },
-                    |m: &mut ConfigProto| { &mut m.gpu_options },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "device_filters",
+                        |m: &ConfigProto| &m.device_filters,
+                        |m: &mut ConfigProto| &mut m.device_filters,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<GPUOptions>,
+                    >(
+                        "gpu_options",
+                        |m: &ConfigProto| &m.gpu_options,
+                        |m: &mut ConfigProto| &mut m.gpu_options,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "allow_soft_placement",
-                    |m: &ConfigProto| { &m.allow_soft_placement },
-                    |m: &mut ConfigProto| { &mut m.allow_soft_placement },
+                    |m: &ConfigProto| &m.allow_soft_placement,
+                    |m: &mut ConfigProto| &mut m.allow_soft_placement,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "log_device_placement",
-                    |m: &ConfigProto| { &m.log_device_placement },
-                    |m: &mut ConfigProto| { &mut m.log_device_placement },
+                    |m: &ConfigProto| &m.log_device_placement,
+                    |m: &mut ConfigProto| &mut m.log_device_placement,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<GraphOptions>>(
-                    "graph_options",
-                    |m: &ConfigProto| { &m.graph_options },
-                    |m: &mut ConfigProto| { &mut m.graph_options },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<GraphOptions>,
+                    >(
+                        "graph_options",
+                        |m: &ConfigProto| &m.graph_options,
+                        |m: &mut ConfigProto| &mut m.graph_options,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "operation_timeout_in_ms",
-                    |m: &ConfigProto| { &m.operation_timeout_in_ms },
-                    |m: &mut ConfigProto| { &mut m.operation_timeout_in_ms },
+                    |m: &ConfigProto| &m.operation_timeout_in_ms,
+                    |m: &mut ConfigProto| &mut m.operation_timeout_in_ms,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<RPCOptions>>(
-                    "rpc_options",
-                    |m: &ConfigProto| { &m.rpc_options },
-                    |m: &mut ConfigProto| { &mut m.rpc_options },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::cluster::ClusterDef>>(
-                    "cluster_def",
-                    |m: &ConfigProto| { &m.cluster_def },
-                    |m: &mut ConfigProto| { &mut m.cluster_def },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<RPCOptions>,
+                    >(
+                        "rpc_options",
+                        |m: &ConfigProto| &m.rpc_options,
+                        |m: &mut ConfigProto| &mut m.rpc_options,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::cluster::ClusterDef>,
+                    >(
+                        "cluster_def",
+                        |m: &ConfigProto| &m.cluster_def,
+                        |m: &mut ConfigProto| &mut m.cluster_def,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "isolate_session_state",
-                    |m: &ConfigProto| { &m.isolate_session_state },
-                    |m: &mut ConfigProto| { &mut m.isolate_session_state },
+                    |m: &ConfigProto| &m.isolate_session_state,
+                    |m: &mut ConfigProto| &mut m.isolate_session_state,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<ConfigProto_Experimental>>(
-                    "experimental",
-                    |m: &ConfigProto| { &m.experimental },
-                    |m: &mut ConfigProto| { &mut m.experimental },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<ConfigProto_Experimental>,
+                    >(
+                        "experimental",
+                        |m: &ConfigProto| &m.experimental,
+                        |m: &mut ConfigProto| &mut m.experimental,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<ConfigProto>(
                     "ConfigProto",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -3251,9 +3746,7 @@ impl ::protobuf::Message for ConfigProto {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const ConfigProto,
         };
-        unsafe {
-            instance.get(ConfigProto::new)
-        }
+        unsafe { instance.get(ConfigProto::new) }
     }
 }
 
@@ -3291,7 +3784,7 @@ impl ::protobuf::reflect::ProtobufValue for ConfigProto {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct ConfigProto_Experimental {
     // message fields
     pub collective_group_leader: ::std::string::String,
@@ -3321,7 +3814,6 @@ impl ConfigProto_Experimental {
 
     // string collective_group_leader = 1;
 
-
     pub fn get_collective_group_leader(&self) -> &str {
         &self.collective_group_leader
     }
@@ -3342,11 +3834,13 @@ impl ConfigProto_Experimental {
 
     // Take field
     pub fn take_collective_group_leader(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.collective_group_leader, ::std::string::String::new())
+        ::std::mem::replace(
+            &mut self.collective_group_leader,
+            ::std::string::String::new(),
+        )
     }
 
     // string executor_type = 3;
-
 
     pub fn get_executor_type(&self) -> &str {
         &self.executor_type
@@ -3373,7 +3867,6 @@ impl ConfigProto_Experimental {
 
     // int32 recv_buf_max_chunk = 4;
 
-
     pub fn get_recv_buf_max_chunk(&self) -> i32 {
         self.recv_buf_max_chunk
     }
@@ -3387,7 +3880,6 @@ impl ConfigProto_Experimental {
     }
 
     // bool use_numa_affinity = 5;
-
 
     pub fn get_use_numa_affinity(&self) -> bool {
         self.use_numa_affinity
@@ -3403,7 +3895,6 @@ impl ConfigProto_Experimental {
 
     // bool collective_deterministic_sequential_execution = 6;
 
-
     pub fn get_collective_deterministic_sequential_execution(&self) -> bool {
         self.collective_deterministic_sequential_execution
     }
@@ -3417,7 +3908,6 @@ impl ConfigProto_Experimental {
     }
 
     // bool collective_nccl = 7;
-
 
     pub fn get_collective_nccl(&self) -> bool {
         self.collective_nccl
@@ -3433,7 +3923,6 @@ impl ConfigProto_Experimental {
 
     // bool share_session_state_in_clusterspec_propagation = 8;
 
-
     pub fn get_share_session_state_in_clusterspec_propagation(&self) -> bool {
         self.share_session_state_in_clusterspec_propagation
     }
@@ -3448,7 +3937,6 @@ impl ConfigProto_Experimental {
 
     // bool disable_thread_spinning = 9;
 
-
     pub fn get_disable_thread_spinning(&self) -> bool {
         self.disable_thread_spinning
     }
@@ -3462,7 +3950,6 @@ impl ConfigProto_Experimental {
     }
 
     // bool share_cluster_devices_in_session = 10;
-
 
     pub fn get_share_cluster_devices_in_session(&self) -> bool {
         self.share_cluster_devices_in_session
@@ -3482,68 +3969,98 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.collective_group_leader)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.collective_group_leader,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.executor_type)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.executor_type,
+                    )?;
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.recv_buf_max_chunk = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.use_numa_affinity = tmp;
-                },
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.collective_deterministic_sequential_execution = tmp;
-                },
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.collective_nccl = tmp;
-                },
+                }
                 8 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.share_session_state_in_clusterspec_propagation = tmp;
-                },
+                }
                 9 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.disable_thread_spinning = tmp;
-                },
+                }
                 10 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.share_cluster_devices_in_session = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -3560,7 +4077,11 @@ impl ::protobuf::Message for ConfigProto_Experimental {
             my_size += ::protobuf::rt::string_size(3, &self.executor_type);
         }
         if self.recv_buf_max_chunk != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.recv_buf_max_chunk, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.recv_buf_max_chunk,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.use_numa_affinity != false {
             my_size += 2;
@@ -3585,7 +4106,10 @@ impl ::protobuf::Message for ConfigProto_Experimental {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.collective_group_leader.is_empty() {
             os.write_string(1, &self.collective_group_leader)?;
         }
@@ -3648,75 +4172,108 @@ impl ::protobuf::Message for ConfigProto_Experimental {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "collective_group_leader",
-                    |m: &ConfigProto_Experimental| { &m.collective_group_leader },
-                    |m: &mut ConfigProto_Experimental| { &mut m.collective_group_leader },
+                    |m: &ConfigProto_Experimental| &m.collective_group_leader,
+                    |m: &mut ConfigProto_Experimental| &mut m.collective_group_leader,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "executor_type",
-                    |m: &ConfigProto_Experimental| { &m.executor_type },
-                    |m: &mut ConfigProto_Experimental| { &mut m.executor_type },
+                    |m: &ConfigProto_Experimental| &m.executor_type,
+                    |m: &mut ConfigProto_Experimental| &mut m.executor_type,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "recv_buf_max_chunk",
-                    |m: &ConfigProto_Experimental| { &m.recv_buf_max_chunk },
-                    |m: &mut ConfigProto_Experimental| { &mut m.recv_buf_max_chunk },
+                    |m: &ConfigProto_Experimental| &m.recv_buf_max_chunk,
+                    |m: &mut ConfigProto_Experimental| &mut m.recv_buf_max_chunk,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "use_numa_affinity",
-                    |m: &ConfigProto_Experimental| { &m.use_numa_affinity },
-                    |m: &mut ConfigProto_Experimental| { &mut m.use_numa_affinity },
+                    |m: &ConfigProto_Experimental| &m.use_numa_affinity,
+                    |m: &mut ConfigProto_Experimental| &mut m.use_numa_affinity,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "collective_deterministic_sequential_execution",
-                    |m: &ConfigProto_Experimental| { &m.collective_deterministic_sequential_execution },
-                    |m: &mut ConfigProto_Experimental| { &mut m.collective_deterministic_sequential_execution },
+                    |m: &ConfigProto_Experimental| &m.collective_deterministic_sequential_execution,
+                    |m: &mut ConfigProto_Experimental| {
+                        &mut m.collective_deterministic_sequential_execution
+                    },
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "collective_nccl",
-                    |m: &ConfigProto_Experimental| { &m.collective_nccl },
-                    |m: &mut ConfigProto_Experimental| { &mut m.collective_nccl },
+                    |m: &ConfigProto_Experimental| &m.collective_nccl,
+                    |m: &mut ConfigProto_Experimental| &mut m.collective_nccl,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "share_session_state_in_clusterspec_propagation",
-                    |m: &ConfigProto_Experimental| { &m.share_session_state_in_clusterspec_propagation },
-                    |m: &mut ConfigProto_Experimental| { &mut m.share_session_state_in_clusterspec_propagation },
+                    |m: &ConfigProto_Experimental| {
+                        &m.share_session_state_in_clusterspec_propagation
+                    },
+                    |m: &mut ConfigProto_Experimental| {
+                        &mut m.share_session_state_in_clusterspec_propagation
+                    },
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "disable_thread_spinning",
-                    |m: &ConfigProto_Experimental| { &m.disable_thread_spinning },
-                    |m: &mut ConfigProto_Experimental| { &mut m.disable_thread_spinning },
+                    |m: &ConfigProto_Experimental| &m.disable_thread_spinning,
+                    |m: &mut ConfigProto_Experimental| &mut m.disable_thread_spinning,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "share_cluster_devices_in_session",
-                    |m: &ConfigProto_Experimental| { &m.share_cluster_devices_in_session },
-                    |m: &mut ConfigProto_Experimental| { &mut m.share_cluster_devices_in_session },
+                    |m: &ConfigProto_Experimental| &m.share_cluster_devices_in_session,
+                    |m: &mut ConfigProto_Experimental| &mut m.share_cluster_devices_in_session,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<ConfigProto_Experimental>(
                     "ConfigProto_Experimental",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static ConfigProto_Experimental {
-        static mut instance: ::protobuf::lazy::Lazy<ConfigProto_Experimental> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ConfigProto_Experimental,
-        };
-        unsafe {
-            instance.get(ConfigProto_Experimental::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<ConfigProto_Experimental> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ConfigProto_Experimental,
+            };
+        unsafe { instance.get(ConfigProto_Experimental::new) }
     }
 }
 
@@ -3747,7 +4304,7 @@ impl ::protobuf::reflect::ProtobufValue for ConfigProto_Experimental {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RunOptions {
     // message fields
     pub trace_level: RunOptions_TraceLevel,
@@ -3775,7 +4332,6 @@ impl RunOptions {
 
     // .tensorflow.RunOptions.TraceLevel trace_level = 1;
 
-
     pub fn get_trace_level(&self) -> RunOptions_TraceLevel {
         self.trace_level
     }
@@ -3789,7 +4345,6 @@ impl RunOptions {
     }
 
     // int64 timeout_in_ms = 2;
-
 
     pub fn get_timeout_in_ms(&self) -> i64 {
         self.timeout_in_ms
@@ -3805,7 +4360,6 @@ impl RunOptions {
 
     // int32 inter_op_thread_pool = 3;
 
-
     pub fn get_inter_op_thread_pool(&self) -> i32 {
         self.inter_op_thread_pool
     }
@@ -3819,7 +4373,6 @@ impl RunOptions {
     }
 
     // bool output_partition_graphs = 5;
-
 
     pub fn get_output_partition_graphs(&self) -> bool {
         self.output_partition_graphs
@@ -3835,9 +4388,10 @@ impl RunOptions {
 
     // .tensorflow.DebugOptions debug_options = 6;
 
-
     pub fn get_debug_options(&self) -> &super::debug::DebugOptions {
-        self.debug_options.as_ref().unwrap_or_else(|| super::debug::DebugOptions::default_instance())
+        self.debug_options
+            .as_ref()
+            .unwrap_or_else(|| super::debug::DebugOptions::default_instance())
     }
     pub fn clear_debug_options(&mut self) {
         self.debug_options.clear();
@@ -3863,11 +4417,12 @@ impl RunOptions {
 
     // Take field
     pub fn take_debug_options(&mut self) -> super::debug::DebugOptions {
-        self.debug_options.take().unwrap_or_else(|| super::debug::DebugOptions::new())
+        self.debug_options
+            .take()
+            .unwrap_or_else(|| super::debug::DebugOptions::new())
     }
 
     // bool report_tensor_allocations_upon_oom = 7;
-
 
     pub fn get_report_tensor_allocations_upon_oom(&self) -> bool {
         self.report_tensor_allocations_upon_oom
@@ -3883,9 +4438,10 @@ impl RunOptions {
 
     // .tensorflow.RunOptions.Experimental experimental = 8;
 
-
     pub fn get_experimental(&self) -> &RunOptions_Experimental {
-        self.experimental.as_ref().unwrap_or_else(|| RunOptions_Experimental::default_instance())
+        self.experimental
+            .as_ref()
+            .unwrap_or_else(|| RunOptions_Experimental::default_instance())
     }
     pub fn clear_experimental(&mut self) {
         self.experimental.clear();
@@ -3911,7 +4467,9 @@ impl RunOptions {
 
     // Take field
     pub fn take_experimental(&mut self) -> RunOptions_Experimental {
-        self.experimental.take().unwrap_or_else(|| RunOptions_Experimental::new())
+        self.experimental
+            .take()
+            .unwrap_or_else(|| RunOptions_Experimental::new())
     }
 }
 
@@ -3921,59 +4479,87 @@ impl ::protobuf::Message for RunOptions {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.experimental {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
-                1 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.trace_level, 1, &mut self.unknown_fields)?
-                },
+                1 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.trace_level,
+                    1,
+                    &mut self.unknown_fields,
+                )?,
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.timeout_in_ms = tmp;
-                },
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.inter_op_thread_pool = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.output_partition_graphs = tmp;
-                },
+                }
                 6 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.debug_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.debug_options,
+                    )?;
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.report_tensor_allocations_upon_oom = tmp;
-                },
+                }
                 8 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.experimental)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.experimental,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -3987,10 +4573,18 @@ impl ::protobuf::Message for RunOptions {
             my_size += ::protobuf::rt::enum_size(1, self.trace_level);
         }
         if self.timeout_in_ms != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.timeout_in_ms, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.timeout_in_ms,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.inter_op_thread_pool != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.inter_op_thread_pool, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.inter_op_thread_pool,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.output_partition_graphs != false {
             my_size += 2;
@@ -4011,7 +4605,10 @@ impl ::protobuf::Message for RunOptions {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.trace_level != RunOptions_TraceLevel::NO_TRACE {
             os.write_enum(1, self.trace_level.value())?;
         }
@@ -4072,52 +4669,78 @@ impl ::protobuf::Message for RunOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RunOptions_TraceLevel>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RunOptions_TraceLevel>,
+                >(
                     "trace_level",
-                    |m: &RunOptions| { &m.trace_level },
-                    |m: &mut RunOptions| { &mut m.trace_level },
+                    |m: &RunOptions| &m.trace_level,
+                    |m: &mut RunOptions| &mut m.trace_level,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "timeout_in_ms",
-                    |m: &RunOptions| { &m.timeout_in_ms },
-                    |m: &mut RunOptions| { &mut m.timeout_in_ms },
+                    |m: &RunOptions| &m.timeout_in_ms,
+                    |m: &mut RunOptions| &mut m.timeout_in_ms,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "inter_op_thread_pool",
-                    |m: &RunOptions| { &m.inter_op_thread_pool },
-                    |m: &mut RunOptions| { &mut m.inter_op_thread_pool },
+                    |m: &RunOptions| &m.inter_op_thread_pool,
+                    |m: &mut RunOptions| &mut m.inter_op_thread_pool,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "output_partition_graphs",
-                    |m: &RunOptions| { &m.output_partition_graphs },
-                    |m: &mut RunOptions| { &mut m.output_partition_graphs },
+                    |m: &RunOptions| &m.output_partition_graphs,
+                    |m: &mut RunOptions| &mut m.output_partition_graphs,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::debug::DebugOptions>>(
-                    "debug_options",
-                    |m: &RunOptions| { &m.debug_options },
-                    |m: &mut RunOptions| { &mut m.debug_options },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::debug::DebugOptions>,
+                    >(
+                        "debug_options",
+                        |m: &RunOptions| &m.debug_options,
+                        |m: &mut RunOptions| &mut m.debug_options,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "report_tensor_allocations_upon_oom",
-                    |m: &RunOptions| { &m.report_tensor_allocations_upon_oom },
-                    |m: &mut RunOptions| { &mut m.report_tensor_allocations_upon_oom },
+                    |m: &RunOptions| &m.report_tensor_allocations_upon_oom,
+                    |m: &mut RunOptions| &mut m.report_tensor_allocations_upon_oom,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<RunOptions_Experimental>>(
-                    "experimental",
-                    |m: &RunOptions| { &m.experimental },
-                    |m: &mut RunOptions| { &mut m.experimental },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<RunOptions_Experimental>,
+                    >(
+                        "experimental",
+                        |m: &RunOptions| &m.experimental,
+                        |m: &mut RunOptions| &mut m.experimental,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<RunOptions>(
                     "RunOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -4128,9 +4751,7 @@ impl ::protobuf::Message for RunOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const RunOptions,
         };
-        unsafe {
-            instance.get(RunOptions::new)
-        }
+        unsafe { instance.get(RunOptions::new) }
     }
 }
 
@@ -4159,7 +4780,7 @@ impl ::protobuf::reflect::ProtobufValue for RunOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RunOptions_Experimental {
     // message fields
     pub collective_graph_key: i64,
@@ -4182,7 +4803,6 @@ impl RunOptions_Experimental {
 
     // int64 collective_graph_key = 1;
 
-
     pub fn get_collective_graph_key(&self) -> i64 {
         self.collective_graph_key
     }
@@ -4196,7 +4816,6 @@ impl RunOptions_Experimental {
     }
 
     // bool use_run_handler_pool = 2;
-
 
     pub fn get_use_run_handler_pool(&self) -> bool {
         self.use_run_handler_pool
@@ -4216,27 +4835,39 @@ impl ::protobuf::Message for RunOptions_Experimental {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.collective_graph_key = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.use_run_handler_pool = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -4247,7 +4878,11 @@ impl ::protobuf::Message for RunOptions_Experimental {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.collective_graph_key != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.collective_graph_key, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.collective_graph_key,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.use_run_handler_pool != false {
             my_size += 2;
@@ -4257,7 +4892,10 @@ impl ::protobuf::Message for RunOptions_Experimental {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.collective_graph_key != 0 {
             os.write_int64(1, self.collective_graph_key)?;
         }
@@ -4299,40 +4937,46 @@ impl ::protobuf::Message for RunOptions_Experimental {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "collective_graph_key",
-                    |m: &RunOptions_Experimental| { &m.collective_graph_key },
-                    |m: &mut RunOptions_Experimental| { &mut m.collective_graph_key },
+                    |m: &RunOptions_Experimental| &m.collective_graph_key,
+                    |m: &mut RunOptions_Experimental| &mut m.collective_graph_key,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "use_run_handler_pool",
-                    |m: &RunOptions_Experimental| { &m.use_run_handler_pool },
-                    |m: &mut RunOptions_Experimental| { &mut m.use_run_handler_pool },
+                    |m: &RunOptions_Experimental| &m.use_run_handler_pool,
+                    |m: &mut RunOptions_Experimental| &mut m.use_run_handler_pool,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<RunOptions_Experimental>(
                     "RunOptions_Experimental",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static RunOptions_Experimental {
-        static mut instance: ::protobuf::lazy::Lazy<RunOptions_Experimental> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const RunOptions_Experimental,
-        };
-        unsafe {
-            instance.get(RunOptions_Experimental::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<RunOptions_Experimental> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const RunOptions_Experimental,
+            };
+        unsafe { instance.get(RunOptions_Experimental::new) }
     }
 }
 
@@ -4356,7 +5000,7 @@ impl ::protobuf::reflect::ProtobufValue for RunOptions_Experimental {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum RunOptions_TraceLevel {
     NO_TRACE = 0,
     SOFTWARE_TRACE = 1,
@@ -4375,7 +5019,7 @@ impl ::protobuf::ProtobufEnum for RunOptions_TraceLevel {
             1 => ::std::option::Option::Some(RunOptions_TraceLevel::SOFTWARE_TRACE),
             2 => ::std::option::Option::Some(RunOptions_TraceLevel::HARDWARE_TRACE),
             3 => ::std::option::Option::Some(RunOptions_TraceLevel::FULL_TRACE),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -4390,20 +5034,23 @@ impl ::protobuf::ProtobufEnum for RunOptions_TraceLevel {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("RunOptions_TraceLevel", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "RunOptions_TraceLevel",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for RunOptions_TraceLevel {
-}
+impl ::std::marker::Copy for RunOptions_TraceLevel {}
 
 impl ::std::default::Default for RunOptions_TraceLevel {
     fn default() -> Self {
@@ -4417,7 +5064,7 @@ impl ::protobuf::reflect::ProtobufValue for RunOptions_TraceLevel {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RunMetadata {
     // message fields
     pub step_stats: ::protobuf::SingularPtrField<super::step_stats::StepStats>,
@@ -4442,9 +5089,10 @@ impl RunMetadata {
 
     // .tensorflow.StepStats step_stats = 1;
 
-
     pub fn get_step_stats(&self) -> &super::step_stats::StepStats {
-        self.step_stats.as_ref().unwrap_or_else(|| super::step_stats::StepStats::default_instance())
+        self.step_stats
+            .as_ref()
+            .unwrap_or_else(|| super::step_stats::StepStats::default_instance())
     }
     pub fn clear_step_stats(&mut self) {
         self.step_stats.clear();
@@ -4470,14 +5118,17 @@ impl RunMetadata {
 
     // Take field
     pub fn take_step_stats(&mut self) -> super::step_stats::StepStats {
-        self.step_stats.take().unwrap_or_else(|| super::step_stats::StepStats::new())
+        self.step_stats
+            .take()
+            .unwrap_or_else(|| super::step_stats::StepStats::new())
     }
 
     // .tensorflow.CostGraphDef cost_graph = 2;
 
-
     pub fn get_cost_graph(&self) -> &super::cost_graph::CostGraphDef {
-        self.cost_graph.as_ref().unwrap_or_else(|| super::cost_graph::CostGraphDef::default_instance())
+        self.cost_graph
+            .as_ref()
+            .unwrap_or_else(|| super::cost_graph::CostGraphDef::default_instance())
     }
     pub fn clear_cost_graph(&mut self) {
         self.cost_graph.clear();
@@ -4503,11 +5154,12 @@ impl RunMetadata {
 
     // Take field
     pub fn take_cost_graph(&mut self) -> super::cost_graph::CostGraphDef {
-        self.cost_graph.take().unwrap_or_else(|| super::cost_graph::CostGraphDef::new())
+        self.cost_graph
+            .take()
+            .unwrap_or_else(|| super::cost_graph::CostGraphDef::new())
     }
 
     // repeated .tensorflow.GraphDef partition_graphs = 3;
-
 
     pub fn get_partition_graphs(&self) -> &[super::graph::GraphDef] {
         &self.partition_graphs
@@ -4522,7 +5174,9 @@ impl RunMetadata {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_partition_graphs(&mut self) -> &mut ::protobuf::RepeatedField<super::graph::GraphDef> {
+    pub fn mut_partition_graphs(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<super::graph::GraphDef> {
         &mut self.partition_graphs
     }
 
@@ -4533,7 +5187,6 @@ impl RunMetadata {
 
     // repeated .tensorflow.RunMetadata.FunctionGraphs function_graphs = 4;
 
-
     pub fn get_function_graphs(&self) -> &[RunMetadata_FunctionGraphs] {
         &self.function_graphs
     }
@@ -4542,17 +5195,24 @@ impl RunMetadata {
     }
 
     // Param is passed by value, moved
-    pub fn set_function_graphs(&mut self, v: ::protobuf::RepeatedField<RunMetadata_FunctionGraphs>) {
+    pub fn set_function_graphs(
+        &mut self,
+        v: ::protobuf::RepeatedField<RunMetadata_FunctionGraphs>,
+    ) {
         self.function_graphs = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_function_graphs(&mut self) -> &mut ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
+    pub fn mut_function_graphs(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
         &mut self.function_graphs
     }
 
     // Take field
-    pub fn take_function_graphs(&mut self) -> ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
+    pub fn take_function_graphs(
+        &mut self,
+    ) -> ::protobuf::RepeatedField<RunMetadata_FunctionGraphs> {
         ::std::mem::replace(&mut self.function_graphs, ::protobuf::RepeatedField::new())
     }
 }
@@ -4563,44 +5223,68 @@ impl ::protobuf::Message for RunMetadata {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.cost_graph {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.partition_graphs {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.function_graphs {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.step_stats)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.step_stats,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.cost_graph)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.cost_graph,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.partition_graphs)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.partition_graphs,
+                    )?;
+                }
                 4 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.function_graphs)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.function_graphs,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -4621,17 +5305,20 @@ impl ::protobuf::Message for RunMetadata {
         for value in &self.partition_graphs {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         for value in &self.function_graphs {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if let Some(ref v) = self.step_stats.as_ref() {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -4646,12 +5333,12 @@ impl ::protobuf::Message for RunMetadata {
             os.write_tag(3, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         for v in &self.function_graphs {
             os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -4687,37 +5374,58 @@ impl ::protobuf::Message for RunMetadata {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::step_stats::StepStats>>(
-                    "step_stats",
-                    |m: &RunMetadata| { &m.step_stats },
-                    |m: &mut RunMetadata| { &mut m.step_stats },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::cost_graph::CostGraphDef>>(
-                    "cost_graph",
-                    |m: &RunMetadata| { &m.cost_graph },
-                    |m: &mut RunMetadata| { &mut m.cost_graph },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
-                    "partition_graphs",
-                    |m: &RunMetadata| { &m.partition_graphs },
-                    |m: &mut RunMetadata| { &mut m.partition_graphs },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<RunMetadata_FunctionGraphs>>(
-                    "function_graphs",
-                    |m: &RunMetadata| { &m.function_graphs },
-                    |m: &mut RunMetadata| { &mut m.function_graphs },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::step_stats::StepStats>,
+                    >(
+                        "step_stats",
+                        |m: &RunMetadata| &m.step_stats,
+                        |m: &mut RunMetadata| &mut m.step_stats,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::cost_graph::CostGraphDef>,
+                    >(
+                        "cost_graph",
+                        |m: &RunMetadata| &m.cost_graph,
+                        |m: &mut RunMetadata| &mut m.cost_graph,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>,
+                    >(
+                        "partition_graphs",
+                        |m: &RunMetadata| &m.partition_graphs,
+                        |m: &mut RunMetadata| &mut m.partition_graphs,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<RunMetadata_FunctionGraphs>,
+                    >(
+                        "function_graphs",
+                        |m: &RunMetadata| &m.function_graphs,
+                        |m: &mut RunMetadata| &mut m.function_graphs,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<RunMetadata>(
                     "RunMetadata",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -4728,9 +5436,7 @@ impl ::protobuf::Message for RunMetadata {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const RunMetadata,
         };
-        unsafe {
-            instance.get(RunMetadata::new)
-        }
+        unsafe { instance.get(RunMetadata::new) }
     }
 }
 
@@ -4756,7 +5462,7 @@ impl ::protobuf::reflect::ProtobufValue for RunMetadata {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RunMetadata_FunctionGraphs {
     // message fields
     pub partition_graphs: ::protobuf::RepeatedField<super::graph::GraphDef>,
@@ -4780,7 +5486,6 @@ impl RunMetadata_FunctionGraphs {
 
     // repeated .tensorflow.GraphDef partition_graphs = 1;
 
-
     pub fn get_partition_graphs(&self) -> &[super::graph::GraphDef] {
         &self.partition_graphs
     }
@@ -4794,7 +5499,9 @@ impl RunMetadata_FunctionGraphs {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_partition_graphs(&mut self) -> &mut ::protobuf::RepeatedField<super::graph::GraphDef> {
+    pub fn mut_partition_graphs(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<super::graph::GraphDef> {
         &mut self.partition_graphs
     }
 
@@ -4805,9 +5512,10 @@ impl RunMetadata_FunctionGraphs {
 
     // .tensorflow.GraphDef pre_optimization_graph = 2;
 
-
     pub fn get_pre_optimization_graph(&self) -> &super::graph::GraphDef {
-        self.pre_optimization_graph.as_ref().unwrap_or_else(|| super::graph::GraphDef::default_instance())
+        self.pre_optimization_graph
+            .as_ref()
+            .unwrap_or_else(|| super::graph::GraphDef::default_instance())
     }
     pub fn clear_pre_optimization_graph(&mut self) {
         self.pre_optimization_graph.clear();
@@ -4833,14 +5541,17 @@ impl RunMetadata_FunctionGraphs {
 
     // Take field
     pub fn take_pre_optimization_graph(&mut self) -> super::graph::GraphDef {
-        self.pre_optimization_graph.take().unwrap_or_else(|| super::graph::GraphDef::new())
+        self.pre_optimization_graph
+            .take()
+            .unwrap_or_else(|| super::graph::GraphDef::new())
     }
 
     // .tensorflow.GraphDef post_optimization_graph = 3;
 
-
     pub fn get_post_optimization_graph(&self) -> &super::graph::GraphDef {
-        self.post_optimization_graph.as_ref().unwrap_or_else(|| super::graph::GraphDef::default_instance())
+        self.post_optimization_graph
+            .as_ref()
+            .unwrap_or_else(|| super::graph::GraphDef::default_instance())
     }
     pub fn clear_post_optimization_graph(&mut self) {
         self.post_optimization_graph.clear();
@@ -4866,7 +5577,9 @@ impl RunMetadata_FunctionGraphs {
 
     // Take field
     pub fn take_post_optimization_graph(&mut self) -> super::graph::GraphDef {
-        self.post_optimization_graph.take().unwrap_or_else(|| super::graph::GraphDef::new())
+        self.post_optimization_graph
+            .take()
+            .unwrap_or_else(|| super::graph::GraphDef::new())
     }
 }
 
@@ -4876,36 +5589,56 @@ impl ::protobuf::Message for RunMetadata_FunctionGraphs {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.pre_optimization_graph {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.post_optimization_graph {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.partition_graphs)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.partition_graphs,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.pre_optimization_graph)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.pre_optimization_graph,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.post_optimization_graph)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.post_optimization_graph,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -4918,7 +5651,7 @@ impl ::protobuf::Message for RunMetadata_FunctionGraphs {
         for value in &self.partition_graphs {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if let Some(ref v) = self.pre_optimization_graph.as_ref() {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
@@ -4932,12 +5665,15 @@ impl ::protobuf::Message for RunMetadata_FunctionGraphs {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.partition_graphs {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if let Some(ref v) = self.pre_optimization_graph.as_ref() {
             os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -4983,45 +5719,60 @@ impl ::protobuf::Message for RunMetadata_FunctionGraphs {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
-                    "partition_graphs",
-                    |m: &RunMetadata_FunctionGraphs| { &m.partition_graphs },
-                    |m: &mut RunMetadata_FunctionGraphs| { &mut m.partition_graphs },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
-                    "pre_optimization_graph",
-                    |m: &RunMetadata_FunctionGraphs| { &m.pre_optimization_graph },
-                    |m: &mut RunMetadata_FunctionGraphs| { &mut m.pre_optimization_graph },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>>(
-                    "post_optimization_graph",
-                    |m: &RunMetadata_FunctionGraphs| { &m.post_optimization_graph },
-                    |m: &mut RunMetadata_FunctionGraphs| { &mut m.post_optimization_graph },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>,
+                    >(
+                        "partition_graphs",
+                        |m: &RunMetadata_FunctionGraphs| &m.partition_graphs,
+                        |m: &mut RunMetadata_FunctionGraphs| &mut m.partition_graphs,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>,
+                    >(
+                        "pre_optimization_graph",
+                        |m: &RunMetadata_FunctionGraphs| &m.pre_optimization_graph,
+                        |m: &mut RunMetadata_FunctionGraphs| &mut m.pre_optimization_graph,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<super::graph::GraphDef>,
+                    >(
+                        "post_optimization_graph",
+                        |m: &RunMetadata_FunctionGraphs| &m.post_optimization_graph,
+                        |m: &mut RunMetadata_FunctionGraphs| &mut m.post_optimization_graph,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<RunMetadata_FunctionGraphs>(
                     "RunMetadata_FunctionGraphs",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static RunMetadata_FunctionGraphs {
-        static mut instance: ::protobuf::lazy::Lazy<RunMetadata_FunctionGraphs> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const RunMetadata_FunctionGraphs,
-        };
-        unsafe {
-            instance.get(RunMetadata_FunctionGraphs::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<RunMetadata_FunctionGraphs> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const RunMetadata_FunctionGraphs,
+            };
+        unsafe { instance.get(RunMetadata_FunctionGraphs::new) }
     }
 }
 
@@ -5046,7 +5797,7 @@ impl ::protobuf::reflect::ProtobufValue for RunMetadata_FunctionGraphs {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorConnection {
     // message fields
     pub from_tensor: ::std::string::String,
@@ -5068,7 +5819,6 @@ impl TensorConnection {
     }
 
     // string from_tensor = 1;
-
 
     pub fn get_from_tensor(&self) -> &str {
         &self.from_tensor
@@ -5094,7 +5844,6 @@ impl TensorConnection {
     }
 
     // string to_tensor = 2;
-
 
     pub fn get_to_tensor(&self) -> &str {
         &self.to_tensor
@@ -5125,19 +5874,35 @@ impl ::protobuf::Message for TensorConnection {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.from_tensor)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.from_tensor,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.to_tensor)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.to_tensor,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -5158,7 +5923,10 @@ impl ::protobuf::Message for TensorConnection {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.from_tensor.is_empty() {
             os.write_string(1, &self.from_tensor)?;
         }
@@ -5200,27 +5968,34 @@ impl ::protobuf::Message for TensorConnection {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "from_tensor",
-                    |m: &TensorConnection| { &m.from_tensor },
-                    |m: &mut TensorConnection| { &mut m.from_tensor },
+                    |m: &TensorConnection| &m.from_tensor,
+                    |m: &mut TensorConnection| &mut m.from_tensor,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "to_tensor",
-                    |m: &TensorConnection| { &m.to_tensor },
-                    |m: &mut TensorConnection| { &mut m.to_tensor },
+                    |m: &TensorConnection| &m.to_tensor,
+                    |m: &mut TensorConnection| &mut m.to_tensor,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<TensorConnection>(
                     "TensorConnection",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -5231,9 +6006,7 @@ impl ::protobuf::Message for TensorConnection {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const TensorConnection,
         };
-        unsafe {
-            instance.get(TensorConnection::new)
-        }
+        unsafe { instance.get(TensorConnection::new) }
     }
 }
 
@@ -5257,7 +6030,7 @@ impl ::protobuf::reflect::ProtobufValue for TensorConnection {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CallableOptions {
     // message fields
     pub feed: ::protobuf::RepeatedField<::std::string::String>,
@@ -5286,7 +6059,6 @@ impl CallableOptions {
 
     // repeated string feed = 1;
 
-
     pub fn get_feed(&self) -> &[::std::string::String] {
         &self.feed
     }
@@ -5310,7 +6082,6 @@ impl CallableOptions {
     }
 
     // repeated string fetch = 2;
-
 
     pub fn get_fetch(&self) -> &[::std::string::String] {
         &self.fetch
@@ -5336,7 +6107,6 @@ impl CallableOptions {
 
     // repeated string target = 3;
 
-
     pub fn get_target(&self) -> &[::std::string::String] {
         &self.target
     }
@@ -5361,9 +6131,10 @@ impl CallableOptions {
 
     // .tensorflow.RunOptions run_options = 4;
 
-
     pub fn get_run_options(&self) -> &RunOptions {
-        self.run_options.as_ref().unwrap_or_else(|| RunOptions::default_instance())
+        self.run_options
+            .as_ref()
+            .unwrap_or_else(|| RunOptions::default_instance())
     }
     pub fn clear_run_options(&mut self) {
         self.run_options.clear();
@@ -5394,7 +6165,6 @@ impl CallableOptions {
 
     // repeated .tensorflow.TensorConnection tensor_connection = 5;
 
-
     pub fn get_tensor_connection(&self) -> &[TensorConnection] {
         &self.tensor_connection
     }
@@ -5414,13 +6184,17 @@ impl CallableOptions {
 
     // Take field
     pub fn take_tensor_connection(&mut self) -> ::protobuf::RepeatedField<TensorConnection> {
-        ::std::mem::replace(&mut self.tensor_connection, ::protobuf::RepeatedField::new())
+        ::std::mem::replace(
+            &mut self.tensor_connection,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // repeated .tensorflow.CallableOptions.FeedDevicesEntry feed_devices = 6;
 
-
-    pub fn get_feed_devices(&self) -> &::std::collections::HashMap<::std::string::String, ::std::string::String> {
+    pub fn get_feed_devices(
+        &self,
+    ) -> &::std::collections::HashMap<::std::string::String, ::std::string::String> {
         &self.feed_devices
     }
     pub fn clear_feed_devices(&mut self) {
@@ -5428,24 +6202,32 @@ impl CallableOptions {
     }
 
     // Param is passed by value, moved
-    pub fn set_feed_devices(&mut self, v: ::std::collections::HashMap<::std::string::String, ::std::string::String>) {
+    pub fn set_feed_devices(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+    ) {
         self.feed_devices = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_feed_devices(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, ::std::string::String> {
+    pub fn mut_feed_devices(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, ::std::string::String> {
         &mut self.feed_devices
     }
 
     // Take field
-    pub fn take_feed_devices(&mut self) -> ::std::collections::HashMap<::std::string::String, ::std::string::String> {
+    pub fn take_feed_devices(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, ::std::string::String> {
         ::std::mem::replace(&mut self.feed_devices, ::std::collections::HashMap::new())
     }
 
     // repeated .tensorflow.CallableOptions.FetchDevicesEntry fetch_devices = 7;
 
-
-    pub fn get_fetch_devices(&self) -> &::std::collections::HashMap<::std::string::String, ::std::string::String> {
+    pub fn get_fetch_devices(
+        &self,
+    ) -> &::std::collections::HashMap<::std::string::String, ::std::string::String> {
         &self.fetch_devices
     }
     pub fn clear_fetch_devices(&mut self) {
@@ -5453,22 +6235,28 @@ impl CallableOptions {
     }
 
     // Param is passed by value, moved
-    pub fn set_fetch_devices(&mut self, v: ::std::collections::HashMap<::std::string::String, ::std::string::String>) {
+    pub fn set_fetch_devices(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, ::std::string::String>,
+    ) {
         self.fetch_devices = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_fetch_devices(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, ::std::string::String> {
+    pub fn mut_fetch_devices(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, ::std::string::String> {
         &mut self.fetch_devices
     }
 
     // Take field
-    pub fn take_fetch_devices(&mut self) -> ::std::collections::HashMap<::std::string::String, ::std::string::String> {
+    pub fn take_fetch_devices(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, ::std::string::String> {
         ::std::mem::replace(&mut self.fetch_devices, ::std::collections::HashMap::new())
     }
 
     // bool fetch_skip_sync = 8;
-
 
     pub fn get_fetch_skip_sync(&self) -> bool {
         self.fetch_skip_sync
@@ -5489,50 +6277,74 @@ impl ::protobuf::Message for CallableOptions {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.tensor_connection {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.feed)?;
-                },
+                }
                 2 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.fetch)?;
-                },
+                }
                 3 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.target)?;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.run_options)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.run_options,
+                    )?;
+                }
                 5 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.tensor_connection)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.tensor_connection,
+                    )?;
+                }
                 6 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.feed_devices)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(wire_type, is, &mut self.feed_devices)?;
+                }
                 7 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.fetch_devices)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(wire_type, is, &mut self.fetch_devices)?;
+                }
                 8 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.fetch_skip_sync = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -5544,13 +6356,13 @@ impl ::protobuf::Message for CallableOptions {
         let mut my_size = 0;
         for value in &self.feed {
             my_size += ::protobuf::rt::string_size(1, &value);
-        };
+        }
         for value in &self.fetch {
             my_size += ::protobuf::rt::string_size(2, &value);
-        };
+        }
         for value in &self.target {
             my_size += ::protobuf::rt::string_size(3, &value);
-        };
+        }
         if let Some(ref v) = self.run_options.as_ref() {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
@@ -5558,9 +6370,15 @@ impl ::protobuf::Message for CallableOptions {
         for value in &self.tensor_connection {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(6, &self.feed_devices);
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(7, &self.fetch_devices);
+        }
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeString,
+        >(6, &self.feed_devices);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeString,
+        >(7, &self.fetch_devices);
         if self.fetch_skip_sync != false {
             my_size += 2;
         }
@@ -5569,16 +6387,19 @@ impl ::protobuf::Message for CallableOptions {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.feed {
             os.write_string(1, &v)?;
-        };
+        }
         for v in &self.fetch {
             os.write_string(2, &v)?;
-        };
+        }
         for v in &self.target {
             os.write_string(3, &v)?;
-        };
+        }
         if let Some(ref v) = self.run_options.as_ref() {
             os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -5588,9 +6409,15 @@ impl ::protobuf::Message for CallableOptions {
             os.write_tag(5, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(6, &self.feed_devices, os)?;
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(7, &self.fetch_devices, os)?;
+        }
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeString,
+        >(6, &self.feed_devices, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeString,
+        >(7, &self.fetch_devices, os)?;
         if self.fetch_skip_sync != false {
             os.write_bool(8, self.fetch_skip_sync)?;
         }
@@ -5629,57 +6456,94 @@ impl ::protobuf::Message for CallableOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "feed",
-                    |m: &CallableOptions| { &m.feed },
-                    |m: &mut CallableOptions| { &mut m.feed },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "fetch",
-                    |m: &CallableOptions| { &m.fetch },
-                    |m: &mut CallableOptions| { &mut m.fetch },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "target",
-                    |m: &CallableOptions| { &m.target },
-                    |m: &mut CallableOptions| { &mut m.target },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<RunOptions>>(
-                    "run_options",
-                    |m: &CallableOptions| { &m.run_options },
-                    |m: &mut CallableOptions| { &mut m.run_options },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<TensorConnection>>(
-                    "tensor_connection",
-                    |m: &CallableOptions| { &m.tensor_connection },
-                    |m: &mut CallableOptions| { &mut m.tensor_connection },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "feed",
+                        |m: &CallableOptions| &m.feed,
+                        |m: &mut CallableOptions| &mut m.feed,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "fetch",
+                        |m: &CallableOptions| &m.fetch,
+                        |m: &mut CallableOptions| &mut m.fetch,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "target",
+                        |m: &CallableOptions| &m.target,
+                        |m: &mut CallableOptions| &mut m.target,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<RunOptions>,
+                    >(
+                        "run_options",
+                        |m: &CallableOptions| &m.run_options,
+                        |m: &mut CallableOptions| &mut m.run_options,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<TensorConnection>,
+                    >(
+                        "tensor_connection",
+                        |m: &CallableOptions| &m.tensor_connection,
+                        |m: &mut CallableOptions| &mut m.tensor_connection,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "feed_devices",
-                    |m: &CallableOptions| { &m.feed_devices },
-                    |m: &mut CallableOptions| { &mut m.feed_devices },
+                    |m: &CallableOptions| &m.feed_devices,
+                    |m: &mut CallableOptions| &mut m.feed_devices,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "fetch_devices",
-                    |m: &CallableOptions| { &m.fetch_devices },
-                    |m: &mut CallableOptions| { &mut m.fetch_devices },
+                    |m: &CallableOptions| &m.fetch_devices,
+                    |m: &mut CallableOptions| &mut m.fetch_devices,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "fetch_skip_sync",
-                    |m: &CallableOptions| { &m.fetch_skip_sync },
-                    |m: &mut CallableOptions| { &mut m.fetch_skip_sync },
+                    |m: &CallableOptions| &m.fetch_skip_sync,
+                    |m: &mut CallableOptions| &mut m.fetch_skip_sync,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CallableOptions>(
                     "CallableOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -5690,9 +6554,7 @@ impl ::protobuf::Message for CallableOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const CallableOptions,
         };
-        unsafe {
-            instance.get(CallableOptions::new)
-        }
+        unsafe { instance.get(CallableOptions::new) }
     }
 }
 
@@ -5851,7 +6713,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     flow.frameworkB\x0cConfigProtosP\x01\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -5861,9 +6725,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

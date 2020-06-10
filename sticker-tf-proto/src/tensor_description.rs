@@ -26,12 +26,13 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct TensorDescription {
     // message fields
     pub dtype: super::types::DataType,
     pub shape: ::protobuf::SingularPtrField<super::tensor_shape::TensorShapeProto>,
-    pub allocation_description: ::protobuf::SingularPtrField<super::allocation_description::AllocationDescription>,
+    pub allocation_description:
+        ::protobuf::SingularPtrField<super::allocation_description::AllocationDescription>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -50,7 +51,6 @@ impl TensorDescription {
 
     // .tensorflow.DataType dtype = 1;
 
-
     pub fn get_dtype(&self) -> super::types::DataType {
         self.dtype
     }
@@ -65,9 +65,10 @@ impl TensorDescription {
 
     // .tensorflow.TensorShapeProto shape = 2;
 
-
     pub fn get_shape(&self) -> &super::tensor_shape::TensorShapeProto {
-        self.shape.as_ref().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
+        self.shape
+            .as_ref()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
     }
     pub fn clear_shape(&mut self) {
         self.shape.clear();
@@ -93,14 +94,19 @@ impl TensorDescription {
 
     // Take field
     pub fn take_shape(&mut self) -> super::tensor_shape::TensorShapeProto {
-        self.shape.take().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
+        self.shape
+            .take()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
     }
 
     // .tensorflow.AllocationDescription allocation_description = 4;
 
-
-    pub fn get_allocation_description(&self) -> &super::allocation_description::AllocationDescription {
-        self.allocation_description.as_ref().unwrap_or_else(|| super::allocation_description::AllocationDescription::default_instance())
+    pub fn get_allocation_description(
+        &self,
+    ) -> &super::allocation_description::AllocationDescription {
+        self.allocation_description.as_ref().unwrap_or_else(|| {
+            super::allocation_description::AllocationDescription::default_instance()
+        })
     }
     pub fn clear_allocation_description(&mut self) {
         self.allocation_description.clear();
@@ -111,13 +117,18 @@ impl TensorDescription {
     }
 
     // Param is passed by value, moved
-    pub fn set_allocation_description(&mut self, v: super::allocation_description::AllocationDescription) {
+    pub fn set_allocation_description(
+        &mut self,
+        v: super::allocation_description::AllocationDescription,
+    ) {
         self.allocation_description = ::protobuf::SingularPtrField::some(v);
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_allocation_description(&mut self) -> &mut super::allocation_description::AllocationDescription {
+    pub fn mut_allocation_description(
+        &mut self,
+    ) -> &mut super::allocation_description::AllocationDescription {
         if self.allocation_description.is_none() {
             self.allocation_description.set_default();
         }
@@ -125,8 +136,12 @@ impl TensorDescription {
     }
 
     // Take field
-    pub fn take_allocation_description(&mut self) -> super::allocation_description::AllocationDescription {
-        self.allocation_description.take().unwrap_or_else(|| super::allocation_description::AllocationDescription::new())
+    pub fn take_allocation_description(
+        &mut self,
+    ) -> super::allocation_description::AllocationDescription {
+        self.allocation_description
+            .take()
+            .unwrap_or_else(|| super::allocation_description::AllocationDescription::new())
     }
 }
 
@@ -136,31 +151,47 @@ impl ::protobuf::Message for TensorDescription {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.allocation_description {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
-                1 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.dtype, 1, &mut self.unknown_fields)?
-                },
+                1 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.dtype,
+                    1,
+                    &mut self.unknown_fields,
+                )?,
                 2 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.shape)?;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.allocation_description)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.allocation_description,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -186,7 +217,10 @@ impl ::protobuf::Message for TensorDescription {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.dtype != super::types::DataType::DT_INVALID {
             os.write_enum(1, self.dtype.value())?;
         }
@@ -235,32 +269,50 @@ impl ::protobuf::Message for TensorDescription {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<super::types::DataType>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<super::types::DataType>,
+                >(
                     "dtype",
-                    |m: &TensorDescription| { &m.dtype },
-                    |m: &mut TensorDescription| { &mut m.dtype },
+                    |m: &TensorDescription| &m.dtype,
+                    |m: &mut TensorDescription| &mut m.dtype,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::tensor_shape::TensorShapeProto>>(
-                    "shape",
-                    |m: &TensorDescription| { &m.shape },
-                    |m: &mut TensorDescription| { &mut m.shape },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::allocation_description::AllocationDescription>>(
-                    "allocation_description",
-                    |m: &TensorDescription| { &m.allocation_description },
-                    |m: &mut TensorDescription| { &mut m.allocation_description },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::tensor_shape::TensorShapeProto,
+                        >,
+                    >(
+                        "shape",
+                        |m: &TensorDescription| &m.shape,
+                        |m: &mut TensorDescription| &mut m.shape,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::allocation_description::AllocationDescription,
+                        >,
+                    >(
+                        "allocation_description",
+                        |m: &TensorDescription| &m.allocation_description,
+                        |m: &mut TensorDescription| &mut m.allocation_description,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<TensorDescription>(
                     "TensorDescription",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -271,9 +323,7 @@ impl ::protobuf::Message for TensorDescription {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const TensorDescription,
         };
-        unsafe {
-            instance.get(TensorDescription::new)
-        }
+        unsafe { instance.get(TensorDescription::new) }
     }
 }
 
@@ -311,7 +361,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     rk\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -321,9 +373,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

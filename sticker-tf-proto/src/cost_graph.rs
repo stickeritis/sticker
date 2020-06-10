@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CostGraphDef {
     // message fields
     pub node: ::protobuf::RepeatedField<CostGraphDef_Node>,
@@ -47,7 +47,6 @@ impl CostGraphDef {
     }
 
     // repeated .tensorflow.CostGraphDef.Node node = 1;
-
 
     pub fn get_node(&self) -> &[CostGraphDef_Node] {
         &self.node
@@ -78,20 +77,28 @@ impl ::protobuf::Message for CostGraphDef {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.node)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -104,18 +111,21 @@ impl ::protobuf::Message for CostGraphDef {
         for value in &self.node {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.node {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -151,22 +161,28 @@ impl ::protobuf::Message for CostGraphDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<CostGraphDef_Node>>(
-                    "node",
-                    |m: &CostGraphDef| { &m.node },
-                    |m: &mut CostGraphDef| { &mut m.node },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<CostGraphDef_Node>,
+                    >(
+                        "node",
+                        |m: &CostGraphDef| &m.node,
+                        |m: &mut CostGraphDef| &mut m.node,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<CostGraphDef>(
                     "CostGraphDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -177,9 +193,7 @@ impl ::protobuf::Message for CostGraphDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const CostGraphDef,
         };
-        unsafe {
-            instance.get(CostGraphDef::new)
-        }
+        unsafe { instance.get(CostGraphDef::new) }
     }
 }
 
@@ -202,7 +216,7 @@ impl ::protobuf::reflect::ProtobufValue for CostGraphDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CostGraphDef_Node {
     // message fields
     pub name: ::std::string::String,
@@ -239,7 +253,6 @@ impl CostGraphDef_Node {
 
     // string name = 1;
 
-
     pub fn get_name(&self) -> &str {
         &self.name
     }
@@ -264,7 +277,6 @@ impl CostGraphDef_Node {
     }
 
     // string device = 2;
-
 
     pub fn get_device(&self) -> &str {
         &self.device
@@ -291,7 +303,6 @@ impl CostGraphDef_Node {
 
     // int32 id = 3;
 
-
     pub fn get_id(&self) -> i32 {
         self.id
     }
@@ -306,7 +317,6 @@ impl CostGraphDef_Node {
 
     // repeated .tensorflow.CostGraphDef.Node.InputInfo input_info = 4;
 
-
     pub fn get_input_info(&self) -> &[CostGraphDef_Node_InputInfo] {
         &self.input_info
     }
@@ -320,7 +330,9 @@ impl CostGraphDef_Node {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_input_info(&mut self) -> &mut ::protobuf::RepeatedField<CostGraphDef_Node_InputInfo> {
+    pub fn mut_input_info(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<CostGraphDef_Node_InputInfo> {
         &mut self.input_info
     }
 
@@ -330,7 +342,6 @@ impl CostGraphDef_Node {
     }
 
     // repeated .tensorflow.CostGraphDef.Node.OutputInfo output_info = 5;
-
 
     pub fn get_output_info(&self) -> &[CostGraphDef_Node_OutputInfo] {
         &self.output_info
@@ -345,7 +356,9 @@ impl CostGraphDef_Node {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_output_info(&mut self) -> &mut ::protobuf::RepeatedField<CostGraphDef_Node_OutputInfo> {
+    pub fn mut_output_info(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<CostGraphDef_Node_OutputInfo> {
         &mut self.output_info
     }
 
@@ -355,7 +368,6 @@ impl CostGraphDef_Node {
     }
 
     // int64 temporary_memory_size = 6;
-
 
     pub fn get_temporary_memory_size(&self) -> i64 {
         self.temporary_memory_size
@@ -371,7 +383,6 @@ impl CostGraphDef_Node {
 
     // int64 persistent_memory_size = 12;
 
-
     pub fn get_persistent_memory_size(&self) -> i64 {
         self.persistent_memory_size
     }
@@ -385,7 +396,6 @@ impl CostGraphDef_Node {
     }
 
     // int64 host_temp_memory_size = 10;
-
 
     pub fn get_host_temp_memory_size(&self) -> i64 {
         self.host_temp_memory_size
@@ -401,7 +411,6 @@ impl CostGraphDef_Node {
 
     // int64 device_temp_memory_size = 11;
 
-
     pub fn get_device_temp_memory_size(&self) -> i64 {
         self.device_temp_memory_size
     }
@@ -415,7 +424,6 @@ impl CostGraphDef_Node {
     }
 
     // int64 device_persistent_memory_size = 16;
-
 
     pub fn get_device_persistent_memory_size(&self) -> i64 {
         self.device_persistent_memory_size
@@ -431,7 +439,6 @@ impl CostGraphDef_Node {
 
     // int64 compute_cost = 9;
 
-
     pub fn get_compute_cost(&self) -> i64 {
         self.compute_cost
     }
@@ -445,7 +452,6 @@ impl CostGraphDef_Node {
     }
 
     // int64 compute_time = 14;
-
 
     pub fn get_compute_time(&self) -> i64 {
         self.compute_time
@@ -461,7 +467,6 @@ impl CostGraphDef_Node {
 
     // int64 memory_time = 15;
 
-
     pub fn get_memory_time(&self) -> i64 {
         self.memory_time
     }
@@ -476,7 +481,6 @@ impl CostGraphDef_Node {
 
     // bool is_final = 7;
 
-
     pub fn get_is_final(&self) -> bool {
         self.is_final
     }
@@ -490,7 +494,6 @@ impl CostGraphDef_Node {
     }
 
     // repeated int32 control_input = 8;
-
 
     pub fn get_control_input(&self) -> &[i32] {
         &self.control_input
@@ -516,7 +519,6 @@ impl CostGraphDef_Node {
 
     // bool inaccurate = 17;
 
-
     pub fn get_inaccurate(&self) -> bool {
         self.inaccurate
     }
@@ -536,114 +538,164 @@ impl ::protobuf::Message for CostGraphDef_Node {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.output_info {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.device)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.device,
+                    )?;
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.id = tmp;
-                },
+                }
                 4 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.input_info)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.input_info,
+                    )?;
+                }
                 5 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.output_info)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.output_info,
+                    )?;
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.temporary_memory_size = tmp;
-                },
+                }
                 12 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.persistent_memory_size = tmp;
-                },
+                }
                 10 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.host_temp_memory_size = tmp;
-                },
+                }
                 11 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.device_temp_memory_size = tmp;
-                },
+                }
                 16 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.device_persistent_memory_size = tmp;
-                },
+                }
                 9 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.compute_cost = tmp;
-                },
+                }
                 14 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.compute_time = tmp;
-                },
+                }
                 15 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.memory_time = tmp;
-                },
+                }
                 7 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.is_final = tmp;
-                },
+                }
                 8 => {
-                    ::protobuf::rt::read_repeated_int32_into(wire_type, is, &mut self.control_input)?;
-                },
+                    ::protobuf::rt::read_repeated_int32_into(
+                        wire_type,
+                        is,
+                        &mut self.control_input,
+                    )?;
+                }
                 17 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.inaccurate = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -660,46 +712,80 @@ impl ::protobuf::Message for CostGraphDef_Node {
             my_size += ::protobuf::rt::string_size(2, &self.device);
         }
         if self.id != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.id, ::protobuf::wire_format::WireTypeVarint);
+            my_size +=
+                ::protobuf::rt::value_size(3, self.id, ::protobuf::wire_format::WireTypeVarint);
         }
         for value in &self.input_info {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         for value in &self.output_info {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if self.temporary_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(6, self.temporary_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                6,
+                self.temporary_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.persistent_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(12, self.persistent_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                12,
+                self.persistent_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.host_temp_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(10, self.host_temp_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                10,
+                self.host_temp_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.device_temp_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(11, self.device_temp_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                11,
+                self.device_temp_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.device_persistent_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(16, self.device_persistent_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                16,
+                self.device_persistent_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.compute_cost != 0 {
-            my_size += ::protobuf::rt::value_size(9, self.compute_cost, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                9,
+                self.compute_cost,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.compute_time != 0 {
-            my_size += ::protobuf::rt::value_size(14, self.compute_time, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                14,
+                self.compute_time,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.memory_time != 0 {
-            my_size += ::protobuf::rt::value_size(15, self.memory_time, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                15,
+                self.memory_time,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.is_final != false {
             my_size += 2;
         }
         for value in &self.control_input {
-            my_size += ::protobuf::rt::value_size(8, *value, ::protobuf::wire_format::WireTypeVarint);
-        };
+            my_size +=
+                ::protobuf::rt::value_size(8, *value, ::protobuf::wire_format::WireTypeVarint);
+        }
         if self.inaccurate != false {
             my_size += 3;
         }
@@ -708,7 +794,10 @@ impl ::protobuf::Message for CostGraphDef_Node {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.name.is_empty() {
             os.write_string(1, &self.name)?;
         }
@@ -722,12 +811,12 @@ impl ::protobuf::Message for CostGraphDef_Node {
             os.write_tag(4, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         for v in &self.output_info {
             os.write_tag(5, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if self.temporary_memory_size != 0 {
             os.write_int64(6, self.temporary_memory_size)?;
         }
@@ -757,7 +846,7 @@ impl ::protobuf::Message for CostGraphDef_Node {
         }
         for v in &self.control_input {
             os.write_int32(8, *v)?;
-        };
+        }
         if self.inaccurate != false {
             os.write_bool(17, self.inaccurate)?;
         }
@@ -796,97 +885,150 @@ impl ::protobuf::Message for CostGraphDef_Node {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "name",
-                    |m: &CostGraphDef_Node| { &m.name },
-                    |m: &mut CostGraphDef_Node| { &mut m.name },
+                    |m: &CostGraphDef_Node| &m.name,
+                    |m: &mut CostGraphDef_Node| &mut m.name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "device",
-                    |m: &CostGraphDef_Node| { &m.device },
-                    |m: &mut CostGraphDef_Node| { &mut m.device },
+                    |m: &CostGraphDef_Node| &m.device,
+                    |m: &mut CostGraphDef_Node| &mut m.device,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "id",
-                    |m: &CostGraphDef_Node| { &m.id },
-                    |m: &mut CostGraphDef_Node| { &mut m.id },
+                    |m: &CostGraphDef_Node| &m.id,
+                    |m: &mut CostGraphDef_Node| &mut m.id,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<CostGraphDef_Node_InputInfo>>(
-                    "input_info",
-                    |m: &CostGraphDef_Node| { &m.input_info },
-                    |m: &mut CostGraphDef_Node| { &mut m.input_info },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<CostGraphDef_Node_OutputInfo>>(
-                    "output_info",
-                    |m: &CostGraphDef_Node| { &m.output_info },
-                    |m: &mut CostGraphDef_Node| { &mut m.output_info },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<CostGraphDef_Node_InputInfo>,
+                    >(
+                        "input_info",
+                        |m: &CostGraphDef_Node| &m.input_info,
+                        |m: &mut CostGraphDef_Node| &mut m.input_info,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<CostGraphDef_Node_OutputInfo>,
+                    >(
+                        "output_info",
+                        |m: &CostGraphDef_Node| &m.output_info,
+                        |m: &mut CostGraphDef_Node| &mut m.output_info,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "temporary_memory_size",
-                    |m: &CostGraphDef_Node| { &m.temporary_memory_size },
-                    |m: &mut CostGraphDef_Node| { &mut m.temporary_memory_size },
+                    |m: &CostGraphDef_Node| &m.temporary_memory_size,
+                    |m: &mut CostGraphDef_Node| &mut m.temporary_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "persistent_memory_size",
-                    |m: &CostGraphDef_Node| { &m.persistent_memory_size },
-                    |m: &mut CostGraphDef_Node| { &mut m.persistent_memory_size },
+                    |m: &CostGraphDef_Node| &m.persistent_memory_size,
+                    |m: &mut CostGraphDef_Node| &mut m.persistent_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "host_temp_memory_size",
-                    |m: &CostGraphDef_Node| { &m.host_temp_memory_size },
-                    |m: &mut CostGraphDef_Node| { &mut m.host_temp_memory_size },
+                    |m: &CostGraphDef_Node| &m.host_temp_memory_size,
+                    |m: &mut CostGraphDef_Node| &mut m.host_temp_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "device_temp_memory_size",
-                    |m: &CostGraphDef_Node| { &m.device_temp_memory_size },
-                    |m: &mut CostGraphDef_Node| { &mut m.device_temp_memory_size },
+                    |m: &CostGraphDef_Node| &m.device_temp_memory_size,
+                    |m: &mut CostGraphDef_Node| &mut m.device_temp_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "device_persistent_memory_size",
-                    |m: &CostGraphDef_Node| { &m.device_persistent_memory_size },
-                    |m: &mut CostGraphDef_Node| { &mut m.device_persistent_memory_size },
+                    |m: &CostGraphDef_Node| &m.device_persistent_memory_size,
+                    |m: &mut CostGraphDef_Node| &mut m.device_persistent_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "compute_cost",
-                    |m: &CostGraphDef_Node| { &m.compute_cost },
-                    |m: &mut CostGraphDef_Node| { &mut m.compute_cost },
+                    |m: &CostGraphDef_Node| &m.compute_cost,
+                    |m: &mut CostGraphDef_Node| &mut m.compute_cost,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "compute_time",
-                    |m: &CostGraphDef_Node| { &m.compute_time },
-                    |m: &mut CostGraphDef_Node| { &mut m.compute_time },
+                    |m: &CostGraphDef_Node| &m.compute_time,
+                    |m: &mut CostGraphDef_Node| &mut m.compute_time,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "memory_time",
-                    |m: &CostGraphDef_Node| { &m.memory_time },
-                    |m: &mut CostGraphDef_Node| { &mut m.memory_time },
+                    |m: &CostGraphDef_Node| &m.memory_time,
+                    |m: &mut CostGraphDef_Node| &mut m.memory_time,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "is_final",
-                    |m: &CostGraphDef_Node| { &m.is_final },
-                    |m: &mut CostGraphDef_Node| { &mut m.is_final },
+                    |m: &CostGraphDef_Node| &m.is_final,
+                    |m: &mut CostGraphDef_Node| &mut m.is_final,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "control_input",
-                    |m: &CostGraphDef_Node| { &m.control_input },
-                    |m: &mut CostGraphDef_Node| { &mut m.control_input },
+                    |m: &CostGraphDef_Node| &m.control_input,
+                    |m: &mut CostGraphDef_Node| &mut m.control_input,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "inaccurate",
-                    |m: &CostGraphDef_Node| { &m.inaccurate },
-                    |m: &mut CostGraphDef_Node| { &mut m.inaccurate },
+                    |m: &CostGraphDef_Node| &m.inaccurate,
+                    |m: &mut CostGraphDef_Node| &mut m.inaccurate,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CostGraphDef_Node>(
                     "CostGraphDef_Node",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -897,9 +1039,7 @@ impl ::protobuf::Message for CostGraphDef_Node {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const CostGraphDef_Node,
         };
-        unsafe {
-            instance.get(CostGraphDef_Node::new)
-        }
+        unsafe { instance.get(CostGraphDef_Node::new) }
     }
 }
 
@@ -937,7 +1077,7 @@ impl ::protobuf::reflect::ProtobufValue for CostGraphDef_Node {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CostGraphDef_Node_InputInfo {
     // message fields
     pub preceding_node: i32,
@@ -960,7 +1100,6 @@ impl CostGraphDef_Node_InputInfo {
 
     // int32 preceding_node = 1;
 
-
     pub fn get_preceding_node(&self) -> i32 {
         self.preceding_node
     }
@@ -974,7 +1113,6 @@ impl CostGraphDef_Node_InputInfo {
     }
 
     // int32 preceding_port = 2;
-
 
     pub fn get_preceding_port(&self) -> i32 {
         self.preceding_port
@@ -994,27 +1132,39 @@ impl ::protobuf::Message for CostGraphDef_Node_InputInfo {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.preceding_node = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.preceding_port = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1025,17 +1175,28 @@ impl ::protobuf::Message for CostGraphDef_Node_InputInfo {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.preceding_node != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.preceding_node, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.preceding_node,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.preceding_port != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.preceding_port, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.preceding_port,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.preceding_node != 0 {
             os.write_int32(1, self.preceding_node)?;
         }
@@ -1077,40 +1238,46 @@ impl ::protobuf::Message for CostGraphDef_Node_InputInfo {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "preceding_node",
-                    |m: &CostGraphDef_Node_InputInfo| { &m.preceding_node },
-                    |m: &mut CostGraphDef_Node_InputInfo| { &mut m.preceding_node },
+                    |m: &CostGraphDef_Node_InputInfo| &m.preceding_node,
+                    |m: &mut CostGraphDef_Node_InputInfo| &mut m.preceding_node,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "preceding_port",
-                    |m: &CostGraphDef_Node_InputInfo| { &m.preceding_port },
-                    |m: &mut CostGraphDef_Node_InputInfo| { &mut m.preceding_port },
+                    |m: &CostGraphDef_Node_InputInfo| &m.preceding_port,
+                    |m: &mut CostGraphDef_Node_InputInfo| &mut m.preceding_port,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CostGraphDef_Node_InputInfo>(
                     "CostGraphDef_Node_InputInfo",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CostGraphDef_Node_InputInfo {
-        static mut instance: ::protobuf::lazy::Lazy<CostGraphDef_Node_InputInfo> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CostGraphDef_Node_InputInfo,
-        };
-        unsafe {
-            instance.get(CostGraphDef_Node_InputInfo::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CostGraphDef_Node_InputInfo> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CostGraphDef_Node_InputInfo,
+            };
+        unsafe { instance.get(CostGraphDef_Node_InputInfo::new) }
     }
 }
 
@@ -1134,7 +1301,7 @@ impl ::protobuf::reflect::ProtobufValue for CostGraphDef_Node_InputInfo {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct CostGraphDef_Node_OutputInfo {
     // message fields
     pub size: i64,
@@ -1159,7 +1326,6 @@ impl CostGraphDef_Node_OutputInfo {
 
     // int64 size = 1;
 
-
     pub fn get_size(&self) -> i64 {
         self.size
     }
@@ -1173,7 +1339,6 @@ impl CostGraphDef_Node_OutputInfo {
     }
 
     // int64 alias_input_port = 2;
-
 
     pub fn get_alias_input_port(&self) -> i64 {
         self.alias_input_port
@@ -1189,9 +1354,10 @@ impl CostGraphDef_Node_OutputInfo {
 
     // .tensorflow.TensorShapeProto shape = 3;
 
-
     pub fn get_shape(&self) -> &super::tensor_shape::TensorShapeProto {
-        self.shape.as_ref().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
+        self.shape
+            .as_ref()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::default_instance())
     }
     pub fn clear_shape(&mut self) {
         self.shape.clear();
@@ -1217,11 +1383,12 @@ impl CostGraphDef_Node_OutputInfo {
 
     // Take field
     pub fn take_shape(&mut self) -> super::tensor_shape::TensorShapeProto {
-        self.shape.take().unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
+        self.shape
+            .take()
+            .unwrap_or_else(|| super::tensor_shape::TensorShapeProto::new())
     }
 
     // .tensorflow.DataType dtype = 4;
-
 
     pub fn get_dtype(&self) -> super::types::DataType {
         self.dtype
@@ -1242,37 +1409,53 @@ impl ::protobuf::Message for CostGraphDef_Node_OutputInfo {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.size = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.alias_input_port = tmp;
-                },
+                }
                 3 => {
                     ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.shape)?;
-                },
-                4 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.dtype, 4, &mut self.unknown_fields)?
-                },
+                }
+                4 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.dtype,
+                    4,
+                    &mut self.unknown_fields,
+                )?,
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1283,10 +1466,15 @@ impl ::protobuf::Message for CostGraphDef_Node_OutputInfo {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.size != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.size, ::protobuf::wire_format::WireTypeVarint);
+            my_size +=
+                ::protobuf::rt::value_size(1, self.size, ::protobuf::wire_format::WireTypeVarint);
         }
         if self.alias_input_port != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.alias_input_port, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.alias_input_port,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if let Some(ref v) = self.shape.as_ref() {
             let len = v.compute_size();
@@ -1300,7 +1488,10 @@ impl ::protobuf::Message for CostGraphDef_Node_OutputInfo {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.size != 0 {
             os.write_int64(1, self.size)?;
         }
@@ -1350,50 +1541,66 @@ impl ::protobuf::Message for CostGraphDef_Node_OutputInfo {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "size",
-                    |m: &CostGraphDef_Node_OutputInfo| { &m.size },
-                    |m: &mut CostGraphDef_Node_OutputInfo| { &mut m.size },
+                    |m: &CostGraphDef_Node_OutputInfo| &m.size,
+                    |m: &mut CostGraphDef_Node_OutputInfo| &mut m.size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "alias_input_port",
-                    |m: &CostGraphDef_Node_OutputInfo| { &m.alias_input_port },
-                    |m: &mut CostGraphDef_Node_OutputInfo| { &mut m.alias_input_port },
+                    |m: &CostGraphDef_Node_OutputInfo| &m.alias_input_port,
+                    |m: &mut CostGraphDef_Node_OutputInfo| &mut m.alias_input_port,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::tensor_shape::TensorShapeProto>>(
-                    "shape",
-                    |m: &CostGraphDef_Node_OutputInfo| { &m.shape },
-                    |m: &mut CostGraphDef_Node_OutputInfo| { &mut m.shape },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<super::types::DataType>>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::tensor_shape::TensorShapeProto,
+                        >,
+                    >(
+                        "shape",
+                        |m: &CostGraphDef_Node_OutputInfo| &m.shape,
+                        |m: &mut CostGraphDef_Node_OutputInfo| &mut m.shape,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<super::types::DataType>,
+                >(
                     "dtype",
-                    |m: &CostGraphDef_Node_OutputInfo| { &m.dtype },
-                    |m: &mut CostGraphDef_Node_OutputInfo| { &mut m.dtype },
+                    |m: &CostGraphDef_Node_OutputInfo| &m.dtype,
+                    |m: &mut CostGraphDef_Node_OutputInfo| &mut m.dtype,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<CostGraphDef_Node_OutputInfo>(
                     "CostGraphDef_Node_OutputInfo",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static CostGraphDef_Node_OutputInfo {
-        static mut instance: ::protobuf::lazy::Lazy<CostGraphDef_Node_OutputInfo> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const CostGraphDef_Node_OutputInfo,
-        };
-        unsafe {
-            instance.get(CostGraphDef_Node_OutputInfo::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<CostGraphDef_Node_OutputInfo> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const CostGraphDef_Node_OutputInfo,
+            };
+        unsafe { instance.get(CostGraphDef_Node_OutputInfo::new) }
     }
 }
 
@@ -1450,7 +1657,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     sorflow/tensorflow/go/core/framework\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -1460,9 +1669,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

@@ -12,7 +12,6 @@ use stdinout::{Input, OrExit, Output};
 use sticker_encoders::deprel::{RelativePOSEncoder, RelativePositionEncoder};
 use sticker_encoders::layer::LayerEncoder;
 use sticker_encoders::SentenceEncoder;
-use toml;
 
 use sticker::serialization::CborWrite;
 use sticker::wrapper::{Config, EncoderType, LabelerType, TomlRead};
