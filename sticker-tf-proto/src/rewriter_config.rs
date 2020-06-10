@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct AutoParallelOptions {
     // message fields
     pub enable: bool,
@@ -49,7 +49,6 @@ impl AutoParallelOptions {
 
     // bool enable = 1;
 
-
     pub fn get_enable(&self) -> bool {
         self.enable
     }
@@ -63,7 +62,6 @@ impl AutoParallelOptions {
     }
 
     // int32 num_replicas = 2;
-
 
     pub fn get_num_replicas(&self) -> i32 {
         self.num_replicas
@@ -83,27 +81,39 @@ impl ::protobuf::Message for AutoParallelOptions {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.enable = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.num_replicas = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -117,14 +127,21 @@ impl ::protobuf::Message for AutoParallelOptions {
             my_size += 2;
         }
         if self.num_replicas != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.num_replicas, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.num_replicas,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.enable != false {
             os.write_bool(1, self.enable)?;
         }
@@ -166,27 +183,34 @@ impl ::protobuf::Message for AutoParallelOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "enable",
-                    |m: &AutoParallelOptions| { &m.enable },
-                    |m: &mut AutoParallelOptions| { &mut m.enable },
+                    |m: &AutoParallelOptions| &m.enable,
+                    |m: &mut AutoParallelOptions| &mut m.enable,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "num_replicas",
-                    |m: &AutoParallelOptions| { &m.num_replicas },
-                    |m: &mut AutoParallelOptions| { &mut m.num_replicas },
+                    |m: &AutoParallelOptions| &m.num_replicas,
+                    |m: &mut AutoParallelOptions| &mut m.num_replicas,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<AutoParallelOptions>(
                     "AutoParallelOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -197,9 +221,7 @@ impl ::protobuf::Message for AutoParallelOptions {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const AutoParallelOptions,
         };
-        unsafe {
-            instance.get(AutoParallelOptions::new)
-        }
+        unsafe { instance.get(AutoParallelOptions::new) }
     }
 }
 
@@ -223,7 +245,7 @@ impl ::protobuf::reflect::ProtobufValue for AutoParallelOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct ScopedAllocatorOptions {
     // message fields
     pub enable_op: ::protobuf::RepeatedField<::std::string::String>,
@@ -244,7 +266,6 @@ impl ScopedAllocatorOptions {
     }
 
     // repeated string enable_op = 1;
-
 
     pub fn get_enable_op(&self) -> &[::std::string::String] {
         &self.enable_op
@@ -274,16 +295,24 @@ impl ::protobuf::Message for ScopedAllocatorOptions {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.enable_op)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -295,16 +324,19 @@ impl ::protobuf::Message for ScopedAllocatorOptions {
         let mut my_size = 0;
         for value in &self.enable_op {
             my_size += ::protobuf::rt::string_size(1, &value);
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.enable_op {
             os.write_string(1, &v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -340,35 +372,40 @@ impl ::protobuf::Message for ScopedAllocatorOptions {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "enable_op",
-                    |m: &ScopedAllocatorOptions| { &m.enable_op },
-                    |m: &mut ScopedAllocatorOptions| { &mut m.enable_op },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "enable_op",
+                        |m: &ScopedAllocatorOptions| &m.enable_op,
+                        |m: &mut ScopedAllocatorOptions| &mut m.enable_op,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<ScopedAllocatorOptions>(
                     "ScopedAllocatorOptions",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static ScopedAllocatorOptions {
-        static mut instance: ::protobuf::lazy::Lazy<ScopedAllocatorOptions> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ScopedAllocatorOptions,
-        };
-        unsafe {
-            instance.get(ScopedAllocatorOptions::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<ScopedAllocatorOptions> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ScopedAllocatorOptions,
+            };
+        unsafe { instance.get(ScopedAllocatorOptions::new) }
     }
 }
 
@@ -391,7 +428,7 @@ impl ::protobuf::reflect::ProtobufValue for ScopedAllocatorOptions {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RewriterConfig {
     // message fields
     pub layout_optimizer: RewriterConfig_Toggle,
@@ -419,8 +456,10 @@ pub struct RewriterConfig {
     pub scoped_allocator_opts: ::protobuf::SingularPtrField<ScopedAllocatorOptions>,
     pub optimizers: ::protobuf::RepeatedField<::std::string::String>,
     pub custom_optimizers: ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer>,
-    pub inter_optimizer_verifier_config: ::protobuf::SingularPtrField<super::verifier_config::VerifierConfig>,
-    pub post_optimization_verifier_config: ::protobuf::SingularPtrField<super::verifier_config::VerifierConfig>,
+    pub inter_optimizer_verifier_config:
+        ::protobuf::SingularPtrField<super::verifier_config::VerifierConfig>,
+    pub post_optimization_verifier_config:
+        ::protobuf::SingularPtrField<super::verifier_config::VerifierConfig>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -439,7 +478,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle layout_optimizer = 1;
 
-
     pub fn get_layout_optimizer(&self) -> RewriterConfig_Toggle {
         self.layout_optimizer
     }
@@ -453,7 +491,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.Toggle constant_folding = 3;
-
 
     pub fn get_constant_folding(&self) -> RewriterConfig_Toggle {
         self.constant_folding
@@ -469,7 +506,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle shape_optimization = 13;
 
-
     pub fn get_shape_optimization(&self) -> RewriterConfig_Toggle {
         self.shape_optimization
     }
@@ -483,7 +519,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.Toggle remapping = 14;
-
 
     pub fn get_remapping(&self) -> RewriterConfig_Toggle {
         self.remapping
@@ -499,7 +534,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle arithmetic_optimization = 7;
 
-
     pub fn get_arithmetic_optimization(&self) -> RewriterConfig_Toggle {
         self.arithmetic_optimization
     }
@@ -513,7 +547,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.Toggle dependency_optimization = 8;
-
 
     pub fn get_dependency_optimization(&self) -> RewriterConfig_Toggle {
         self.dependency_optimization
@@ -529,7 +562,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle loop_optimization = 9;
 
-
     pub fn get_loop_optimization(&self) -> RewriterConfig_Toggle {
         self.loop_optimization
     }
@@ -543,7 +575,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.Toggle function_optimization = 10;
-
 
     pub fn get_function_optimization(&self) -> RewriterConfig_Toggle {
         self.function_optimization
@@ -559,7 +590,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle debug_stripper = 11;
 
-
     pub fn get_debug_stripper(&self) -> RewriterConfig_Toggle {
         self.debug_stripper
     }
@@ -573,7 +603,6 @@ impl RewriterConfig {
     }
 
     // bool disable_model_pruning = 2;
-
 
     pub fn get_disable_model_pruning(&self) -> bool {
         self.disable_model_pruning
@@ -589,7 +618,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle scoped_allocator_optimization = 15;
 
-
     pub fn get_scoped_allocator_optimization(&self) -> RewriterConfig_Toggle {
         self.scoped_allocator_optimization
     }
@@ -603,7 +631,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.Toggle pin_to_host_optimization = 18;
-
 
     pub fn get_pin_to_host_optimization(&self) -> RewriterConfig_Toggle {
         self.pin_to_host_optimization
@@ -619,7 +646,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.Toggle implementation_selector = 22;
 
-
     pub fn get_implementation_selector(&self) -> RewriterConfig_Toggle {
         self.implementation_selector
     }
@@ -633,7 +659,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.Toggle auto_mixed_precision = 23;
-
 
     pub fn get_auto_mixed_precision(&self) -> RewriterConfig_Toggle {
         self.auto_mixed_precision
@@ -649,7 +674,6 @@ impl RewriterConfig {
 
     // bool disable_meta_optimizer = 19;
 
-
     pub fn get_disable_meta_optimizer(&self) -> bool {
         self.disable_meta_optimizer
     }
@@ -663,7 +687,6 @@ impl RewriterConfig {
     }
 
     // .tensorflow.RewriterConfig.NumIterationsType meta_optimizer_iterations = 12;
-
 
     pub fn get_meta_optimizer_iterations(&self) -> RewriterConfig_NumIterationsType {
         self.meta_optimizer_iterations
@@ -679,7 +702,6 @@ impl RewriterConfig {
 
     // int32 min_graph_nodes = 17;
 
-
     pub fn get_min_graph_nodes(&self) -> i32 {
         self.min_graph_nodes
     }
@@ -694,7 +716,6 @@ impl RewriterConfig {
 
     // .tensorflow.RewriterConfig.MemOptType memory_optimization = 4;
 
-
     pub fn get_memory_optimization(&self) -> RewriterConfig_MemOptType {
         self.memory_optimization
     }
@@ -708,7 +729,6 @@ impl RewriterConfig {
     }
 
     // string memory_optimizer_target_node_name_scope = 6;
-
 
     pub fn get_memory_optimizer_target_node_name_scope(&self) -> &str {
         &self.memory_optimizer_target_node_name_scope
@@ -730,11 +750,13 @@ impl RewriterConfig {
 
     // Take field
     pub fn take_memory_optimizer_target_node_name_scope(&mut self) -> ::std::string::String {
-        ::std::mem::replace(&mut self.memory_optimizer_target_node_name_scope, ::std::string::String::new())
+        ::std::mem::replace(
+            &mut self.memory_optimizer_target_node_name_scope,
+            ::std::string::String::new(),
+        )
     }
 
     // int64 meta_optimizer_timeout_ms = 20;
-
 
     pub fn get_meta_optimizer_timeout_ms(&self) -> i64 {
         self.meta_optimizer_timeout_ms
@@ -750,9 +772,10 @@ impl RewriterConfig {
 
     // .tensorflow.AutoParallelOptions auto_parallel = 5;
 
-
     pub fn get_auto_parallel(&self) -> &AutoParallelOptions {
-        self.auto_parallel.as_ref().unwrap_or_else(|| AutoParallelOptions::default_instance())
+        self.auto_parallel
+            .as_ref()
+            .unwrap_or_else(|| AutoParallelOptions::default_instance())
     }
     pub fn clear_auto_parallel(&mut self) {
         self.auto_parallel.clear();
@@ -778,11 +801,12 @@ impl RewriterConfig {
 
     // Take field
     pub fn take_auto_parallel(&mut self) -> AutoParallelOptions {
-        self.auto_parallel.take().unwrap_or_else(|| AutoParallelOptions::new())
+        self.auto_parallel
+            .take()
+            .unwrap_or_else(|| AutoParallelOptions::new())
     }
 
     // bool fail_on_optimizer_errors = 21;
-
 
     pub fn get_fail_on_optimizer_errors(&self) -> bool {
         self.fail_on_optimizer_errors
@@ -798,9 +822,10 @@ impl RewriterConfig {
 
     // .tensorflow.ScopedAllocatorOptions scoped_allocator_opts = 16;
 
-
     pub fn get_scoped_allocator_opts(&self) -> &ScopedAllocatorOptions {
-        self.scoped_allocator_opts.as_ref().unwrap_or_else(|| ScopedAllocatorOptions::default_instance())
+        self.scoped_allocator_opts
+            .as_ref()
+            .unwrap_or_else(|| ScopedAllocatorOptions::default_instance())
     }
     pub fn clear_scoped_allocator_opts(&mut self) {
         self.scoped_allocator_opts.clear();
@@ -826,11 +851,12 @@ impl RewriterConfig {
 
     // Take field
     pub fn take_scoped_allocator_opts(&mut self) -> ScopedAllocatorOptions {
-        self.scoped_allocator_opts.take().unwrap_or_else(|| ScopedAllocatorOptions::new())
+        self.scoped_allocator_opts
+            .take()
+            .unwrap_or_else(|| ScopedAllocatorOptions::new())
     }
 
     // repeated string optimizers = 100;
-
 
     pub fn get_optimizers(&self) -> &[::std::string::String] {
         &self.optimizers
@@ -856,7 +882,6 @@ impl RewriterConfig {
 
     // repeated .tensorflow.RewriterConfig.CustomGraphOptimizer custom_optimizers = 200;
 
-
     pub fn get_custom_optimizers(&self) -> &[RewriterConfig_CustomGraphOptimizer] {
         &self.custom_optimizers
     }
@@ -865,25 +890,36 @@ impl RewriterConfig {
     }
 
     // Param is passed by value, moved
-    pub fn set_custom_optimizers(&mut self, v: ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer>) {
+    pub fn set_custom_optimizers(
+        &mut self,
+        v: ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer>,
+    ) {
         self.custom_optimizers = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_custom_optimizers(&mut self) -> &mut ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer> {
+    pub fn mut_custom_optimizers(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer> {
         &mut self.custom_optimizers
     }
 
     // Take field
-    pub fn take_custom_optimizers(&mut self) -> ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer> {
-        ::std::mem::replace(&mut self.custom_optimizers, ::protobuf::RepeatedField::new())
+    pub fn take_custom_optimizers(
+        &mut self,
+    ) -> ::protobuf::RepeatedField<RewriterConfig_CustomGraphOptimizer> {
+        ::std::mem::replace(
+            &mut self.custom_optimizers,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // .tensorflow.VerifierConfig inter_optimizer_verifier_config = 300;
 
-
     pub fn get_inter_optimizer_verifier_config(&self) -> &super::verifier_config::VerifierConfig {
-        self.inter_optimizer_verifier_config.as_ref().unwrap_or_else(|| super::verifier_config::VerifierConfig::default_instance())
+        self.inter_optimizer_verifier_config
+            .as_ref()
+            .unwrap_or_else(|| super::verifier_config::VerifierConfig::default_instance())
     }
     pub fn clear_inter_optimizer_verifier_config(&mut self) {
         self.inter_optimizer_verifier_config.clear();
@@ -894,13 +930,18 @@ impl RewriterConfig {
     }
 
     // Param is passed by value, moved
-    pub fn set_inter_optimizer_verifier_config(&mut self, v: super::verifier_config::VerifierConfig) {
+    pub fn set_inter_optimizer_verifier_config(
+        &mut self,
+        v: super::verifier_config::VerifierConfig,
+    ) {
         self.inter_optimizer_verifier_config = ::protobuf::SingularPtrField::some(v);
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_inter_optimizer_verifier_config(&mut self) -> &mut super::verifier_config::VerifierConfig {
+    pub fn mut_inter_optimizer_verifier_config(
+        &mut self,
+    ) -> &mut super::verifier_config::VerifierConfig {
         if self.inter_optimizer_verifier_config.is_none() {
             self.inter_optimizer_verifier_config.set_default();
         }
@@ -908,15 +949,20 @@ impl RewriterConfig {
     }
 
     // Take field
-    pub fn take_inter_optimizer_verifier_config(&mut self) -> super::verifier_config::VerifierConfig {
-        self.inter_optimizer_verifier_config.take().unwrap_or_else(|| super::verifier_config::VerifierConfig::new())
+    pub fn take_inter_optimizer_verifier_config(
+        &mut self,
+    ) -> super::verifier_config::VerifierConfig {
+        self.inter_optimizer_verifier_config
+            .take()
+            .unwrap_or_else(|| super::verifier_config::VerifierConfig::new())
     }
 
     // .tensorflow.VerifierConfig post_optimization_verifier_config = 301;
 
-
     pub fn get_post_optimization_verifier_config(&self) -> &super::verifier_config::VerifierConfig {
-        self.post_optimization_verifier_config.as_ref().unwrap_or_else(|| super::verifier_config::VerifierConfig::default_instance())
+        self.post_optimization_verifier_config
+            .as_ref()
+            .unwrap_or_else(|| super::verifier_config::VerifierConfig::default_instance())
     }
     pub fn clear_post_optimization_verifier_config(&mut self) {
         self.post_optimization_verifier_config.clear();
@@ -927,13 +973,18 @@ impl RewriterConfig {
     }
 
     // Param is passed by value, moved
-    pub fn set_post_optimization_verifier_config(&mut self, v: super::verifier_config::VerifierConfig) {
+    pub fn set_post_optimization_verifier_config(
+        &mut self,
+        v: super::verifier_config::VerifierConfig,
+    ) {
         self.post_optimization_verifier_config = ::protobuf::SingularPtrField::some(v);
     }
 
     // Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
-    pub fn mut_post_optimization_verifier_config(&mut self) -> &mut super::verifier_config::VerifierConfig {
+    pub fn mut_post_optimization_verifier_config(
+        &mut self,
+    ) -> &mut super::verifier_config::VerifierConfig {
         if self.post_optimization_verifier_config.is_none() {
             self.post_optimization_verifier_config.set_default();
         }
@@ -941,8 +992,12 @@ impl RewriterConfig {
     }
 
     // Take field
-    pub fn take_post_optimization_verifier_config(&mut self) -> super::verifier_config::VerifierConfig {
-        self.post_optimization_verifier_config.take().unwrap_or_else(|| super::verifier_config::VerifierConfig::new())
+    pub fn take_post_optimization_verifier_config(
+        &mut self,
+    ) -> super::verifier_config::VerifierConfig {
+        self.post_optimization_verifier_config
+            .take()
+            .unwrap_or_else(|| super::verifier_config::VerifierConfig::new())
     }
 }
 
@@ -952,138 +1007,240 @@ impl ::protobuf::Message for RewriterConfig {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.scoped_allocator_opts {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.custom_optimizers {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.inter_optimizer_verifier_config {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.post_optimization_verifier_config {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
-                1 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.layout_optimizer, 1, &mut self.unknown_fields)?
-                },
-                3 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.constant_folding, 3, &mut self.unknown_fields)?
-                },
-                13 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.shape_optimization, 13, &mut self.unknown_fields)?
-                },
-                14 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.remapping, 14, &mut self.unknown_fields)?
-                },
-                7 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.arithmetic_optimization, 7, &mut self.unknown_fields)?
-                },
-                8 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.dependency_optimization, 8, &mut self.unknown_fields)?
-                },
-                9 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.loop_optimization, 9, &mut self.unknown_fields)?
-                },
-                10 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.function_optimization, 10, &mut self.unknown_fields)?
-                },
-                11 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.debug_stripper, 11, &mut self.unknown_fields)?
-                },
+                1 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.layout_optimizer,
+                    1,
+                    &mut self.unknown_fields,
+                )?,
+                3 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.constant_folding,
+                    3,
+                    &mut self.unknown_fields,
+                )?,
+                13 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.shape_optimization,
+                    13,
+                    &mut self.unknown_fields,
+                )?,
+                14 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.remapping,
+                    14,
+                    &mut self.unknown_fields,
+                )?,
+                7 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.arithmetic_optimization,
+                    7,
+                    &mut self.unknown_fields,
+                )?,
+                8 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.dependency_optimization,
+                    8,
+                    &mut self.unknown_fields,
+                )?,
+                9 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.loop_optimization,
+                    9,
+                    &mut self.unknown_fields,
+                )?,
+                10 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.function_optimization,
+                    10,
+                    &mut self.unknown_fields,
+                )?,
+                11 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.debug_stripper,
+                    11,
+                    &mut self.unknown_fields,
+                )?,
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.disable_model_pruning = tmp;
-                },
-                15 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.scoped_allocator_optimization, 15, &mut self.unknown_fields)?
-                },
-                18 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.pin_to_host_optimization, 18, &mut self.unknown_fields)?
-                },
-                22 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.implementation_selector, 22, &mut self.unknown_fields)?
-                },
-                23 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.auto_mixed_precision, 23, &mut self.unknown_fields)?
-                },
+                }
+                15 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.scoped_allocator_optimization,
+                    15,
+                    &mut self.unknown_fields,
+                )?,
+                18 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.pin_to_host_optimization,
+                    18,
+                    &mut self.unknown_fields,
+                )?,
+                22 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.implementation_selector,
+                    22,
+                    &mut self.unknown_fields,
+                )?,
+                23 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.auto_mixed_precision,
+                    23,
+                    &mut self.unknown_fields,
+                )?,
                 19 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.disable_meta_optimizer = tmp;
-                },
-                12 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.meta_optimizer_iterations, 12, &mut self.unknown_fields)?
-                },
+                }
+                12 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.meta_optimizer_iterations,
+                    12,
+                    &mut self.unknown_fields,
+                )?,
                 17 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.min_graph_nodes = tmp;
-                },
-                4 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.memory_optimization, 4, &mut self.unknown_fields)?
-                },
+                }
+                4 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.memory_optimization,
+                    4,
+                    &mut self.unknown_fields,
+                )?,
                 6 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.memory_optimizer_target_node_name_scope)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.memory_optimizer_target_node_name_scope,
+                    )?;
+                }
                 20 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.meta_optimizer_timeout_ms = tmp;
-                },
+                }
                 5 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.auto_parallel)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.auto_parallel,
+                    )?;
+                }
                 21 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.fail_on_optimizer_errors = tmp;
-                },
+                }
                 16 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.scoped_allocator_opts)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.scoped_allocator_opts,
+                    )?;
+                }
                 100 => {
                     ::protobuf::rt::read_repeated_string_into(wire_type, is, &mut self.optimizers)?;
-                },
+                }
                 200 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.custom_optimizers)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.custom_optimizers,
+                    )?;
+                }
                 300 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.inter_optimizer_verifier_config)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.inter_optimizer_verifier_config,
+                    )?;
+                }
                 301 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.post_optimization_verifier_config)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.post_optimization_verifier_config,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1142,16 +1299,25 @@ impl ::protobuf::Message for RewriterConfig {
             my_size += ::protobuf::rt::enum_size(12, self.meta_optimizer_iterations);
         }
         if self.min_graph_nodes != 0 {
-            my_size += ::protobuf::rt::value_size(17, self.min_graph_nodes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                17,
+                self.min_graph_nodes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.memory_optimization != RewriterConfig_MemOptType::DEFAULT_MEM_OPT {
             my_size += ::protobuf::rt::enum_size(4, self.memory_optimization);
         }
         if !self.memory_optimizer_target_node_name_scope.is_empty() {
-            my_size += ::protobuf::rt::string_size(6, &self.memory_optimizer_target_node_name_scope);
+            my_size +=
+                ::protobuf::rt::string_size(6, &self.memory_optimizer_target_node_name_scope);
         }
         if self.meta_optimizer_timeout_ms != 0 {
-            my_size += ::protobuf::rt::value_size(20, self.meta_optimizer_timeout_ms, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                20,
+                self.meta_optimizer_timeout_ms,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if let Some(ref v) = self.auto_parallel.as_ref() {
             let len = v.compute_size();
@@ -1166,11 +1332,11 @@ impl ::protobuf::Message for RewriterConfig {
         }
         for value in &self.optimizers {
             my_size += ::protobuf::rt::string_size(100, &value);
-        };
+        }
         for value in &self.custom_optimizers {
             let len = value.compute_size();
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if let Some(ref v) = self.inter_optimizer_verifier_config.as_ref() {
             let len = v.compute_size();
             my_size += 2 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
@@ -1184,7 +1350,10 @@ impl ::protobuf::Message for RewriterConfig {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.layout_optimizer != RewriterConfig_Toggle::DEFAULT {
             os.write_enum(1, self.layout_optimizer.value())?;
         }
@@ -1260,12 +1429,12 @@ impl ::protobuf::Message for RewriterConfig {
         }
         for v in &self.optimizers {
             os.write_string(100, &v)?;
-        };
+        }
         for v in &self.custom_optimizers {
             os.write_tag(200, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if let Some(ref v) = self.inter_optimizer_verifier_config.as_ref() {
             os.write_tag(300, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -1311,152 +1480,250 @@ impl ::protobuf::Message for RewriterConfig {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "layout_optimizer",
-                    |m: &RewriterConfig| { &m.layout_optimizer },
-                    |m: &mut RewriterConfig| { &mut m.layout_optimizer },
+                    |m: &RewriterConfig| &m.layout_optimizer,
+                    |m: &mut RewriterConfig| &mut m.layout_optimizer,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "constant_folding",
-                    |m: &RewriterConfig| { &m.constant_folding },
-                    |m: &mut RewriterConfig| { &mut m.constant_folding },
+                    |m: &RewriterConfig| &m.constant_folding,
+                    |m: &mut RewriterConfig| &mut m.constant_folding,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "shape_optimization",
-                    |m: &RewriterConfig| { &m.shape_optimization },
-                    |m: &mut RewriterConfig| { &mut m.shape_optimization },
+                    |m: &RewriterConfig| &m.shape_optimization,
+                    |m: &mut RewriterConfig| &mut m.shape_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "remapping",
-                    |m: &RewriterConfig| { &m.remapping },
-                    |m: &mut RewriterConfig| { &mut m.remapping },
+                    |m: &RewriterConfig| &m.remapping,
+                    |m: &mut RewriterConfig| &mut m.remapping,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "arithmetic_optimization",
-                    |m: &RewriterConfig| { &m.arithmetic_optimization },
-                    |m: &mut RewriterConfig| { &mut m.arithmetic_optimization },
+                    |m: &RewriterConfig| &m.arithmetic_optimization,
+                    |m: &mut RewriterConfig| &mut m.arithmetic_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "dependency_optimization",
-                    |m: &RewriterConfig| { &m.dependency_optimization },
-                    |m: &mut RewriterConfig| { &mut m.dependency_optimization },
+                    |m: &RewriterConfig| &m.dependency_optimization,
+                    |m: &mut RewriterConfig| &mut m.dependency_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "loop_optimization",
-                    |m: &RewriterConfig| { &m.loop_optimization },
-                    |m: &mut RewriterConfig| { &mut m.loop_optimization },
+                    |m: &RewriterConfig| &m.loop_optimization,
+                    |m: &mut RewriterConfig| &mut m.loop_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "function_optimization",
-                    |m: &RewriterConfig| { &m.function_optimization },
-                    |m: &mut RewriterConfig| { &mut m.function_optimization },
+                    |m: &RewriterConfig| &m.function_optimization,
+                    |m: &mut RewriterConfig| &mut m.function_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "debug_stripper",
-                    |m: &RewriterConfig| { &m.debug_stripper },
-                    |m: &mut RewriterConfig| { &mut m.debug_stripper },
+                    |m: &RewriterConfig| &m.debug_stripper,
+                    |m: &mut RewriterConfig| &mut m.debug_stripper,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "disable_model_pruning",
-                    |m: &RewriterConfig| { &m.disable_model_pruning },
-                    |m: &mut RewriterConfig| { &mut m.disable_model_pruning },
+                    |m: &RewriterConfig| &m.disable_model_pruning,
+                    |m: &mut RewriterConfig| &mut m.disable_model_pruning,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "scoped_allocator_optimization",
-                    |m: &RewriterConfig| { &m.scoped_allocator_optimization },
-                    |m: &mut RewriterConfig| { &mut m.scoped_allocator_optimization },
+                    |m: &RewriterConfig| &m.scoped_allocator_optimization,
+                    |m: &mut RewriterConfig| &mut m.scoped_allocator_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "pin_to_host_optimization",
-                    |m: &RewriterConfig| { &m.pin_to_host_optimization },
-                    |m: &mut RewriterConfig| { &mut m.pin_to_host_optimization },
+                    |m: &RewriterConfig| &m.pin_to_host_optimization,
+                    |m: &mut RewriterConfig| &mut m.pin_to_host_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "implementation_selector",
-                    |m: &RewriterConfig| { &m.implementation_selector },
-                    |m: &mut RewriterConfig| { &mut m.implementation_selector },
+                    |m: &RewriterConfig| &m.implementation_selector,
+                    |m: &mut RewriterConfig| &mut m.implementation_selector,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_Toggle>,
+                >(
                     "auto_mixed_precision",
-                    |m: &RewriterConfig| { &m.auto_mixed_precision },
-                    |m: &mut RewriterConfig| { &mut m.auto_mixed_precision },
+                    |m: &RewriterConfig| &m.auto_mixed_precision,
+                    |m: &mut RewriterConfig| &mut m.auto_mixed_precision,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "disable_meta_optimizer",
-                    |m: &RewriterConfig| { &m.disable_meta_optimizer },
-                    |m: &mut RewriterConfig| { &mut m.disable_meta_optimizer },
+                    |m: &RewriterConfig| &m.disable_meta_optimizer,
+                    |m: &mut RewriterConfig| &mut m.disable_meta_optimizer,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_NumIterationsType>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_NumIterationsType>,
+                >(
                     "meta_optimizer_iterations",
-                    |m: &RewriterConfig| { &m.meta_optimizer_iterations },
-                    |m: &mut RewriterConfig| { &mut m.meta_optimizer_iterations },
+                    |m: &RewriterConfig| &m.meta_optimizer_iterations,
+                    |m: &mut RewriterConfig| &mut m.meta_optimizer_iterations,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "min_graph_nodes",
-                    |m: &RewriterConfig| { &m.min_graph_nodes },
-                    |m: &mut RewriterConfig| { &mut m.min_graph_nodes },
+                    |m: &RewriterConfig| &m.min_graph_nodes,
+                    |m: &mut RewriterConfig| &mut m.min_graph_nodes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<RewriterConfig_MemOptType>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<RewriterConfig_MemOptType>,
+                >(
                     "memory_optimization",
-                    |m: &RewriterConfig| { &m.memory_optimization },
-                    |m: &mut RewriterConfig| { &mut m.memory_optimization },
+                    |m: &RewriterConfig| &m.memory_optimization,
+                    |m: &mut RewriterConfig| &mut m.memory_optimization,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "memory_optimizer_target_node_name_scope",
-                    |m: &RewriterConfig| { &m.memory_optimizer_target_node_name_scope },
-                    |m: &mut RewriterConfig| { &mut m.memory_optimizer_target_node_name_scope },
+                    |m: &RewriterConfig| &m.memory_optimizer_target_node_name_scope,
+                    |m: &mut RewriterConfig| &mut m.memory_optimizer_target_node_name_scope,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "meta_optimizer_timeout_ms",
-                    |m: &RewriterConfig| { &m.meta_optimizer_timeout_ms },
-                    |m: &mut RewriterConfig| { &mut m.meta_optimizer_timeout_ms },
+                    |m: &RewriterConfig| &m.meta_optimizer_timeout_ms,
+                    |m: &mut RewriterConfig| &mut m.meta_optimizer_timeout_ms,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<AutoParallelOptions>>(
-                    "auto_parallel",
-                    |m: &RewriterConfig| { &m.auto_parallel },
-                    |m: &mut RewriterConfig| { &mut m.auto_parallel },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<AutoParallelOptions>,
+                    >(
+                        "auto_parallel",
+                        |m: &RewriterConfig| &m.auto_parallel,
+                        |m: &mut RewriterConfig| &mut m.auto_parallel,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "fail_on_optimizer_errors",
-                    |m: &RewriterConfig| { &m.fail_on_optimizer_errors },
-                    |m: &mut RewriterConfig| { &mut m.fail_on_optimizer_errors },
+                    |m: &RewriterConfig| &m.fail_on_optimizer_errors,
+                    |m: &mut RewriterConfig| &mut m.fail_on_optimizer_errors,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<ScopedAllocatorOptions>>(
-                    "scoped_allocator_opts",
-                    |m: &RewriterConfig| { &m.scoped_allocator_opts },
-                    |m: &mut RewriterConfig| { &mut m.scoped_allocator_opts },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "optimizers",
-                    |m: &RewriterConfig| { &m.optimizers },
-                    |m: &mut RewriterConfig| { &mut m.optimizers },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<RewriterConfig_CustomGraphOptimizer>>(
-                    "custom_optimizers",
-                    |m: &RewriterConfig| { &m.custom_optimizers },
-                    |m: &mut RewriterConfig| { &mut m.custom_optimizers },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::verifier_config::VerifierConfig>>(
-                    "inter_optimizer_verifier_config",
-                    |m: &RewriterConfig| { &m.inter_optimizer_verifier_config },
-                    |m: &mut RewriterConfig| { &mut m.inter_optimizer_verifier_config },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::verifier_config::VerifierConfig>>(
-                    "post_optimization_verifier_config",
-                    |m: &RewriterConfig| { &m.post_optimization_verifier_config },
-                    |m: &mut RewriterConfig| { &mut m.post_optimization_verifier_config },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<ScopedAllocatorOptions>,
+                    >(
+                        "scoped_allocator_opts",
+                        |m: &RewriterConfig| &m.scoped_allocator_opts,
+                        |m: &mut RewriterConfig| &mut m.scoped_allocator_opts,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(
+                        "optimizers",
+                        |m: &RewriterConfig| &m.optimizers,
+                        |m: &mut RewriterConfig| &mut m.optimizers,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<RewriterConfig_CustomGraphOptimizer>,
+                    >(
+                        "custom_optimizers",
+                        |m: &RewriterConfig| &m.custom_optimizers,
+                        |m: &mut RewriterConfig| &mut m.custom_optimizers,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::verifier_config::VerifierConfig,
+                        >,
+                    >(
+                        "inter_optimizer_verifier_config",
+                        |m: &RewriterConfig| &m.inter_optimizer_verifier_config,
+                        |m: &mut RewriterConfig| &mut m.inter_optimizer_verifier_config,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::verifier_config::VerifierConfig,
+                        >,
+                    >(
+                        "post_optimization_verifier_config",
+                        |m: &RewriterConfig| &m.post_optimization_verifier_config,
+                        |m: &mut RewriterConfig| &mut m.post_optimization_verifier_config,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<RewriterConfig>(
                     "RewriterConfig",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1467,9 +1734,7 @@ impl ::protobuf::Message for RewriterConfig {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const RewriterConfig,
         };
-        unsafe {
-            instance.get(RewriterConfig::new)
-        }
+        unsafe { instance.get(RewriterConfig::new) }
     }
 }
 
@@ -1518,11 +1783,12 @@ impl ::protobuf::reflect::ProtobufValue for RewriterConfig {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct RewriterConfig_CustomGraphOptimizer {
     // message fields
     pub name: ::std::string::String,
-    pub parameter_map: ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>,
+    pub parameter_map:
+        ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -1540,7 +1806,6 @@ impl RewriterConfig_CustomGraphOptimizer {
     }
 
     // string name = 1;
-
 
     pub fn get_name(&self) -> &str {
         &self.name
@@ -1567,8 +1832,9 @@ impl RewriterConfig_CustomGraphOptimizer {
 
     // repeated .tensorflow.RewriterConfig.CustomGraphOptimizer.ParameterMapEntry parameter_map = 2;
 
-
-    pub fn get_parameter_map(&self) -> &::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
+    pub fn get_parameter_map(
+        &self,
+    ) -> &::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
         &self.parameter_map
     }
     pub fn clear_parameter_map(&mut self) {
@@ -1576,17 +1842,24 @@ impl RewriterConfig_CustomGraphOptimizer {
     }
 
     // Param is passed by value, moved
-    pub fn set_parameter_map(&mut self, v: ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>) {
+    pub fn set_parameter_map(
+        &mut self,
+        v: ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue>,
+    ) {
         self.parameter_map = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_parameter_map(&mut self) -> &mut ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
+    pub fn mut_parameter_map(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
         &mut self.parameter_map
     }
 
     // Take field
-    pub fn take_parameter_map(&mut self) -> ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
+    pub fn take_parameter_map(
+        &mut self,
+    ) -> ::std::collections::HashMap<::std::string::String, super::attr_value::AttrValue> {
         ::std::mem::replace(&mut self.parameter_map, ::std::collections::HashMap::new())
     }
 }
@@ -1596,19 +1869,34 @@ impl ::protobuf::Message for RewriterConfig_CustomGraphOptimizer {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(wire_type, is, &mut self.parameter_map)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeString,
+                        ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>,
+                    >(wire_type, is, &mut self.parameter_map)?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1621,17 +1909,26 @@ impl ::protobuf::Message for RewriterConfig_CustomGraphOptimizer {
         if !self.name.is_empty() {
             my_size += ::protobuf::rt::string_size(1, &self.name);
         }
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(2, &self.parameter_map);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>,
+        >(2, &self.parameter_map);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.name.is_empty() {
             os.write_string(1, &self.name)?;
         }
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(2, &self.parameter_map, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeString,
+            ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>,
+        >(2, &self.parameter_map, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1667,40 +1964,47 @@ impl ::protobuf::Message for RewriterConfig_CustomGraphOptimizer {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "name",
-                    |m: &RewriterConfig_CustomGraphOptimizer| { &m.name },
-                    |m: &mut RewriterConfig_CustomGraphOptimizer| { &mut m.name },
+                    |m: &RewriterConfig_CustomGraphOptimizer| &m.name,
+                    |m: &mut RewriterConfig_CustomGraphOptimizer| &mut m.name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeString, ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                    ::protobuf::types::ProtobufTypeMessage<super::attr_value::AttrValue>,
+                >(
                     "parameter_map",
-                    |m: &RewriterConfig_CustomGraphOptimizer| { &m.parameter_map },
-                    |m: &mut RewriterConfig_CustomGraphOptimizer| { &mut m.parameter_map },
+                    |m: &RewriterConfig_CustomGraphOptimizer| &m.parameter_map,
+                    |m: &mut RewriterConfig_CustomGraphOptimizer| &mut m.parameter_map,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<RewriterConfig_CustomGraphOptimizer>(
                     "RewriterConfig_CustomGraphOptimizer",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static RewriterConfig_CustomGraphOptimizer {
-        static mut instance: ::protobuf::lazy::Lazy<RewriterConfig_CustomGraphOptimizer> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const RewriterConfig_CustomGraphOptimizer,
-        };
-        unsafe {
-            instance.get(RewriterConfig_CustomGraphOptimizer::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<RewriterConfig_CustomGraphOptimizer> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const RewriterConfig_CustomGraphOptimizer,
+            };
+        unsafe { instance.get(RewriterConfig_CustomGraphOptimizer::new) }
     }
 }
 
@@ -1724,7 +2028,7 @@ impl ::protobuf::reflect::ProtobufValue for RewriterConfig_CustomGraphOptimizer 
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum RewriterConfig_Toggle {
     DEFAULT = 0,
     ON = 1,
@@ -1743,7 +2047,7 @@ impl ::protobuf::ProtobufEnum for RewriterConfig_Toggle {
             1 => ::std::option::Option::Some(RewriterConfig_Toggle::ON),
             2 => ::std::option::Option::Some(RewriterConfig_Toggle::OFF),
             3 => ::std::option::Option::Some(RewriterConfig_Toggle::AGGRESSIVE),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -1758,20 +2062,23 @@ impl ::protobuf::ProtobufEnum for RewriterConfig_Toggle {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("RewriterConfig_Toggle", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "RewriterConfig_Toggle",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for RewriterConfig_Toggle {
-}
+impl ::std::marker::Copy for RewriterConfig_Toggle {}
 
 impl ::std::default::Default for RewriterConfig_Toggle {
     fn default() -> Self {
@@ -1785,7 +2092,7 @@ impl ::protobuf::reflect::ProtobufValue for RewriterConfig_Toggle {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum RewriterConfig_NumIterationsType {
     DEFAULT_NUM_ITERS = 0,
     ONE = 1,
@@ -1802,7 +2109,7 @@ impl ::protobuf::ProtobufEnum for RewriterConfig_NumIterationsType {
             0 => ::std::option::Option::Some(RewriterConfig_NumIterationsType::DEFAULT_NUM_ITERS),
             1 => ::std::option::Option::Some(RewriterConfig_NumIterationsType::ONE),
             2 => ::std::option::Option::Some(RewriterConfig_NumIterationsType::TWO),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -1816,20 +2123,23 @@ impl ::protobuf::ProtobufEnum for RewriterConfig_NumIterationsType {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("RewriterConfig_NumIterationsType", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "RewriterConfig_NumIterationsType",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for RewriterConfig_NumIterationsType {
-}
+impl ::std::marker::Copy for RewriterConfig_NumIterationsType {}
 
 impl ::std::default::Default for RewriterConfig_NumIterationsType {
     fn default() -> Self {
@@ -1843,7 +2153,7 @@ impl ::protobuf::reflect::ProtobufValue for RewriterConfig_NumIterationsType {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum RewriterConfig_MemOptType {
     DEFAULT_MEM_OPT = 0,
     NO_MEM_OPT = 1,
@@ -1868,7 +2178,7 @@ impl ::protobuf::ProtobufEnum for RewriterConfig_MemOptType {
             5 => ::std::option::Option::Some(RewriterConfig_MemOptType::RECOMPUTATION_HEURISTICS),
             6 => ::std::option::Option::Some(RewriterConfig_MemOptType::SCHEDULING_HEURISTICS),
             3 => ::std::option::Option::Some(RewriterConfig_MemOptType::HEURISTICS),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -1886,20 +2196,23 @@ impl ::protobuf::ProtobufEnum for RewriterConfig_MemOptType {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("RewriterConfig_MemOptType", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "RewriterConfig_MemOptType",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for RewriterConfig_MemOptType {
-}
+impl ::std::marker::Copy for RewriterConfig_MemOptType {}
 
 impl ::std::default::Default for RewriterConfig_MemOptType {
     fn default() -> Self {
@@ -1975,7 +2288,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     \xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -1985,9 +2300,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

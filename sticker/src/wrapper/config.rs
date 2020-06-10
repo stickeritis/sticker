@@ -9,7 +9,6 @@ use finalfusion::prelude::*;
 use numberer::Numberer;
 use serde_derive::{Deserialize, Serialize};
 use sticker_encoders::layer::Layer;
-use toml;
 
 use crate::serialization::CborRead;
 use crate::tensorflow::ModelConfig;

@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct JobDef {
     // message fields
     pub name: ::std::string::String,
@@ -48,7 +48,6 @@ impl JobDef {
     }
 
     // string name = 1;
-
 
     pub fn get_name(&self) -> &str {
         &self.name
@@ -74,7 +73,6 @@ impl JobDef {
     }
 
     // repeated .tensorflow.JobDef.TasksEntry tasks = 2;
-
 
     pub fn get_tasks(&self) -> &::std::collections::HashMap<i32, ::std::string::String> {
         &self.tasks
@@ -104,19 +102,34 @@ impl ::protobuf::Message for JobDef {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.name,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeInt32, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.tasks)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeInt32,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(wire_type, is, &mut self.tasks)?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -129,17 +142,26 @@ impl ::protobuf::Message for JobDef {
         if !self.name.is_empty() {
             my_size += ::protobuf::rt::string_size(1, &self.name);
         }
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeInt32, ::protobuf::types::ProtobufTypeString>(2, &self.tasks);
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeInt32,
+            ::protobuf::types::ProtobufTypeString,
+        >(2, &self.tasks);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.name.is_empty() {
             os.write_string(1, &self.name)?;
         }
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeInt32, ::protobuf::types::ProtobufTypeString>(2, &self.tasks, os)?;
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeInt32,
+            ::protobuf::types::ProtobufTypeString,
+        >(2, &self.tasks, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -175,27 +197,33 @@ impl ::protobuf::Message for JobDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
-                    "name",
-                    |m: &JobDef| { &m.name },
-                    |m: &mut JobDef| { &mut m.name },
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
+                    "name", |m: &JobDef| &m.name, |m: &mut JobDef| &mut m.name
                 ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeInt32, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "tasks",
-                    |m: &JobDef| { &m.tasks },
-                    |m: &mut JobDef| { &mut m.tasks },
+                    |m: &JobDef| &m.tasks,
+                    |m: &mut JobDef| &mut m.tasks,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<JobDef>(
                     "JobDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -206,9 +234,7 @@ impl ::protobuf::Message for JobDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const JobDef,
         };
-        unsafe {
-            instance.get(JobDef::new)
-        }
+        unsafe { instance.get(JobDef::new) }
     }
 }
 
@@ -232,7 +258,7 @@ impl ::protobuf::reflect::ProtobufValue for JobDef {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct ClusterDef {
     // message fields
     pub job: ::protobuf::RepeatedField<JobDef>,
@@ -253,7 +279,6 @@ impl ClusterDef {
     }
 
     // repeated .tensorflow.JobDef job = 1;
-
 
     pub fn get_job(&self) -> &[JobDef] {
         &self.job
@@ -284,20 +309,28 @@ impl ::protobuf::Message for ClusterDef {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.job)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -310,18 +343,21 @@ impl ::protobuf::Message for ClusterDef {
         for value in &self.job {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.job {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -357,22 +393,28 @@ impl ::protobuf::Message for ClusterDef {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<JobDef>>(
-                    "job",
-                    |m: &ClusterDef| { &m.job },
-                    |m: &mut ClusterDef| { &mut m.job },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<JobDef>,
+                    >(
+                        "job",
+                        |m: &ClusterDef| &m.job,
+                        |m: &mut ClusterDef| &mut m.job,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<ClusterDef>(
                     "ClusterDef",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -383,9 +425,7 @@ impl ::protobuf::Message for ClusterDef {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const ClusterDef,
         };
-        unsafe {
-            instance.get(ClusterDef::new)
-        }
+        unsafe { instance.get(ClusterDef::new) }
     }
 }
 
@@ -419,7 +459,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     /tensorflow/go/core/protobuf\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -429,9 +471,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }
