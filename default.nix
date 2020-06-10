@@ -6,11 +6,6 @@ let
   crateOverrides = with pkgs; defaultCrateOverrides // {
     sticker-utils = attrs: {
       src = lib.sourceFilesBySuffices ./sticker-utils [".rs"];
-
-      postInstall = ''
-        rm -rf $out/lib
-        rm $out/bin/*.d
-      '';
     };
 
     tensorflow-sys = attrs: {
