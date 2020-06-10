@@ -14,7 +14,7 @@ license-file = "../LICENSE.md"
 [dependencies]
 conllx = "0.12.1"
 failure = "0.1"
-finalfusion = "0.11"
+finalfusion = "0.12"
 itertools = "0.8"
 ndarray = "0.13"
 ndarray-tensorflow = "0.3"
