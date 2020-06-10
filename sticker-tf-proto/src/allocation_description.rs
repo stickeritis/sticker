@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct AllocationDescription {
     // message fields
     pub requested_bytes: i64,
@@ -53,7 +53,6 @@ impl AllocationDescription {
 
     // int64 requested_bytes = 1;
 
-
     pub fn get_requested_bytes(&self) -> i64 {
         self.requested_bytes
     }
@@ -68,7 +67,6 @@ impl AllocationDescription {
 
     // int64 allocated_bytes = 2;
 
-
     pub fn get_allocated_bytes(&self) -> i64 {
         self.allocated_bytes
     }
@@ -82,7 +80,6 @@ impl AllocationDescription {
     }
 
     // string allocator_name = 3;
-
 
     pub fn get_allocator_name(&self) -> &str {
         &self.allocator_name
@@ -109,7 +106,6 @@ impl AllocationDescription {
 
     // int64 allocation_id = 4;
 
-
     pub fn get_allocation_id(&self) -> i64 {
         self.allocation_id
     }
@@ -124,7 +120,6 @@ impl AllocationDescription {
 
     // bool has_single_reference = 5;
 
-
     pub fn get_has_single_reference(&self) -> bool {
         self.has_single_reference
     }
@@ -138,7 +133,6 @@ impl AllocationDescription {
     }
 
     // uint64 ptr = 6;
-
 
     pub fn get_ptr(&self) -> u64 {
         self.ptr
@@ -158,51 +152,73 @@ impl ::protobuf::Message for AllocationDescription {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.requested_bytes = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.allocated_bytes = tmp;
-                },
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.allocator_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.allocator_name,
+                    )?;
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.allocation_id = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_bool()?;
                     self.has_single_reference = tmp;
-                },
+                }
                 6 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_uint64()?;
                     self.ptr = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -213,29 +229,45 @@ impl ::protobuf::Message for AllocationDescription {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.requested_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.requested_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.requested_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.allocated_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.allocated_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.allocated_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if !self.allocator_name.is_empty() {
             my_size += ::protobuf::rt::string_size(3, &self.allocator_name);
         }
         if self.allocation_id != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.allocation_id, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.allocation_id,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.has_single_reference != false {
             my_size += 2;
         }
         if self.ptr != 0 {
-            my_size += ::protobuf::rt::value_size(6, self.ptr, ::protobuf::wire_format::WireTypeVarint);
+            my_size +=
+                ::protobuf::rt::value_size(6, self.ptr, ::protobuf::wire_format::WireTypeVarint);
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.requested_bytes != 0 {
             os.write_int64(1, self.requested_bytes)?;
         }
@@ -289,60 +321,78 @@ impl ::protobuf::Message for AllocationDescription {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "requested_bytes",
-                    |m: &AllocationDescription| { &m.requested_bytes },
-                    |m: &mut AllocationDescription| { &mut m.requested_bytes },
+                    |m: &AllocationDescription| &m.requested_bytes,
+                    |m: &mut AllocationDescription| &mut m.requested_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "allocated_bytes",
-                    |m: &AllocationDescription| { &m.allocated_bytes },
-                    |m: &mut AllocationDescription| { &mut m.allocated_bytes },
+                    |m: &AllocationDescription| &m.allocated_bytes,
+                    |m: &mut AllocationDescription| &mut m.allocated_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "allocator_name",
-                    |m: &AllocationDescription| { &m.allocator_name },
-                    |m: &mut AllocationDescription| { &mut m.allocator_name },
+                    |m: &AllocationDescription| &m.allocator_name,
+                    |m: &mut AllocationDescription| &mut m.allocator_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "allocation_id",
-                    |m: &AllocationDescription| { &m.allocation_id },
-                    |m: &mut AllocationDescription| { &mut m.allocation_id },
+                    |m: &AllocationDescription| &m.allocation_id,
+                    |m: &mut AllocationDescription| &mut m.allocation_id,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeBool>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeBool,
+                >(
                     "has_single_reference",
-                    |m: &AllocationDescription| { &m.has_single_reference },
-                    |m: &mut AllocationDescription| { &mut m.has_single_reference },
+                    |m: &AllocationDescription| &m.has_single_reference,
+                    |m: &mut AllocationDescription| &mut m.has_single_reference,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeUint64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeUint64,
+                >(
                     "ptr",
-                    |m: &AllocationDescription| { &m.ptr },
-                    |m: &mut AllocationDescription| { &mut m.ptr },
+                    |m: &AllocationDescription| &m.ptr,
+                    |m: &mut AllocationDescription| &mut m.ptr,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<AllocationDescription>(
                     "AllocationDescription",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
     }
 
     fn default_instance() -> &'static AllocationDescription {
-        static mut instance: ::protobuf::lazy::Lazy<AllocationDescription> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const AllocationDescription,
-        };
-        unsafe {
-            instance.get(AllocationDescription::new)
-        }
+        static mut instance: ::protobuf::lazy::Lazy<AllocationDescription> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const AllocationDescription,
+            };
+        unsafe { instance.get(AllocationDescription::new) }
     }
 }
 
@@ -382,7 +432,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     w/tensorflow/tensorflow/go/core/framework\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -392,9 +444,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

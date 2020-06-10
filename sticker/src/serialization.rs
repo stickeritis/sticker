@@ -6,8 +6,6 @@ use failure::Error;
 use numberer::Numberer;
 use sticker_encoders::deprel::{DependencyEncoding, RelativePOS, RelativePosition};
 
-use serde_cbor;
-
 pub trait CborRead
 where
     Self: Sized,

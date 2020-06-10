@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct VerifierConfig {
     // message fields
     pub verification_timeout_in_ms: i64,
@@ -49,7 +49,6 @@ impl VerifierConfig {
 
     // int64 verification_timeout_in_ms = 1;
 
-
     pub fn get_verification_timeout_in_ms(&self) -> i64 {
         self.verification_timeout_in_ms
     }
@@ -63,7 +62,6 @@ impl VerifierConfig {
     }
 
     // .tensorflow.VerifierConfig.Toggle structure_verifier = 2;
-
 
     pub fn get_structure_verifier(&self) -> VerifierConfig_Toggle {
         self.structure_verifier
@@ -83,23 +81,37 @@ impl ::protobuf::Message for VerifierConfig {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.verification_timeout_in_ms = tmp;
-                },
-                2 => {
-                    ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(wire_type, is, &mut self.structure_verifier, 2, &mut self.unknown_fields)?
-                },
+                }
+                2 => ::protobuf::rt::read_proto3_enum_with_unknown_fields_into(
+                    wire_type,
+                    is,
+                    &mut self.structure_verifier,
+                    2,
+                    &mut self.unknown_fields,
+                )?,
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -110,7 +122,11 @@ impl ::protobuf::Message for VerifierConfig {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.verification_timeout_in_ms != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.verification_timeout_in_ms, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.verification_timeout_in_ms,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.structure_verifier != VerifierConfig_Toggle::DEFAULT {
             my_size += ::protobuf::rt::enum_size(2, self.structure_verifier);
@@ -120,7 +136,10 @@ impl ::protobuf::Message for VerifierConfig {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.verification_timeout_in_ms != 0 {
             os.write_int64(1, self.verification_timeout_in_ms)?;
         }
@@ -162,27 +181,34 @@ impl ::protobuf::Message for VerifierConfig {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "verification_timeout_in_ms",
-                    |m: &VerifierConfig| { &m.verification_timeout_in_ms },
-                    |m: &mut VerifierConfig| { &mut m.verification_timeout_in_ms },
+                    |m: &VerifierConfig| &m.verification_timeout_in_ms,
+                    |m: &mut VerifierConfig| &mut m.verification_timeout_in_ms,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeEnum<VerifierConfig_Toggle>>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeEnum<VerifierConfig_Toggle>,
+                >(
                     "structure_verifier",
-                    |m: &VerifierConfig| { &m.structure_verifier },
-                    |m: &mut VerifierConfig| { &mut m.structure_verifier },
+                    |m: &VerifierConfig| &m.structure_verifier,
+                    |m: &mut VerifierConfig| &mut m.structure_verifier,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<VerifierConfig>(
                     "VerifierConfig",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -193,9 +219,7 @@ impl ::protobuf::Message for VerifierConfig {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const VerifierConfig,
         };
-        unsafe {
-            instance.get(VerifierConfig::new)
-        }
+        unsafe { instance.get(VerifierConfig::new) }
     }
 }
 
@@ -219,7 +243,7 @@ impl ::protobuf::reflect::ProtobufValue for VerifierConfig {
     }
 }
 
-#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[derive(Clone, PartialEq, Eq, Debug, Hash)]
 pub enum VerifierConfig_Toggle {
     DEFAULT = 0,
     ON = 1,
@@ -236,7 +260,7 @@ impl ::protobuf::ProtobufEnum for VerifierConfig_Toggle {
             0 => ::std::option::Option::Some(VerifierConfig_Toggle::DEFAULT),
             1 => ::std::option::Option::Some(VerifierConfig_Toggle::ON),
             2 => ::std::option::Option::Some(VerifierConfig_Toggle::OFF),
-            _ => ::std::option::Option::None
+            _ => ::std::option::Option::None,
         }
     }
 
@@ -250,20 +274,23 @@ impl ::protobuf::ProtobufEnum for VerifierConfig_Toggle {
     }
 
     fn enum_descriptor_static() -> &'static ::protobuf::reflect::EnumDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::EnumDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::EnumDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
-                ::protobuf::reflect::EnumDescriptor::new("VerifierConfig_Toggle", file_descriptor_proto())
+                ::protobuf::reflect::EnumDescriptor::new(
+                    "VerifierConfig_Toggle",
+                    file_descriptor_proto(),
+                )
             })
         }
     }
 }
 
-impl ::std::marker::Copy for VerifierConfig_Toggle {
-}
+impl ::std::marker::Copy for VerifierConfig_Toggle {}
 
 impl ::std::default::Default for VerifierConfig_Toggle {
     fn default() -> Self {
@@ -287,7 +314,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     nfigProtosP\x01\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -297,9 +326,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }

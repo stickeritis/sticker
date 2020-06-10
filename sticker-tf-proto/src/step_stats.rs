@@ -26,7 +26,7 @@ use protobuf::ProtobufEnum as ProtobufEnum_imported_for_functions;
 /// of protobuf runtime.
 const _PROTOBUF_VERSION_CHECK: () = ::protobuf::VERSION_2_8_0;
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct AllocationRecord {
     // message fields
     pub alloc_micros: i64,
@@ -49,7 +49,6 @@ impl AllocationRecord {
 
     // int64 alloc_micros = 1;
 
-
     pub fn get_alloc_micros(&self) -> i64 {
         self.alloc_micros
     }
@@ -63,7 +62,6 @@ impl AllocationRecord {
     }
 
     // int64 alloc_bytes = 2;
-
 
     pub fn get_alloc_bytes(&self) -> i64 {
         self.alloc_bytes
@@ -83,27 +81,39 @@ impl ::protobuf::Message for AllocationRecord {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.alloc_micros = tmp;
-                },
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.alloc_bytes = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -114,17 +124,28 @@ impl ::protobuf::Message for AllocationRecord {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.alloc_micros != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.alloc_micros, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.alloc_micros,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.alloc_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.alloc_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.alloc_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.alloc_micros != 0 {
             os.write_int64(1, self.alloc_micros)?;
         }
@@ -166,27 +187,34 @@ impl ::protobuf::Message for AllocationRecord {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "alloc_micros",
-                    |m: &AllocationRecord| { &m.alloc_micros },
-                    |m: &mut AllocationRecord| { &mut m.alloc_micros },
+                    |m: &AllocationRecord| &m.alloc_micros,
+                    |m: &mut AllocationRecord| &mut m.alloc_micros,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "alloc_bytes",
-                    |m: &AllocationRecord| { &m.alloc_bytes },
-                    |m: &mut AllocationRecord| { &mut m.alloc_bytes },
+                    |m: &AllocationRecord| &m.alloc_bytes,
+                    |m: &mut AllocationRecord| &mut m.alloc_bytes,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<AllocationRecord>(
                     "AllocationRecord",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -197,9 +225,7 @@ impl ::protobuf::Message for AllocationRecord {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const AllocationRecord,
         };
-        unsafe {
-            instance.get(AllocationRecord::new)
-        }
+        unsafe { instance.get(AllocationRecord::new) }
     }
 }
 
@@ -223,7 +249,7 @@ impl ::protobuf::reflect::ProtobufValue for AllocationRecord {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct AllocatorMemoryUsed {
     // message fields
     pub allocator_name: ::std::string::String,
@@ -250,7 +276,6 @@ impl AllocatorMemoryUsed {
 
     // string allocator_name = 1;
 
-
     pub fn get_allocator_name(&self) -> &str {
         &self.allocator_name
     }
@@ -276,7 +301,6 @@ impl AllocatorMemoryUsed {
 
     // int64 total_bytes = 2;
 
-
     pub fn get_total_bytes(&self) -> i64 {
         self.total_bytes
     }
@@ -290,7 +314,6 @@ impl AllocatorMemoryUsed {
     }
 
     // int64 peak_bytes = 3;
-
 
     pub fn get_peak_bytes(&self) -> i64 {
         self.peak_bytes
@@ -306,7 +329,6 @@ impl AllocatorMemoryUsed {
 
     // int64 live_bytes = 4;
 
-
     pub fn get_live_bytes(&self) -> i64 {
         self.live_bytes
     }
@@ -320,7 +342,6 @@ impl AllocatorMemoryUsed {
     }
 
     // repeated .tensorflow.AllocationRecord allocation_records = 6;
-
 
     pub fn get_allocation_records(&self) -> &[AllocationRecord] {
         &self.allocation_records
@@ -341,11 +362,13 @@ impl AllocatorMemoryUsed {
 
     // Take field
     pub fn take_allocation_records(&mut self) -> ::protobuf::RepeatedField<AllocationRecord> {
-        ::std::mem::replace(&mut self.allocation_records, ::protobuf::RepeatedField::new())
+        ::std::mem::replace(
+            &mut self.allocation_records,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // int64 allocator_bytes_in_use = 5;
-
 
     pub fn get_allocator_bytes_in_use(&self) -> i64 {
         self.allocator_bytes_in_use
@@ -366,51 +389,75 @@ impl ::protobuf::Message for AllocatorMemoryUsed {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.allocator_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.allocator_name,
+                    )?;
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.total_bytes = tmp;
-                },
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.peak_bytes = tmp;
-                },
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.live_bytes = tmp;
-                },
+                }
                 6 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.allocation_records)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.allocation_records,
+                    )?;
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.allocator_bytes_in_use = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -424,27 +471,46 @@ impl ::protobuf::Message for AllocatorMemoryUsed {
             my_size += ::protobuf::rt::string_size(1, &self.allocator_name);
         }
         if self.total_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.total_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.total_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.peak_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.peak_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.peak_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.live_bytes != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.live_bytes, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.live_bytes,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.allocation_records {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if self.allocator_bytes_in_use != 0 {
-            my_size += ::protobuf::rt::value_size(5, self.allocator_bytes_in_use, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                5,
+                self.allocator_bytes_in_use,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.allocator_name.is_empty() {
             os.write_string(1, &self.allocator_name)?;
         }
@@ -461,7 +527,7 @@ impl ::protobuf::Message for AllocatorMemoryUsed {
             os.write_tag(6, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if self.allocator_bytes_in_use != 0 {
             os.write_int64(5, self.allocator_bytes_in_use)?;
         }
@@ -500,47 +566,68 @@ impl ::protobuf::Message for AllocatorMemoryUsed {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "allocator_name",
-                    |m: &AllocatorMemoryUsed| { &m.allocator_name },
-                    |m: &mut AllocatorMemoryUsed| { &mut m.allocator_name },
+                    |m: &AllocatorMemoryUsed| &m.allocator_name,
+                    |m: &mut AllocatorMemoryUsed| &mut m.allocator_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "total_bytes",
-                    |m: &AllocatorMemoryUsed| { &m.total_bytes },
-                    |m: &mut AllocatorMemoryUsed| { &mut m.total_bytes },
+                    |m: &AllocatorMemoryUsed| &m.total_bytes,
+                    |m: &mut AllocatorMemoryUsed| &mut m.total_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "peak_bytes",
-                    |m: &AllocatorMemoryUsed| { &m.peak_bytes },
-                    |m: &mut AllocatorMemoryUsed| { &mut m.peak_bytes },
+                    |m: &AllocatorMemoryUsed| &m.peak_bytes,
+                    |m: &mut AllocatorMemoryUsed| &mut m.peak_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "live_bytes",
-                    |m: &AllocatorMemoryUsed| { &m.live_bytes },
-                    |m: &mut AllocatorMemoryUsed| { &mut m.live_bytes },
+                    |m: &AllocatorMemoryUsed| &m.live_bytes,
+                    |m: &mut AllocatorMemoryUsed| &mut m.live_bytes,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<AllocationRecord>>(
-                    "allocation_records",
-                    |m: &AllocatorMemoryUsed| { &m.allocation_records },
-                    |m: &mut AllocatorMemoryUsed| { &mut m.allocation_records },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<AllocationRecord>,
+                    >(
+                        "allocation_records",
+                        |m: &AllocatorMemoryUsed| &m.allocation_records,
+                        |m: &mut AllocatorMemoryUsed| &mut m.allocation_records,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "allocator_bytes_in_use",
-                    |m: &AllocatorMemoryUsed| { &m.allocator_bytes_in_use },
-                    |m: &mut AllocatorMemoryUsed| { &mut m.allocator_bytes_in_use },
+                    |m: &AllocatorMemoryUsed| &m.allocator_bytes_in_use,
+                    |m: &mut AllocatorMemoryUsed| &mut m.allocator_bytes_in_use,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<AllocatorMemoryUsed>(
                     "AllocatorMemoryUsed",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -551,9 +638,7 @@ impl ::protobuf::Message for AllocatorMemoryUsed {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const AllocatorMemoryUsed,
         };
-        unsafe {
-            instance.get(AllocatorMemoryUsed::new)
-        }
+        unsafe { instance.get(AllocatorMemoryUsed::new) }
     }
 }
 
@@ -581,11 +666,12 @@ impl ::protobuf::reflect::ProtobufValue for AllocatorMemoryUsed {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct NodeOutput {
     // message fields
     pub slot: i32,
-    pub tensor_description: ::protobuf::SingularPtrField<super::tensor_description::TensorDescription>,
+    pub tensor_description:
+        ::protobuf::SingularPtrField<super::tensor_description::TensorDescription>,
     // special fields
     pub unknown_fields: ::protobuf::UnknownFields,
     pub cached_size: ::protobuf::CachedSize,
@@ -604,7 +690,6 @@ impl NodeOutput {
 
     // int32 slot = 1;
 
-
     pub fn get_slot(&self) -> i32 {
         self.slot
     }
@@ -619,9 +704,10 @@ impl NodeOutput {
 
     // .tensorflow.TensorDescription tensor_description = 3;
 
-
     pub fn get_tensor_description(&self) -> &super::tensor_description::TensorDescription {
-        self.tensor_description.as_ref().unwrap_or_else(|| super::tensor_description::TensorDescription::default_instance())
+        self.tensor_description
+            .as_ref()
+            .unwrap_or_else(|| super::tensor_description::TensorDescription::default_instance())
     }
     pub fn clear_tensor_description(&mut self) {
         self.tensor_description.clear();
@@ -647,7 +733,9 @@ impl NodeOutput {
 
     // Take field
     pub fn take_tensor_description(&mut self) -> super::tensor_description::TensorDescription {
-        self.tensor_description.take().unwrap_or_else(|| super::tensor_description::TensorDescription::new())
+        self.tensor_description
+            .take()
+            .unwrap_or_else(|| super::tensor_description::TensorDescription::new())
     }
 }
 
@@ -657,27 +745,41 @@ impl ::protobuf::Message for NodeOutput {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int32()?;
                     self.slot = tmp;
-                },
+                }
                 3 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.tensor_description)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.tensor_description,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -688,7 +790,8 @@ impl ::protobuf::Message for NodeOutput {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.slot != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.slot, ::protobuf::wire_format::WireTypeVarint);
+            my_size +=
+                ::protobuf::rt::value_size(1, self.slot, ::protobuf::wire_format::WireTypeVarint);
         }
         if let Some(ref v) = self.tensor_description.as_ref() {
             let len = v.compute_size();
@@ -699,7 +802,10 @@ impl ::protobuf::Message for NodeOutput {
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.slot != 0 {
             os.write_int32(1, self.slot)?;
         }
@@ -743,27 +849,38 @@ impl ::protobuf::Message for NodeOutput {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt32,
+                >(
                     "slot",
-                    |m: &NodeOutput| { &m.slot },
-                    |m: &mut NodeOutput| { &mut m.slot },
+                    |m: &NodeOutput| &m.slot,
+                    |m: &mut NodeOutput| &mut m.slot,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::tensor_description::TensorDescription>>(
-                    "tensor_description",
-                    |m: &NodeOutput| { &m.tensor_description },
-                    |m: &mut NodeOutput| { &mut m.tensor_description },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::tensor_description::TensorDescription,
+                        >,
+                    >(
+                        "tensor_description",
+                        |m: &NodeOutput| &m.tensor_description,
+                        |m: &mut NodeOutput| &mut m.tensor_description,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<NodeOutput>(
                     "NodeOutput",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -774,9 +891,7 @@ impl ::protobuf::Message for NodeOutput {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const NodeOutput,
         };
-        unsafe {
-            instance.get(NodeOutput::new)
-        }
+        unsafe { instance.get(NodeOutput::new) }
     }
 }
 
@@ -800,7 +915,7 @@ impl ::protobuf::reflect::ProtobufValue for NodeOutput {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct MemoryStats {
     // message fields
     pub temp_memory_size: i64,
@@ -827,7 +942,6 @@ impl MemoryStats {
 
     // int64 temp_memory_size = 1;
 
-
     pub fn get_temp_memory_size(&self) -> i64 {
         self.temp_memory_size
     }
@@ -842,7 +956,6 @@ impl MemoryStats {
 
     // int64 persistent_memory_size = 3;
 
-
     pub fn get_persistent_memory_size(&self) -> i64 {
         self.persistent_memory_size
     }
@@ -856,7 +969,6 @@ impl MemoryStats {
     }
 
     // repeated int64 persistent_tensor_alloc_ids = 5;
-
 
     pub fn get_persistent_tensor_alloc_ids(&self) -> &[i64] {
         &self.persistent_tensor_alloc_ids
@@ -877,11 +989,13 @@ impl MemoryStats {
 
     // Take field
     pub fn take_persistent_tensor_alloc_ids(&mut self) -> ::std::vec::Vec<i64> {
-        ::std::mem::replace(&mut self.persistent_tensor_alloc_ids, ::std::vec::Vec::new())
+        ::std::mem::replace(
+            &mut self.persistent_tensor_alloc_ids,
+            ::std::vec::Vec::new(),
+        )
     }
 
     // int64 device_temp_memory_size = 2;
-
 
     pub fn get_device_temp_memory_size(&self) -> i64 {
         self.device_temp_memory_size
@@ -897,7 +1011,6 @@ impl MemoryStats {
 
     // int64 device_persistent_memory_size = 4;
 
-
     pub fn get_device_persistent_memory_size(&self) -> i64 {
         self.device_persistent_memory_size
     }
@@ -911,7 +1024,6 @@ impl MemoryStats {
     }
 
     // repeated int64 device_persistent_tensor_alloc_ids = 6;
-
 
     pub fn get_device_persistent_tensor_alloc_ids(&self) -> &[i64] {
         &self.device_persistent_tensor_alloc_ids
@@ -932,7 +1044,10 @@ impl MemoryStats {
 
     // Take field
     pub fn take_device_persistent_tensor_alloc_ids(&mut self) -> ::std::vec::Vec<i64> {
-        ::std::mem::replace(&mut self.device_persistent_tensor_alloc_ids, ::std::vec::Vec::new())
+        ::std::mem::replace(
+            &mut self.device_persistent_tensor_alloc_ids,
+            ::std::vec::Vec::new(),
+        )
     }
 }
 
@@ -941,47 +1056,71 @@ impl ::protobuf::Message for MemoryStats {
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.temp_memory_size = tmp;
-                },
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.persistent_memory_size = tmp;
-                },
+                }
                 5 => {
-                    ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.persistent_tensor_alloc_ids)?;
-                },
+                    ::protobuf::rt::read_repeated_int64_into(
+                        wire_type,
+                        is,
+                        &mut self.persistent_tensor_alloc_ids,
+                    )?;
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.device_temp_memory_size = tmp;
-                },
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.device_persistent_memory_size = tmp;
-                },
+                }
                 6 => {
-                    ::protobuf::rt::read_repeated_int64_into(wire_type, is, &mut self.device_persistent_tensor_alloc_ids)?;
-                },
+                    ::protobuf::rt::read_repeated_int64_into(
+                        wire_type,
+                        is,
+                        &mut self.device_persistent_tensor_alloc_ids,
+                    )?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -992,29 +1131,50 @@ impl ::protobuf::Message for MemoryStats {
     fn compute_size(&self) -> u32 {
         let mut my_size = 0;
         if self.temp_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(1, self.temp_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                1,
+                self.temp_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.persistent_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.persistent_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.persistent_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.persistent_tensor_alloc_ids {
-            my_size += ::protobuf::rt::value_size(5, *value, ::protobuf::wire_format::WireTypeVarint);
-        };
+            my_size +=
+                ::protobuf::rt::value_size(5, *value, ::protobuf::wire_format::WireTypeVarint);
+        }
         if self.device_temp_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.device_temp_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.device_temp_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.device_persistent_memory_size != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.device_persistent_memory_size, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.device_persistent_memory_size,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.device_persistent_tensor_alloc_ids {
-            my_size += ::protobuf::rt::value_size(6, *value, ::protobuf::wire_format::WireTypeVarint);
-        };
+            my_size +=
+                ::protobuf::rt::value_size(6, *value, ::protobuf::wire_format::WireTypeVarint);
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if self.temp_memory_size != 0 {
             os.write_int64(1, self.temp_memory_size)?;
         }
@@ -1023,7 +1183,7 @@ impl ::protobuf::Message for MemoryStats {
         }
         for v in &self.persistent_tensor_alloc_ids {
             os.write_int64(5, *v)?;
-        };
+        }
         if self.device_temp_memory_size != 0 {
             os.write_int64(2, self.device_temp_memory_size)?;
         }
@@ -1032,7 +1192,7 @@ impl ::protobuf::Message for MemoryStats {
         }
         for v in &self.device_persistent_tensor_alloc_ids {
             os.write_int64(6, *v)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -1068,47 +1228,66 @@ impl ::protobuf::Message for MemoryStats {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "temp_memory_size",
-                    |m: &MemoryStats| { &m.temp_memory_size },
-                    |m: &mut MemoryStats| { &mut m.temp_memory_size },
+                    |m: &MemoryStats| &m.temp_memory_size,
+                    |m: &mut MemoryStats| &mut m.temp_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "persistent_memory_size",
-                    |m: &MemoryStats| { &m.persistent_memory_size },
-                    |m: &mut MemoryStats| { &mut m.persistent_memory_size },
+                    |m: &MemoryStats| &m.persistent_memory_size,
+                    |m: &mut MemoryStats| &mut m.persistent_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "persistent_tensor_alloc_ids",
-                    |m: &MemoryStats| { &m.persistent_tensor_alloc_ids },
-                    |m: &mut MemoryStats| { &mut m.persistent_tensor_alloc_ids },
+                    |m: &MemoryStats| &m.persistent_tensor_alloc_ids,
+                    |m: &mut MemoryStats| &mut m.persistent_tensor_alloc_ids,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "device_temp_memory_size",
-                    |m: &MemoryStats| { &m.device_temp_memory_size },
-                    |m: &mut MemoryStats| { &mut m.device_temp_memory_size },
+                    |m: &MemoryStats| &m.device_temp_memory_size,
+                    |m: &mut MemoryStats| &mut m.device_temp_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "device_persistent_memory_size",
-                    |m: &MemoryStats| { &m.device_persistent_memory_size },
-                    |m: &mut MemoryStats| { &mut m.device_persistent_memory_size },
+                    |m: &MemoryStats| &m.device_persistent_memory_size,
+                    |m: &mut MemoryStats| &mut m.device_persistent_memory_size,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_vec_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "device_persistent_tensor_alloc_ids",
-                    |m: &MemoryStats| { &m.device_persistent_tensor_alloc_ids },
-                    |m: &mut MemoryStats| { &mut m.device_persistent_tensor_alloc_ids },
+                    |m: &MemoryStats| &m.device_persistent_tensor_alloc_ids,
+                    |m: &mut MemoryStats| &mut m.device_persistent_tensor_alloc_ids,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<MemoryStats>(
                     "MemoryStats",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1119,9 +1298,7 @@ impl ::protobuf::Message for MemoryStats {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const MemoryStats,
         };
-        unsafe {
-            instance.get(MemoryStats::new)
-        }
+        unsafe { instance.get(MemoryStats::new) }
     }
 }
 
@@ -1149,7 +1326,7 @@ impl ::protobuf::reflect::ProtobufValue for MemoryStats {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct NodeExecStats {
     // message fields
     pub node_name: ::std::string::String,
@@ -1162,7 +1339,8 @@ pub struct NodeExecStats {
     pub timeline_label: ::std::string::String,
     pub scheduled_micros: i64,
     pub thread_id: u32,
-    pub referenced_tensor: ::protobuf::RepeatedField<super::allocation_description::AllocationDescription>,
+    pub referenced_tensor:
+        ::protobuf::RepeatedField<super::allocation_description::AllocationDescription>,
     pub memory_stats: ::protobuf::SingularPtrField<MemoryStats>,
     pub all_start_nanos: i64,
     pub op_start_rel_nanos: i64,
@@ -1186,7 +1364,6 @@ impl NodeExecStats {
     }
 
     // string node_name = 1;
-
 
     pub fn get_node_name(&self) -> &str {
         &self.node_name
@@ -1213,7 +1390,6 @@ impl NodeExecStats {
 
     // int64 all_start_micros = 2;
 
-
     pub fn get_all_start_micros(&self) -> i64 {
         self.all_start_micros
     }
@@ -1227,7 +1403,6 @@ impl NodeExecStats {
     }
 
     // int64 op_start_rel_micros = 3;
-
 
     pub fn get_op_start_rel_micros(&self) -> i64 {
         self.op_start_rel_micros
@@ -1243,7 +1418,6 @@ impl NodeExecStats {
 
     // int64 op_end_rel_micros = 4;
 
-
     pub fn get_op_end_rel_micros(&self) -> i64 {
         self.op_end_rel_micros
     }
@@ -1258,7 +1432,6 @@ impl NodeExecStats {
 
     // int64 all_end_rel_micros = 5;
 
-
     pub fn get_all_end_rel_micros(&self) -> i64 {
         self.all_end_rel_micros
     }
@@ -1272,7 +1445,6 @@ impl NodeExecStats {
     }
 
     // repeated .tensorflow.AllocatorMemoryUsed memory = 6;
-
 
     pub fn get_memory(&self) -> &[AllocatorMemoryUsed] {
         &self.memory
@@ -1298,7 +1470,6 @@ impl NodeExecStats {
 
     // repeated .tensorflow.NodeOutput output = 7;
 
-
     pub fn get_output(&self) -> &[NodeOutput] {
         &self.output
     }
@@ -1322,7 +1493,6 @@ impl NodeExecStats {
     }
 
     // string timeline_label = 8;
-
 
     pub fn get_timeline_label(&self) -> &str {
         &self.timeline_label
@@ -1349,7 +1519,6 @@ impl NodeExecStats {
 
     // int64 scheduled_micros = 9;
 
-
     pub fn get_scheduled_micros(&self) -> i64 {
         self.scheduled_micros
     }
@@ -1363,7 +1532,6 @@ impl NodeExecStats {
     }
 
     // uint32 thread_id = 10;
-
 
     pub fn get_thread_id(&self) -> u32 {
         self.thread_id
@@ -1379,7 +1547,6 @@ impl NodeExecStats {
 
     // repeated .tensorflow.AllocationDescription referenced_tensor = 11;
 
-
     pub fn get_referenced_tensor(&self) -> &[super::allocation_description::AllocationDescription] {
         &self.referenced_tensor
     }
@@ -1388,25 +1555,36 @@ impl NodeExecStats {
     }
 
     // Param is passed by value, moved
-    pub fn set_referenced_tensor(&mut self, v: ::protobuf::RepeatedField<super::allocation_description::AllocationDescription>) {
+    pub fn set_referenced_tensor(
+        &mut self,
+        v: ::protobuf::RepeatedField<super::allocation_description::AllocationDescription>,
+    ) {
         self.referenced_tensor = v;
     }
 
     // Mutable pointer to the field.
-    pub fn mut_referenced_tensor(&mut self) -> &mut ::protobuf::RepeatedField<super::allocation_description::AllocationDescription> {
+    pub fn mut_referenced_tensor(
+        &mut self,
+    ) -> &mut ::protobuf::RepeatedField<super::allocation_description::AllocationDescription> {
         &mut self.referenced_tensor
     }
 
     // Take field
-    pub fn take_referenced_tensor(&mut self) -> ::protobuf::RepeatedField<super::allocation_description::AllocationDescription> {
-        ::std::mem::replace(&mut self.referenced_tensor, ::protobuf::RepeatedField::new())
+    pub fn take_referenced_tensor(
+        &mut self,
+    ) -> ::protobuf::RepeatedField<super::allocation_description::AllocationDescription> {
+        ::std::mem::replace(
+            &mut self.referenced_tensor,
+            ::protobuf::RepeatedField::new(),
+        )
     }
 
     // .tensorflow.MemoryStats memory_stats = 12;
 
-
     pub fn get_memory_stats(&self) -> &MemoryStats {
-        self.memory_stats.as_ref().unwrap_or_else(|| MemoryStats::default_instance())
+        self.memory_stats
+            .as_ref()
+            .unwrap_or_else(|| MemoryStats::default_instance())
     }
     pub fn clear_memory_stats(&mut self) {
         self.memory_stats.clear();
@@ -1432,11 +1610,12 @@ impl NodeExecStats {
 
     // Take field
     pub fn take_memory_stats(&mut self) -> MemoryStats {
-        self.memory_stats.take().unwrap_or_else(|| MemoryStats::new())
+        self.memory_stats
+            .take()
+            .unwrap_or_else(|| MemoryStats::new())
     }
 
     // int64 all_start_nanos = 13;
-
 
     pub fn get_all_start_nanos(&self) -> i64 {
         self.all_start_nanos
@@ -1452,7 +1631,6 @@ impl NodeExecStats {
 
     // int64 op_start_rel_nanos = 14;
 
-
     pub fn get_op_start_rel_nanos(&self) -> i64 {
         self.op_start_rel_nanos
     }
@@ -1466,7 +1644,6 @@ impl NodeExecStats {
     }
 
     // int64 op_end_rel_nanos = 15;
-
 
     pub fn get_op_end_rel_nanos(&self) -> i64 {
         self.op_end_rel_nanos
@@ -1482,7 +1659,6 @@ impl NodeExecStats {
 
     // int64 all_end_rel_nanos = 16;
 
-
     pub fn get_all_end_rel_nanos(&self) -> i64 {
         self.all_end_rel_nanos
     }
@@ -1496,7 +1672,6 @@ impl NodeExecStats {
     }
 
     // int64 scheduled_nanos = 17;
-
 
     pub fn get_scheduled_nanos(&self) -> i64 {
         self.scheduled_nanos
@@ -1517,127 +1692,173 @@ impl ::protobuf::Message for NodeExecStats {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.output {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.referenced_tensor {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         for v in &self.memory_stats {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.node_name)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.node_name,
+                    )?;
+                }
                 2 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.all_start_micros = tmp;
-                },
+                }
                 3 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.op_start_rel_micros = tmp;
-                },
+                }
                 4 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.op_end_rel_micros = tmp;
-                },
+                }
                 5 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.all_end_rel_micros = tmp;
-                },
+                }
                 6 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.memory)?;
-                },
+                }
                 7 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.output)?;
-                },
+                }
                 8 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.timeline_label)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.timeline_label,
+                    )?;
+                }
                 9 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.scheduled_micros = tmp;
-                },
+                }
                 10 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_uint32()?;
                     self.thread_id = tmp;
-                },
+                }
                 11 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.referenced_tensor)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.referenced_tensor,
+                    )?;
+                }
                 12 => {
-                    ::protobuf::rt::read_singular_message_into(wire_type, is, &mut self.memory_stats)?;
-                },
+                    ::protobuf::rt::read_singular_message_into(
+                        wire_type,
+                        is,
+                        &mut self.memory_stats,
+                    )?;
+                }
                 13 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.all_start_nanos = tmp;
-                },
+                }
                 14 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.op_start_rel_nanos = tmp;
-                },
+                }
                 15 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.op_end_rel_nanos = tmp;
-                },
+                }
                 16 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.all_end_rel_nanos = tmp;
-                },
+                }
                 17 => {
                     if wire_type != ::protobuf::wire_format::WireTypeVarint {
-                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(wire_type));
+                        return ::std::result::Result::Err(::protobuf::rt::unexpected_wire_type(
+                            wire_type,
+                        ));
                     }
                     let tmp = is.read_int64()?;
                     self.scheduled_nanos = tmp;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -1651,63 +1872,110 @@ impl ::protobuf::Message for NodeExecStats {
             my_size += ::protobuf::rt::string_size(1, &self.node_name);
         }
         if self.all_start_micros != 0 {
-            my_size += ::protobuf::rt::value_size(2, self.all_start_micros, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                2,
+                self.all_start_micros,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.op_start_rel_micros != 0 {
-            my_size += ::protobuf::rt::value_size(3, self.op_start_rel_micros, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                3,
+                self.op_start_rel_micros,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.op_end_rel_micros != 0 {
-            my_size += ::protobuf::rt::value_size(4, self.op_end_rel_micros, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                4,
+                self.op_end_rel_micros,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.all_end_rel_micros != 0 {
-            my_size += ::protobuf::rt::value_size(5, self.all_end_rel_micros, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                5,
+                self.all_end_rel_micros,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.memory {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         for value in &self.output {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if !self.timeline_label.is_empty() {
             my_size += ::protobuf::rt::string_size(8, &self.timeline_label);
         }
         if self.scheduled_micros != 0 {
-            my_size += ::protobuf::rt::value_size(9, self.scheduled_micros, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                9,
+                self.scheduled_micros,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.thread_id != 0 {
-            my_size += ::protobuf::rt::value_size(10, self.thread_id, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                10,
+                self.thread_id,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         for value in &self.referenced_tensor {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         if let Some(ref v) = self.memory_stats.as_ref() {
             let len = v.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
         }
         if self.all_start_nanos != 0 {
-            my_size += ::protobuf::rt::value_size(13, self.all_start_nanos, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                13,
+                self.all_start_nanos,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.op_start_rel_nanos != 0 {
-            my_size += ::protobuf::rt::value_size(14, self.op_start_rel_nanos, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                14,
+                self.op_start_rel_nanos,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.op_end_rel_nanos != 0 {
-            my_size += ::protobuf::rt::value_size(15, self.op_end_rel_nanos, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                15,
+                self.op_end_rel_nanos,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.all_end_rel_nanos != 0 {
-            my_size += ::protobuf::rt::value_size(16, self.all_end_rel_nanos, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                16,
+                self.all_end_rel_nanos,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         if self.scheduled_nanos != 0 {
-            my_size += ::protobuf::rt::value_size(17, self.scheduled_nanos, ::protobuf::wire_format::WireTypeVarint);
+            my_size += ::protobuf::rt::value_size(
+                17,
+                self.scheduled_nanos,
+                ::protobuf::wire_format::WireTypeVarint,
+            );
         }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.node_name.is_empty() {
             os.write_string(1, &self.node_name)?;
         }
@@ -1727,12 +1995,12 @@ impl ::protobuf::Message for NodeExecStats {
             os.write_tag(6, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         for v in &self.output {
             os.write_tag(7, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if !self.timeline_label.is_empty() {
             os.write_string(8, &self.timeline_label)?;
         }
@@ -1746,7 +2014,7 @@ impl ::protobuf::Message for NodeExecStats {
             os.write_tag(11, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         if let Some(ref v) = self.memory_stats.as_ref() {
             os.write_tag(12, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
@@ -1802,102 +2070,164 @@ impl ::protobuf::Message for NodeExecStats {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "node_name",
-                    |m: &NodeExecStats| { &m.node_name },
-                    |m: &mut NodeExecStats| { &mut m.node_name },
+                    |m: &NodeExecStats| &m.node_name,
+                    |m: &mut NodeExecStats| &mut m.node_name,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "all_start_micros",
-                    |m: &NodeExecStats| { &m.all_start_micros },
-                    |m: &mut NodeExecStats| { &mut m.all_start_micros },
+                    |m: &NodeExecStats| &m.all_start_micros,
+                    |m: &mut NodeExecStats| &mut m.all_start_micros,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "op_start_rel_micros",
-                    |m: &NodeExecStats| { &m.op_start_rel_micros },
-                    |m: &mut NodeExecStats| { &mut m.op_start_rel_micros },
+                    |m: &NodeExecStats| &m.op_start_rel_micros,
+                    |m: &mut NodeExecStats| &mut m.op_start_rel_micros,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "op_end_rel_micros",
-                    |m: &NodeExecStats| { &m.op_end_rel_micros },
-                    |m: &mut NodeExecStats| { &mut m.op_end_rel_micros },
+                    |m: &NodeExecStats| &m.op_end_rel_micros,
+                    |m: &mut NodeExecStats| &mut m.op_end_rel_micros,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "all_end_rel_micros",
-                    |m: &NodeExecStats| { &m.all_end_rel_micros },
-                    |m: &mut NodeExecStats| { &mut m.all_end_rel_micros },
+                    |m: &NodeExecStats| &m.all_end_rel_micros,
+                    |m: &mut NodeExecStats| &mut m.all_end_rel_micros,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<AllocatorMemoryUsed>>(
-                    "memory",
-                    |m: &NodeExecStats| { &m.memory },
-                    |m: &mut NodeExecStats| { &mut m.memory },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<NodeOutput>>(
-                    "output",
-                    |m: &NodeExecStats| { &m.output },
-                    |m: &mut NodeExecStats| { &mut m.output },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<AllocatorMemoryUsed>,
+                    >(
+                        "memory",
+                        |m: &NodeExecStats| &m.memory,
+                        |m: &mut NodeExecStats| &mut m.memory,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<NodeOutput>,
+                    >(
+                        "output",
+                        |m: &NodeExecStats| &m.output,
+                        |m: &mut NodeExecStats| &mut m.output,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "timeline_label",
-                    |m: &NodeExecStats| { &m.timeline_label },
-                    |m: &mut NodeExecStats| { &mut m.timeline_label },
+                    |m: &NodeExecStats| &m.timeline_label,
+                    |m: &mut NodeExecStats| &mut m.timeline_label,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "scheduled_micros",
-                    |m: &NodeExecStats| { &m.scheduled_micros },
-                    |m: &mut NodeExecStats| { &mut m.scheduled_micros },
+                    |m: &NodeExecStats| &m.scheduled_micros,
+                    |m: &mut NodeExecStats| &mut m.scheduled_micros,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeUint32>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeUint32,
+                >(
                     "thread_id",
-                    |m: &NodeExecStats| { &m.thread_id },
-                    |m: &mut NodeExecStats| { &mut m.thread_id },
+                    |m: &NodeExecStats| &m.thread_id,
+                    |m: &mut NodeExecStats| &mut m.thread_id,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<super::allocation_description::AllocationDescription>>(
-                    "referenced_tensor",
-                    |m: &NodeExecStats| { &m.referenced_tensor },
-                    |m: &mut NodeExecStats| { &mut m.referenced_tensor },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<MemoryStats>>(
-                    "memory_stats",
-                    |m: &NodeExecStats| { &m.memory_stats },
-                    |m: &mut NodeExecStats| { &mut m.memory_stats },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<
+                            super::allocation_description::AllocationDescription,
+                        >,
+                    >(
+                        "referenced_tensor",
+                        |m: &NodeExecStats| &m.referenced_tensor,
+                        |m: &mut NodeExecStats| &mut m.referenced_tensor,
+                    ),
+                );
+                fields.push(
+                    ::protobuf::reflect::accessor::make_singular_ptr_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<MemoryStats>,
+                    >(
+                        "memory_stats",
+                        |m: &NodeExecStats| &m.memory_stats,
+                        |m: &mut NodeExecStats| &mut m.memory_stats,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "all_start_nanos",
-                    |m: &NodeExecStats| { &m.all_start_nanos },
-                    |m: &mut NodeExecStats| { &mut m.all_start_nanos },
+                    |m: &NodeExecStats| &m.all_start_nanos,
+                    |m: &mut NodeExecStats| &mut m.all_start_nanos,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "op_start_rel_nanos",
-                    |m: &NodeExecStats| { &m.op_start_rel_nanos },
-                    |m: &mut NodeExecStats| { &mut m.op_start_rel_nanos },
+                    |m: &NodeExecStats| &m.op_start_rel_nanos,
+                    |m: &mut NodeExecStats| &mut m.op_start_rel_nanos,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "op_end_rel_nanos",
-                    |m: &NodeExecStats| { &m.op_end_rel_nanos },
-                    |m: &mut NodeExecStats| { &mut m.op_end_rel_nanos },
+                    |m: &NodeExecStats| &m.op_end_rel_nanos,
+                    |m: &mut NodeExecStats| &mut m.op_end_rel_nanos,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "all_end_rel_nanos",
-                    |m: &NodeExecStats| { &m.all_end_rel_nanos },
-                    |m: &mut NodeExecStats| { &mut m.all_end_rel_nanos },
+                    |m: &NodeExecStats| &m.all_end_rel_nanos,
+                    |m: &mut NodeExecStats| &mut m.all_end_rel_nanos,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeInt64>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeInt64,
+                >(
                     "scheduled_nanos",
-                    |m: &NodeExecStats| { &m.scheduled_nanos },
-                    |m: &mut NodeExecStats| { &mut m.scheduled_nanos },
+                    |m: &NodeExecStats| &m.scheduled_nanos,
+                    |m: &mut NodeExecStats| &mut m.scheduled_nanos,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<NodeExecStats>(
                     "NodeExecStats",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -1908,9 +2238,7 @@ impl ::protobuf::Message for NodeExecStats {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const NodeExecStats,
         };
-        unsafe {
-            instance.get(NodeExecStats::new)
-        }
+        unsafe { instance.get(NodeExecStats::new) }
     }
 }
 
@@ -1949,7 +2277,7 @@ impl ::protobuf::reflect::ProtobufValue for NodeExecStats {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct DeviceStepStats {
     // message fields
     pub device: ::std::string::String,
@@ -1972,7 +2300,6 @@ impl DeviceStepStats {
     }
 
     // string device = 1;
-
 
     pub fn get_device(&self) -> &str {
         &self.device
@@ -1999,7 +2326,6 @@ impl DeviceStepStats {
 
     // repeated .tensorflow.NodeExecStats node_stats = 2;
 
-
     pub fn get_node_stats(&self) -> &[NodeExecStats] {
         &self.node_stats
     }
@@ -2024,7 +2350,6 @@ impl DeviceStepStats {
 
     // repeated .tensorflow.DeviceStepStats.ThreadNamesEntry thread_names = 3;
 
-
     pub fn get_thread_names(&self) -> &::std::collections::HashMap<u32, ::std::string::String> {
         &self.thread_names
     }
@@ -2038,7 +2363,9 @@ impl DeviceStepStats {
     }
 
     // Mutable pointer to the field.
-    pub fn mut_thread_names(&mut self) -> &mut ::std::collections::HashMap<u32, ::std::string::String> {
+    pub fn mut_thread_names(
+        &mut self,
+    ) -> &mut ::std::collections::HashMap<u32, ::std::string::String> {
         &mut self.thread_names
     }
 
@@ -2054,26 +2381,45 @@ impl ::protobuf::Message for DeviceStepStats {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
-                    ::protobuf::rt::read_singular_proto3_string_into(wire_type, is, &mut self.device)?;
-                },
+                    ::protobuf::rt::read_singular_proto3_string_into(
+                        wire_type,
+                        is,
+                        &mut self.device,
+                    )?;
+                }
                 2 => {
-                    ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.node_stats)?;
-                },
+                    ::protobuf::rt::read_repeated_message_into(
+                        wire_type,
+                        is,
+                        &mut self.node_stats,
+                    )?;
+                }
                 3 => {
-                    ::protobuf::rt::read_map_into::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(wire_type, is, &mut self.thread_names)?;
-                },
+                    ::protobuf::rt::read_map_into::<
+                        ::protobuf::types::ProtobufTypeUint32,
+                        ::protobuf::types::ProtobufTypeString,
+                    >(wire_type, is, &mut self.thread_names)?;
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2089,14 +2435,20 @@ impl ::protobuf::Message for DeviceStepStats {
         for value in &self.node_stats {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
-        my_size += ::protobuf::rt::compute_map_size::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(3, &self.thread_names);
+        }
+        my_size += ::protobuf::rt::compute_map_size::<
+            ::protobuf::types::ProtobufTypeUint32,
+            ::protobuf::types::ProtobufTypeString,
+        >(3, &self.thread_names);
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         if !self.device.is_empty() {
             os.write_string(1, &self.device)?;
         }
@@ -2104,8 +2456,11 @@ impl ::protobuf::Message for DeviceStepStats {
             os.write_tag(2, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
-        ::protobuf::rt::write_map_with_cached_sizes::<::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(3, &self.thread_names, os)?;
+        }
+        ::protobuf::rt::write_map_with_cached_sizes::<
+            ::protobuf::types::ProtobufTypeUint32,
+            ::protobuf::types::ProtobufTypeString,
+        >(3, &self.thread_names, os)?;
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -2141,32 +2496,45 @@ impl ::protobuf::Message for DeviceStepStats {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<_, ::protobuf::types::ProtobufTypeString>(
+                fields.push(::protobuf::reflect::accessor::make_simple_field_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "device",
-                    |m: &DeviceStepStats| { &m.device },
-                    |m: &mut DeviceStepStats| { &mut m.device },
+                    |m: &DeviceStepStats| &m.device,
+                    |m: &mut DeviceStepStats| &mut m.device,
                 ));
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<NodeExecStats>>(
-                    "node_stats",
-                    |m: &DeviceStepStats| { &m.node_stats },
-                    |m: &mut DeviceStepStats| { &mut m.node_stats },
-                ));
-                fields.push(::protobuf::reflect::accessor::make_map_accessor::<_, ::protobuf::types::ProtobufTypeUint32, ::protobuf::types::ProtobufTypeString>(
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<NodeExecStats>,
+                    >(
+                        "node_stats",
+                        |m: &DeviceStepStats| &m.node_stats,
+                        |m: &mut DeviceStepStats| &mut m.node_stats,
+                    ),
+                );
+                fields.push(::protobuf::reflect::accessor::make_map_accessor::<
+                    _,
+                    ::protobuf::types::ProtobufTypeUint32,
+                    ::protobuf::types::ProtobufTypeString,
+                >(
                     "thread_names",
-                    |m: &DeviceStepStats| { &m.thread_names },
-                    |m: &mut DeviceStepStats| { &mut m.thread_names },
+                    |m: &DeviceStepStats| &m.thread_names,
+                    |m: &mut DeviceStepStats| &mut m.thread_names,
                 ));
                 ::protobuf::reflect::MessageDescriptor::new::<DeviceStepStats>(
                     "DeviceStepStats",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -2177,9 +2545,7 @@ impl ::protobuf::Message for DeviceStepStats {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const DeviceStepStats,
         };
-        unsafe {
-            instance.get(DeviceStepStats::new)
-        }
+        unsafe { instance.get(DeviceStepStats::new) }
     }
 }
 
@@ -2204,7 +2570,7 @@ impl ::protobuf::reflect::ProtobufValue for DeviceStepStats {
     }
 }
 
-#[derive(PartialEq,Clone,Default)]
+#[derive(PartialEq, Clone, Default)]
 pub struct StepStats {
     // message fields
     pub dev_stats: ::protobuf::RepeatedField<DeviceStepStats>,
@@ -2225,7 +2591,6 @@ impl StepStats {
     }
 
     // repeated .tensorflow.DeviceStepStats dev_stats = 1;
-
 
     pub fn get_dev_stats(&self) -> &[DeviceStepStats] {
         &self.dev_stats
@@ -2256,20 +2621,28 @@ impl ::protobuf::Message for StepStats {
             if !v.is_initialized() {
                 return false;
             }
-        };
+        }
         true
     }
 
-    fn merge_from(&mut self, is: &mut ::protobuf::CodedInputStream) -> ::protobuf::ProtobufResult<()> {
+    fn merge_from(
+        &mut self,
+        is: &mut ::protobuf::CodedInputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         while !is.eof()? {
             let (field_number, wire_type) = is.read_tag_unpack()?;
             match field_number {
                 1 => {
                     ::protobuf::rt::read_repeated_message_into(wire_type, is, &mut self.dev_stats)?;
-                },
+                }
                 _ => {
-                    ::protobuf::rt::read_unknown_or_skip_group(field_number, wire_type, is, self.mut_unknown_fields())?;
-                },
+                    ::protobuf::rt::read_unknown_or_skip_group(
+                        field_number,
+                        wire_type,
+                        is,
+                        self.mut_unknown_fields(),
+                    )?;
+                }
             };
         }
         ::std::result::Result::Ok(())
@@ -2282,18 +2655,21 @@ impl ::protobuf::Message for StepStats {
         for value in &self.dev_stats {
             let len = value.compute_size();
             my_size += 1 + ::protobuf::rt::compute_raw_varint32_size(len) + len;
-        };
+        }
         my_size += ::protobuf::rt::unknown_fields_size(self.get_unknown_fields());
         self.cached_size.set(my_size);
         my_size
     }
 
-    fn write_to_with_cached_sizes(&self, os: &mut ::protobuf::CodedOutputStream) -> ::protobuf::ProtobufResult<()> {
+    fn write_to_with_cached_sizes(
+        &self,
+        os: &mut ::protobuf::CodedOutputStream,
+    ) -> ::protobuf::ProtobufResult<()> {
         for v in &self.dev_stats {
             os.write_tag(1, ::protobuf::wire_format::WireTypeLengthDelimited)?;
             os.write_raw_varint32(v.get_cached_size())?;
             v.write_to_with_cached_sizes(os)?;
-        };
+        }
         os.write_unknown_fields(self.get_unknown_fields())?;
         ::std::result::Result::Ok(())
     }
@@ -2329,22 +2705,28 @@ impl ::protobuf::Message for StepStats {
     }
 
     fn descriptor_static() -> &'static ::protobuf::reflect::MessageDescriptor {
-        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> = ::protobuf::lazy::Lazy {
-            lock: ::protobuf::lazy::ONCE_INIT,
-            ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
-        };
+        static mut descriptor: ::protobuf::lazy::Lazy<::protobuf::reflect::MessageDescriptor> =
+            ::protobuf::lazy::Lazy {
+                lock: ::protobuf::lazy::ONCE_INIT,
+                ptr: 0 as *const ::protobuf::reflect::MessageDescriptor,
+            };
         unsafe {
             descriptor.get(|| {
                 let mut fields = ::std::vec::Vec::new();
-                fields.push(::protobuf::reflect::accessor::make_repeated_field_accessor::<_, ::protobuf::types::ProtobufTypeMessage<DeviceStepStats>>(
-                    "dev_stats",
-                    |m: &StepStats| { &m.dev_stats },
-                    |m: &mut StepStats| { &mut m.dev_stats },
-                ));
+                fields.push(
+                    ::protobuf::reflect::accessor::make_repeated_field_accessor::<
+                        _,
+                        ::protobuf::types::ProtobufTypeMessage<DeviceStepStats>,
+                    >(
+                        "dev_stats",
+                        |m: &StepStats| &m.dev_stats,
+                        |m: &mut StepStats| &mut m.dev_stats,
+                    ),
+                );
                 ::protobuf::reflect::MessageDescriptor::new::<StepStats>(
                     "StepStats",
                     fields,
-                    file_descriptor_proto()
+                    file_descriptor_proto(),
                 )
             })
         }
@@ -2355,9 +2737,7 @@ impl ::protobuf::Message for StepStats {
             lock: ::protobuf::lazy::ONCE_INIT,
             ptr: 0 as *const StepStats,
         };
-        unsafe {
-            instance.get(StepStats::new)
-        }
+        unsafe { instance.get(StepStats::new) }
     }
 }
 
@@ -2431,7 +2811,9 @@ static file_descriptor_proto_data: &'static [u8] = b"\
     ramework\xf8\x01\x01b\x06proto3\
 ";
 
-static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<::protobuf::descriptor::FileDescriptorProto> = ::protobuf::lazy::Lazy {
+static mut file_descriptor_proto_lazy: ::protobuf::lazy::Lazy<
+    ::protobuf::descriptor::FileDescriptorProto,
+> = ::protobuf::lazy::Lazy {
     lock: ::protobuf::lazy::ONCE_INIT,
     ptr: 0 as *const ::protobuf::descriptor::FileDescriptorProto,
 };
@@ -2441,9 +2823,5 @@ fn parse_descriptor_proto() -> ::protobuf::descriptor::FileDescriptorProto {
 }
 
 pub fn file_descriptor_proto() -> &'static ::protobuf::descriptor::FileDescriptorProto {
-    unsafe {
-        file_descriptor_proto_lazy.get(|| {
-            parse_descriptor_proto()
-        })
-    }
+    unsafe { file_descriptor_proto_lazy.get(|| parse_descriptor_proto()) }
 }
