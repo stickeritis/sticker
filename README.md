@@ -1,3 +1,12 @@
+**Warning:** sticker is succeeded by
+[SyntaxDot](https://github.com/tensordot/syntaxdot), which supports
+*many* new features:
+
+* Multi-task learning.
+* Pretrained transformer models, suchs as BERT and XLM-R.
+* Biaffine parsing in addition to parsing as sequence labeling.
+* Lemmatization.
+
 # sticker
 
 **sticker** is a sequence labeler using neural networks.
